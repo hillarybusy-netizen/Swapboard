@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Gold & Black Matte — SwapBoard Design System */
+    --background: 0 0% 4%;           /* #0a0a0a deep matte black */
+    --foreground: 45 60% 92%;        /* warm off-white */
+    --card: 0 0% 7%;                 /* #121212 card surface */
+    --card-foreground: 45 60% 92%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 45 60% 92%;
+    --primary: 43 65% 51%;           /* #d4af37 gold */
+    --primary-foreground: 0 0% 4%;   /* black text on gold */
+    --secondary: 0 0% 12%;           /* dark grey surface */
+    --secondary-foreground: 45 60% 92%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;    /* #8c8c8c muted text */
+    --accent: 43 65% 51%;            /* gold accent */
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 45 60% 92%;
+    --border: 0 0% 16%;              /* subtle dark border */
+    --input: 0 0% 12%;
+    --ring: 43 65% 51%;              /* gold focus ring */
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(212,175,55,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(212,175,55,0.03) 0%, transparent 50%);
+  }
+}
+
+/* Gold gradient text utility */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f0d060 0%, #d4af37 50%, #a8861f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Matte card with gold border on hover */
+.card-matte {
+  background: #121212;
+  border: 1px solid #1f1f1f;
+  transition: border-color 0.2s ease;
+}
+.card-matte:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+/* Gold button glow */
+.btn-gold {
+  background: linear-gradient(135deg, #d4af37, #a8861f);
+  color: #0a0a0a;
+  font-weight: 600;
+  box-shadow: 0 0 20px rgba(212,175,55,0.25);
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+.btn-gold:hover {
+  box-shadow: 0 0 30px rgba(212,175,55,0.45);
+  transform: translateY(-1px);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+
+/* Mobile: safe area insets for notch phones */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
