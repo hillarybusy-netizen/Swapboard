@@ -20,14 +20,14 @@ export default function IndustryPage() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Progress */}
-      <div className="flex items-center gap-3 mb-12 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+      <div className="flex items-center gap-2 md:gap-3 mb-8 md:mb-12 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
         <span className="text-gold">Step 01</span>
         <span className="opacity-50">/</span>
         <span>Define your Domain</span>
       </div>
 
-      <div className="mb-12">
-        <h1 className="text-5xl font-black tracking-tighter text-white mb-4 leading-tight">
+      <div className="mb-8 md:mb-12">
+        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white mb-4 leading-tight">
           What is your <br />
           <span className="text-gold-gradient">Service Industry?</span>
         </h1>
@@ -36,7 +36,7 @@ export default function IndustryPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {Object.entries(INDUSTRY_TEMPLATES)
           .filter(([key]) => ["restaurant", "healthcare", "retail"].includes(key))
           .map(([key, tmpl]) => (
@@ -44,7 +44,7 @@ export default function IndustryPage() {
               key={key}
               onClick={() => setSelected(key)}
               className={cn(
-                "text-left p-8 rounded-[2rem] border transition-all duration-300 relative overflow-hidden group",
+                "text-left p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border transition-all duration-300 relative overflow-hidden group",
                 selected === key 
                   ? "glass border-gold bg-gold/[0.03] shadow-[0_0_40px_rgba(212,175,55,0.05)]" 
                   : "glass border-white/5 hover:border-white/10"

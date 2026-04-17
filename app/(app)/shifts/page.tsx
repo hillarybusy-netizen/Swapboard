@@ -57,10 +57,10 @@ export default async function ShiftsPage(props: {
 
   return (
     <div className="space-y-10 max-w-7xl mx-auto pb-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-2">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-white mb-2">Team Shifts</h1>
-          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">Team Shifts</h1>
+          <p className="text-white/40 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">
             Schedule Overview · <span className="text-gold/60">{shifts.length} Active Records</span>
           </p>
         </div>
@@ -72,17 +72,17 @@ export default async function ShiftsPage(props: {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 px-2">
+      <div className="flex flex-wrap gap-2 md:gap-3 px-1 md:px-2">
         <Link href="/shifts">
           <Button 
             variant="outline" 
             className={cn(
-              "glass rounded-full text-[10px] font-black uppercase tracking-widest px-6 h-10 border-white/5",
+              "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
               !searchParams.dept && !searchParams.status ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
             )}
             size="sm"
           >
-            All Shifts
+            All
           </Button>
         </Link>
         {(departments as any[]).map((d) => (
@@ -90,12 +90,12 @@ export default async function ShiftsPage(props: {
             <Button 
               variant="outline" 
               className={cn(
-               "glass rounded-full text-[10px] font-black uppercase tracking-widest px-6 h-10 border-white/5",
+               "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
                 searchParams.dept === d.id ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
               )}
               size="sm"
             >
-              <span className="w-2 h-2 rounded-full mr-2 shrink-0 shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: d.color }} />
+              <div className="w-1.5 h-1.5 rounded-full mr-2 shrink-0 shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: d.color }} />
               {d.name}
             </Button>
           </Link>
@@ -104,12 +104,12 @@ export default async function ShiftsPage(props: {
           <Button 
             variant="outline" 
             className={cn(
-              "glass rounded-full text-[10px] font-black uppercase tracking-widest px-6 h-10 border-white/5",
+              "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
               searchParams.status === "open" ? "bg-red-500 text-white border-red-500" : "text-white/40 hover:text-white"
             )}
             size="sm"
           >
-            Open Only
+            Open
           </Button>
         </Link>
       </div>
@@ -127,63 +127,63 @@ export default async function ShiftsPage(props: {
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 px-2">
+        <div className="grid gap-4 px-1 md:px-2">
           {(shifts as any[]).map((shift) => (
             <Link key={shift.id} href={`/shifts/${shift.id}`} className="group">
-              <div className="glass rounded-[2rem] p-6 border-white/5 hover:border-gold/30 hover:bg-gold/[0.02] transition-all duration-300 relative overflow-hidden">
+              <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 hover:border-gold/30 hover:bg-gold/[0.02] transition-all duration-300 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.01] blur-3xl group-hover:bg-gold/[0.03] -z-10 transition-colors" />
                 
-                <div className="flex items-center justify-between gap-6 flex-wrap">
-                  <div className="flex flex-1 items-center gap-6 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                  <div className="flex flex-1 items-center gap-4 md:gap-6 min-w-0">
                     {shift.department && (
-                      <div className="w-1.5 h-12 rounded-full shrink-0 shadow-[0_0_12px_rgba(0,0,0,0.3)] transition-transform group-hover:scale-y-110" style={{ backgroundColor: shift.department.color }} />
+                      <div className="w-1.5 h-10 md:h-12 rounded-full shrink-0 shadow-[0_0_12px_rgba(0,0,0,0.3)] transition-transform group-hover:scale-y-110" style={{ backgroundColor: shift.department.color }} />
                     )}
                     <div className="min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-black tracking-tight text-white truncate">{shift.title}</h3>
+                      <div className="flex items-center gap-2 md:gap-3 mb-1.5 md:mb-2 flex-wrap">
+                        <h3 className="text-base md:text-lg font-black tracking-tight text-white truncate">{shift.title}</h3>
                         {shift.department && (
-                          <Badge className="bg-white/5 text-white/30 rounded-full px-3 py-0.5 text-[9px] font-black uppercase tracking-widest border-none">
+                          <Badge className="bg-white/5 text-white/30 rounded-full px-2.5 py-0.5 text-[8px] md:text-[9px] font-black uppercase tracking-widest border-none">
                             {shift.department.name}
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-6 text-[11px] font-bold text-white/40 uppercase tracking-[0.1em]">
-                        <span className="flex items-center gap-2">
+                      <div className="flex items-center gap-4 md:gap-6 text-[10px] md:text-[11px] font-bold text-white/40 uppercase tracking-[0.1em] flex-wrap">
+                        <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-gold/60" />
                           {formatShiftDate(shift.start_time)}
                         </span>
-                        <span className="flex items-center gap-2">
+                        <span className="flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-gold/60" />
-                          {formatShiftTime(shift.start_time, shift.end_time)} <span className="text-white/10 ml-1">· {formatShiftDuration(shift.start_time, shift.end_time)}</span>
+                          {formatShiftTime(shift.start_time, shift.end_time)} <span className="text-white/10 ml-1 hidden sm:inline">· {formatShiftDuration(shift.start_time, shift.end_time)}</span>
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-8 shrink-0">
-                    <div className="flex flex-col items-end gap-1.5">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-white/20">Assigned To</span>
+                  <div className="flex items-center justify-between sm:justify-end gap-6 md:gap-8 shrink-0 border-t border-white/5 sm:border-none pt-4 sm:pt-0">
+                    <div className="flex flex-col items-start sm:items-end gap-1.5">
+                      <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/20">Assigned To</span>
                       {shift.profile ? (
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-8 h-8 rounded-full ring-2 ring-white/5">
-                            <AvatarFallback className="bg-gold/10 text-gold text-xs font-black">
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <Avatar className="w-7 h-7 md:w-8 md:h-8 rounded-full ring-2 ring-white/5">
+                            <AvatarFallback className="bg-gold/10 text-gold text-[10px] md:text-xs font-black">
                               {shift.profile.full_name?.charAt(0) ?? "?"}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-xs font-bold text-white/80">{shift.profile.full_name}</span>
+                          <span className="text-[11px] md:text-xs font-bold text-white/80">{shift.profile.full_name}</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20">
-                          <Users className="w-3 h-3 text-red-400" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-red-400">Unassigned</span>
+                        <div className="flex items-center gap-1.5 md:gap-2 px-2.5 py-1 md:py-1.5 rounded-full bg-red-500/10 border border-red-500/20">
+                          <Users className="w-2.5 h-2.5 text-red-400" />
+                          <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-red-400">Unassigned</span>
                         </div>
                       )}
                     </div>
 
                     <div className="flex flex-col items-end gap-1.5">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-white/20">Status</span>
+                      <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/20">Status</span>
                       <Badge className={cn(
-                        "rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border-none shadow-lg",
+                        "rounded-full px-3 md:px-4 py-1 md:py-1.5 text-[9px] md:text-[10px] font-black uppercase tracking-widest border-none shadow-lg",
                         shift.status === "scheduled" ? "bg-gold text-[#050505] shadow-gold/20" : 
                         shift.status === "open" ? "bg-red-500/20 text-red-400 shadow-red-500/10" :
                         "bg-blue-500/20 text-blue-400 shadow-blue-500/10"

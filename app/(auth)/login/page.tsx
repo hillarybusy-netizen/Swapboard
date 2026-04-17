@@ -33,10 +33,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="glass rounded-[2rem] p-6 md:p-8 border-white/5 shadow-2xl">
+    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border-white/5 shadow-2xl">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
-        <p className="text-white/50 text-sm font-medium">Sign in to your SwapBoard account</p>
+        <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
+        <p className="text-white/50 text-[13px] md:text-sm font-medium">Sign in to your SwapBoard account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

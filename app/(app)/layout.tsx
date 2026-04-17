@@ -31,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Sidebar org={org} profile={profile} />
       <div className="flex-1 flex flex-col min-w-0">
         <TrialBanner org={org} />
-        <main className="flex-1 p-4 md:p-10 pb-24 md:pb-10 overflow-auto scrollbar-hide">
+        <main className="flex-1 px-4 py-8 md:p-10 pb-32 md:pb-10 overflow-auto scrollbar-hide">
           {children}
         </main>
       </div>

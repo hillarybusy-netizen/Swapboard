@@ -94,8 +94,8 @@ export default function SetupPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center gap-3 mb-12 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
-        <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-2">
+      <div className="flex items-center gap-2 md:gap-3 mb-8 md:mb-12 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+        <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-1.5 md:gap-2">
           <ChevronLeft className="w-3 h-3" /> Back
         </button>
         <span className="opacity-50">/</span>
@@ -104,8 +104,8 @@ export default function SetupPage() {
         <span>Infrastructure Setup</span>
       </div>
 
-      <div className="mb-12">
-        <h1 className="text-5xl font-black tracking-tighter text-white mb-4 leading-tight">
+      <div className="mb-8 md:mb-12">
+        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white mb-4 leading-tight">
           Initialize <br />
           <span className="text-gold-gradient">Your Workspace</span>
         </h1>
@@ -116,30 +116,30 @@ export default function SetupPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Org name */}
-        <div className="glass rounded-[2rem] border-white/5 p-8 space-y-6">
+        <div className="glass rounded-[1.5rem] md:rounded-[2rem] border-white/5 p-6 md:p-8 space-y-4 md:space-y-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-1.5 h-6 bg-gold rounded-full" />
-            <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[11px]">Identity</h2>
+            <div className="w-1 md:w-1.5 h-5 md:h-6 bg-gold rounded-full" />
+            <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[10px] md:text-[11px]">Identity</h2>
           </div>
-          <div className="space-y-3">
-            <Label htmlFor="orgName" className="text-xs font-bold text-white/50 ml-1">Organization / business name</Label>
+          <div className="space-y-2 md:space-y-3">
+            <Label htmlFor="orgName" className="text-[11px] md:text-xs font-bold text-white/50 ml-1">Organization / business name</Label>
             <Input
-              id="orgName" placeholder="e.g. Downtown Bistro, City Medical Center"
+              id="orgName" placeholder="e.g. Downtown Bistro..."
               value={orgName} onChange={(e) => setOrgName(e.target.value)} required 
-              className="h-14 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-base"
+              className="h-12 md:h-14 bg-white/5 border-white/10 rounded-xl md:rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-base px-4"
             />
           </div>
         </div>
 
         {/* Departments */}
-        <div className="glass rounded-[2rem] border-white/5 p-8 space-y-6">
+        <div className="glass rounded-[1.5rem] md:rounded-[2rem] border-white/5 p-6 md:p-8 space-y-4 md:space-y-6">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-              <div className="w-1.5 h-6 bg-gold rounded-full" />
-              <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[11px]">Operational Nodes</h2>
+              <div className="w-1 md:w-1.5 h-5 md:h-6 bg-gold rounded-full" />
+              <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[10px] md:text-[11px]">Operational Nodes</h2>
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={addDept} className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[10px] uppercase tracking-widest">
-              <Plus className="w-3 h-3 mr-2" /> Add Department
+            <Button type="button" variant="ghost" size="sm" onClick={addDept} className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[9px] md:text-[10px] uppercase tracking-widest px-0 md:px-3">
+              <Plus className="w-3 h-3 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Add Department</span><span className="sm:hidden">Add</span>
             </Button>
           </div>
           

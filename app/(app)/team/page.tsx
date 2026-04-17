@@ -37,10 +37,10 @@ export default async function TeamPage() {
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto pb-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-2">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-white mb-2">Team Directory</h1>
-          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">Team Directory</h1>
+          <p className="text-white/40 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">
             Staff Overview · <span className="text-gold/60">{members.length} Active Members</span>
           </p>
         </div>
@@ -57,29 +57,29 @@ export default async function TeamPage() {
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 px-2">
+        <div className="grid gap-4 px-1 md:px-2">
           {(members as any[]).map((member) => (
-            <div key={member.id} className="glass rounded-[2rem] p-6 border-white/5 hover:border-white/10 transition-all duration-300 relative overflow-hidden group">
+            <div key={member.id} className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 hover:border-white/10 transition-all duration-300 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.01] blur-3xl -z-10" />
-              <div className="flex items-center gap-6">
-                <Avatar className="w-14 h-14 rounded-full border-2 border-white/5 ring-4 ring-white/[0.02]">
-                  <AvatarFallback className="bg-white/5 text-white/40 text-lg font-black italic">
+              <div className="flex items-center gap-4 md:gap-6">
+                <Avatar className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-white/5 ring-4 ring-white/[0.02] shrink-0">
+                  <AvatarFallback className="bg-white/5 text-white/40 text-base md:text-lg font-black italic">
                     {member.full_name?.charAt(0) ?? "?"}
                   </AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-black tracking-tight text-white mb-1">{member.full_name ?? "Unknown"}</h3>
-                  <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/30">
+                  <h3 className="text-base md:text-lg font-black tracking-tight text-white mb-1 truncate">{member.full_name ?? "Unknown"}</h3>
+                  <div className="flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30 flex-wrap">
                     {member.department?.name && (
-                      <span className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: member.department.color }} />
+                      <span className="flex items-center gap-1.5 md:gap-2">
+                        <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full" style={{ backgroundColor: member.department.color }} />
                         {member.department.name}
                       </span>
                     )}
                     {member.role?.name && (
                       <>
-                        <span>·</span>
+                        <span className="hidden sm:inline">·</span>
                         <span className="text-gold/40">{member.role.name}</span>
                       </>
                     )}
@@ -87,7 +87,7 @@ export default async function TeamPage() {
                 </div>
 
                 <Badge className={cn(
-                  "rounded-full px-4 py-1.5 text-[9px] font-black uppercase tracking-widest border-none shrink-0",
+                  "rounded-full px-3 md:px-4 py-1 md:py-1.5 text-[8px] md:text-[9px] font-black uppercase tracking-widest border-none shrink-0",
                   member.user_role === "admin" || member.user_role === "manager" ? "bg-gold text-[#050505]" : "bg-white/10 text-white/40"
                 )}>
                   {member.user_role}
