@@ -3,13 +3,13 @@
 
 -- Helper: get current user's org id
 create or replace function get_user_org_id()
-returns uuid language sql security definer stable as $$
+returns uuid language sql security definer set search_path = public stable as $$
   select organization_id from profiles where id = auth.uid()
 $$;
 
 -- Helper: is current user a manager or admin?
 create or replace function is_manager()
-returns boolean language sql security definer stable as $$
+returns boolean language sql security definer set search_path = public stable as $$
   select coalesce(
     (select user_role in ('manager', 'admin') from profiles where id = auth.uid()),
     false
@@ -39,6 +39,12 @@ create policy "Members can read own org" on organizations
 create policy "Admins can update own org" on organizations
   for update using (id = get_user_org_id() and is_manager());
 
+create policy "Authenticated users can create organizations" on organizations
+  for insert with check (auth.role() = 'authenticated');
+
+create policy "Authenticated users can read all organizations" on organizations
+  for select using (auth.role() = 'authenticated');
+
 -- ============================================================
 -- Departments
 -- ============================================================
@@ -47,6 +53,12 @@ create policy "Members read own org depts" on departments
 
 create policy "Managers manage depts" on departments
   for all using (organization_id = get_user_org_id() and is_manager());
+
+create policy "Authenticated users can create departments" on departments
+  for insert with check (auth.role() = 'authenticated');
+
+create policy "Authenticated users can read all departments" on departments
+  for select using (auth.role() = 'authenticated');
 
 -- ============================================================
 -- Roles
@@ -57,11 +69,20 @@ create policy "Members read own org roles" on roles
 create policy "Managers manage roles" on roles
   for all using (organization_id = get_user_org_id() and is_manager());
 
+create policy "Authenticated users can create roles" on roles
+  for insert with check (auth.role() = 'authenticated');
+
+create policy "Authenticated users can read all roles" on roles
+  for select using (auth.role() = 'authenticated');
+
 -- ============================================================
 -- Profiles
 -- ============================================================
 create policy "Users read own profile" on profiles
-  for select using (id = auth.uid() or organization_id = get_user_org_id());
+  for select using (id = auth.uid());
+
+create policy "Users read others in same org" on profiles
+  for select using (organization_id = (select organization_id from profiles where id = auth.uid()));
 
 create policy "Users update own profile" on profiles
   for update using (id = auth.uid());

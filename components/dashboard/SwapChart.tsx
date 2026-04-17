@@ -1,8 +1,20 @@
 "use client";
+import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import type { WeeklySwapData } from "@/lib/analytics";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SwapChart({ data }: { data: WeeklySwapData[] }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <Skeleton className="h-[200px] w-full rounded-lg" />;
+  }
+
   if (!data || data.every((d) => d.requested === 0)) {
     return (
       <div className="h-48 flex items-center justify-center text-muted-foreground text-sm">

@@ -8,7 +8,12 @@ import { InviteTeam } from "@/components/settings/InviteTeam";
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsPage({ searchParams }: { searchParams: { tab?: string } }) {
+import { cn } from "@/lib/utils";
+
+export default async function SettingsPage(props: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -28,35 +33,49 @@ export default async function SettingsPage({ searchParams }: { searchParams: { t
   const departments = (departmentsData ?? []) as any[];
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground text-sm">Manage your organization</p>
+    <div className="space-y-10 max-w-5xl mx-auto pb-10">
+      <div className="px-2">
+        <h1 className="text-4xl font-black tracking-tight text-white mb-2">Configuration</h1>
+        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">Manage your organization settings and preferences</p>
       </div>
 
-      <Tabs defaultValue={searchParams.tab ?? "org"}>
-        <TabsList className="flex-wrap h-auto gap-1">
-          <TabsTrigger value="org">Organization</TabsTrigger>
-          <TabsTrigger value="departments">Departments</TabsTrigger>
-          <TabsTrigger value="team">Invite Team</TabsTrigger>
-          <TabsTrigger value="billing">Trial & Billing</TabsTrigger>
+      <Tabs defaultValue={searchParams.tab ?? "org"} className="px-2">
+        <TabsList className="bg-white/5 p-1 rounded-full border border-white/5 h-12 flex gap-1 w-fit mb-10 overflow-x-auto no-scrollbar">
+          {[
+            { value: "org", label: "Organization" },
+            { value: "departments", label: "Departments" },
+            { value: "team", label: "Invite Team" },
+            { value: "billing", label: "Trial & Billing" },
+          ].map((tab) => (
+            <TabsTrigger 
+              key={tab.value}
+              value={tab.value} 
+              className="rounded-full px-6 data-[state=active]:bg-gold data-[state=active]:text-[#050505] text-[10px] font-black uppercase tracking-widest text-white/40 data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 transition-all h-full whitespace-nowrap"
+            >
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="org" className="mt-6">
-          <OrgSettings org={org} userId={user.id} />
-        </TabsContent>
+        <div className="glass rounded-[3rem] p-8 md:p-12 border-white/5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-3xl -z-10" />
+          
+          <TabsContent value="org" className="mt-0 outline-none">
+            <OrgSettings org={org} userId={user.id} />
+          </TabsContent>
 
-        <TabsContent value="departments" className="mt-6">
-          <DepartmentEditor departments={departments as any} orgId={orgId} />
-        </TabsContent>
+          <TabsContent value="departments" className="mt-0 outline-none">
+            <DepartmentEditor departments={departments as any} orgId={orgId} />
+          </TabsContent>
 
-        <TabsContent value="team" className="mt-6">
-          <InviteTeam orgId={orgId} departments={departments as any} />
-        </TabsContent>
+          <TabsContent value="team" className="mt-0 outline-none">
+            <InviteTeam orgId={orgId} departments={departments as any} />
+          </TabsContent>
 
-        <TabsContent value="billing" className="mt-6">
-          <BillingSettings org={org} />
-        </TabsContent>
+          <TabsContent value="billing" className="mt-0 outline-none">
+            <BillingSettings org={org} />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

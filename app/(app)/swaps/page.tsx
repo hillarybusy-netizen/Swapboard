@@ -2,10 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { formatShiftDate, formatShiftTime, timeAgo, SWAP_STATUS_LABELS } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeftRight, Clock } from "lucide-react";
+import { ArrowLeftRight, Clock, Calendar } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,10 @@ const STATUS_BADGE: Record<string, any> = {
   cancelled: "secondary",
 };
 
-export default async function SwapsPage({ searchParams }: { searchParams: { status?: string } }) {
+export default async function SwapsPage(props: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -29,7 +33,12 @@ export default async function SwapsPage({ searchParams }: { searchParams: { stat
 
   const { data: allSwapsData } = await supabase
     .from("swap_requests")
-    .select("*, shift:shifts(*, department:departments(*)), requester:profiles!swap_requests_requester_id_fkey(*), covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)")
+    .select(`
+      *,
+      shift:shifts(*, department:departments(*)),
+      requester:profiles!swap_requests_requester_id_fkey(*),
+      covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)
+    `)
     .eq("organization_id", orgId)
     .order("requested_at", { ascending: false });
 
@@ -79,35 +88,50 @@ export default async function SwapsPage({ searchParams }: { searchParams: { stat
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-2xl font-bold">Swap Requests</h1>
-        <p className="text-muted-foreground text-sm">{allSwaps.length} total</p>
+    <div className="space-y-10 max-w-5xl mx-auto pb-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+        <div>
+          <h1 className="text-4xl font-black tracking-tight text-white mb-2">Swap Requests</h1>
+          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">
+            Coordination History · <span className="text-gold/60">{allSwaps.length} Total Requests</span>
+          </p>
+        </div>
       </div>
 
-      <Tabs defaultValue={searchParams.status === "worker_accepted" ? "pending" : "pending"}>
-        <TabsList>
-          <TabsTrigger value="pending">
-            Pending {pending.length > 0 && <span className="ml-1.5 bg-primary text-primary-foreground text-xs rounded-full px-1.5 py-0.5">{pending.length}</span>}
+      <Tabs defaultValue="pending" className="px-2">
+        <TabsList className="bg-white/5 p-1 rounded-full border border-white/5 h-12 flex gap-1 w-fit mb-10">
+          <TabsTrigger 
+            value="pending" 
+            className="rounded-full px-8 data-[state=active]:bg-gold data-[state=active]:text-[#050505] text-[10px] font-black uppercase tracking-widest text-white/40 data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 transition-all h-full"
+          >
+            Pending {pending.length > 0 && <span className="ml-2 bg-black/10 px-2 py-0.5 rounded-full">{pending.length}</span>}
           </TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger 
+            value="history"
+            className="rounded-full px-8 data-[state=active]:bg-gold data-[state=active]:text-[#050505] text-[10px] font-black uppercase tracking-widest text-white/40 data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 transition-all h-full"
+          >
+            History
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="space-y-3 mt-4">
+        <TabsContent value="pending" className="space-y-4 outline-none">
           {pending.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground">
-              <ArrowLeftRight className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p>No pending swap requests</p>
+            <div className="glass rounded-[2.5rem] p-20 text-center border-white/5">
+              <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-8 shadow-inner text-white/10">
+                <ArrowLeftRight className="w-10 h-10" />
+              </div>
+              <h3 className="text-xl font-black text-white mb-2 uppercase tracking-widest tracking-tighter">Queue Empty</h3>
+              <p className="text-sm text-white/30 font-medium max-w-xs mx-auto">No pending swap requests requiring your attention.</p>
             </div>
           ) : (
             pending.map((swap) => <SwapCard key={swap.id} swap={swap} />)
           )}
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-3 mt-4">
+        <TabsContent value="history" className="space-y-4 outline-none">
           {history.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground">
-              <p>No completed swaps yet</p>
+            <div className="glass rounded-[2.5rem] p-20 text-center border-white/5 opacity-40">
+               <h3 className="text-lg font-black text-white mb-2 uppercase tracking-widest tracking-tighter">No History</h3>
             </div>
           ) : (
             history.map((swap) => <SwapCard key={swap.id} swap={swap} />)
@@ -115,5 +139,89 @@ export default async function SwapsPage({ searchParams }: { searchParams: { stat
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+function SwapCard({ swap }: { swap: any }) {
+  const isActionRequired = swap.status === "worker_accepted";
+
+  return (
+    <Link href={`/swaps/${swap.id}`} className="group block">
+      <div className={cn(
+        "glass rounded-[2rem] p-6 border-white/5 hover:border-gold/30 hover:bg-gold/[0.02] transition-all duration-300 relative overflow-hidden",
+        isActionRequired && "border-gold/20 bg-gold/[0.03]"
+      )}>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.01] blur-3xl group-hover:bg-gold/[0.03] -z-10 transition-colors" />
+        
+        <div className="flex items-center justify-between gap-6 flex-wrap">
+          <div className="flex flex-1 items-center gap-6 min-w-0">
+            <Avatar className="w-12 h-12 rounded-full border-2 border-white/5 ring-4 ring-gold/5 group-hover:ring-gold/10 transition-all">
+              <AvatarFallback className="bg-gold/10 text-gold text-sm font-black italic">
+                {swap.requester?.full_name?.charAt(0) ?? "?"}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="min-w-0">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <p className="text-base font-black tracking-tight text-white">{swap.requester?.full_name ?? "Unknown"}</p>
+                <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                <p className="text-[10px] font-black uppercase tracking-widest text-gold/60">Requested Swap</p>
+              </div>
+
+              {swap.shift && (
+                <div className="flex items-center gap-4 text-[11px] font-bold text-white/30 uppercase tracking-[0.1em] flex-wrap">
+                  <span className="text-white/60 font-black">{swap.shift.title}</span>
+                  <span>·</span>
+                  <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time)}</span>
+                  <span>·</span>
+                  <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}</span>
+                  {swap.shift.department && (
+                    <>
+                      <span>·</span>
+                      <span className="text-gold/40">{swap.shift.department.name}</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-8 shrink-0">
+            {swap.covering_worker && (
+              <div className="flex flex-col items-end gap-2 pr-8 border-r border-white/5">
+                <span className="text-[9px] font-black uppercase tracking-widest text-white/20 italic">Covering Partner</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-white/80">{swap.covering_worker.full_name}</span>
+                  <Avatar className="w-7 h-7 rounded-full opacity-60">
+                    <AvatarFallback className="bg-white/5 text-white/40 text-[10px] font-black">
+                       {swap.covering_worker.full_name?.charAt(0) ?? "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-white/20" />
+                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-white/20">{timeAgo(swap.requested_at)}</span>
+              </div>
+              <Badge className={cn(
+                "rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border-none shadow-lg",
+                isActionRequired ? "bg-gold text-[#050505] shadow-gold/20" : "bg-white/10 text-white/60"
+              )}>
+                {SWAP_STATUS_LABELS[swap.status] ?? swap.status}
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {swap.reason && (
+          <div className="mt-6 p-4 rounded-2xl bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.04] transition-colors">
+            <p className="text-xs text-white/40 font-medium italic">&ldquo;{swap.reason}&rdquo;</p>
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }

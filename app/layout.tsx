@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SwapBoard — Shift Swapping Made Simple",
+  title: "Swapboard",
   description: "Multi-industry shift swap management for pilot programs",
 };
 

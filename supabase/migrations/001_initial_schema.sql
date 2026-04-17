@@ -54,6 +54,7 @@ create table profiles (
   department_id   uuid references departments(id) on delete set null,
   role_id         uuid references roles(id) on delete set null,
   full_name       text,
+  email           text not null,
   phone           text,
   hourly_rate     numeric(10, 2) not null default 0,
   user_role       text not null default 'worker' check (user_role in ('worker', 'manager', 'admin')),
@@ -192,12 +193,15 @@ create trigger shifts_updated_at before update on shifts
 -- Trigger: auto-create profile on signup
 -- ============================================================
 create or replace function handle_new_user()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer 
+set search_path = public
+as $$
 begin
-  insert into profiles (id, full_name)
+  insert into public.profiles (id, full_name, email)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1))
+    coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
+    new.email
   );
   return new;
 end;

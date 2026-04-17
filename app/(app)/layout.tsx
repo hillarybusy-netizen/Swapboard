@@ -24,11 +24,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const org = (profile as any)?.organization ?? null;
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen bg-[#050505] flex relative overflow-hidden">
+      {/* Background Mesh */}
+      <div className="absolute inset-0 bg-mesh opacity-10 -z-10 pointer-events-none" />
+      
       <Sidebar org={org} profile={profile} />
       <div className="flex-1 flex flex-col min-w-0">
         <TrialBanner org={org} />
-        <main className="flex-1 p-4 md:p-6 pb-24 md:pb-6 overflow-auto">
+        <main className="flex-1 p-4 md:p-10 pb-24 md:pb-10 overflow-auto scrollbar-hide">
           {children}
         </main>
       </div>

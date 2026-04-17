@@ -1,5 +1,6 @@
 "use client";
 import { Suspense } from "react";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -97,6 +98,7 @@ function InviteForm() {
           </Button>
         </CardFooter>
       </form>
+      <Link href="/my-shifts" prefetch className="hidden" aria-hidden tabIndex={-1} />
     </Card>
   );
 }

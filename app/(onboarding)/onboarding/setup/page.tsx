@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { INDUSTRY_TEMPLATES, type DepartmentTemplate } from "@/lib/industry-templates";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,7 @@ export default function SetupPage() {
   }
 
   function addDept() {
-    setDepartments((d) => [...d, { name: "", color: "#6366f1", roles: [] }]);
+    setDepartments((d) => [...d, { name: "", color: "#d4af37", roles: [] }]);
   }
 
   function updateDeptName(i: number, name: string) {
@@ -74,9 +75,10 @@ export default function SetupPage() {
       }
 
       // Update profile
-      await supabase.from("profiles")
+      const { error: profileErr } = await supabase.from("profiles")
         .update({ organization_id: org.id, user_role: "admin", onboarding_complete: false })
         .eq("id", user.id);
+      if (profileErr) throw profileErr;
 
       sessionStorage.removeItem("onboarding_industry");
       router.push("/onboarding/invite");
@@ -91,76 +93,95 @@ export default function SetupPage() {
   if (!industry) return null;
 
   return (
-    <div>
-      <div className="flex items-center gap-2 mb-8 text-sm text-muted-foreground">
-        <button onClick={() => router.back()} className="hover:text-foreground transition-colors">
-          <ChevronLeft className="w-4 h-4 inline" /> Back
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex items-center gap-3 mb-12 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+        <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-2">
+          <ChevronLeft className="w-3 h-3" /> Back
         </button>
-        <span className="ml-2 font-semibold text-primary">Step 2</span>
-        <span>/</span>
-        <span>3 — Set up your organization</span>
+        <span className="opacity-50">/</span>
+        <span className="text-gold">Step 02</span>
+        <span className="opacity-50">/</span>
+        <span>Infrastructure Setup</span>
       </div>
 
-      <h1 className="text-3xl font-bold mb-2">Set up your organization</h1>
-      <p className="text-muted-foreground mb-8">
-        We&apos;ve pre-filled departments based on your industry. Customize them to match your business.
-      </p>
+      <div className="mb-12">
+        <h1 className="text-5xl font-black tracking-tighter text-white mb-4 leading-tight">
+          Initialize <br />
+          <span className="text-gold-gradient">Your Workspace</span>
+        </h1>
+        <p className="text-white/40 text-sm font-medium max-w-lg">
+          Personalize your organization structure. We&apos;ve suggested a blueprint based on your industry selection.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Org name */}
-        <div className="bg-white rounded-xl border p-6 space-y-4">
-          <h2 className="font-semibold">Organization details</h2>
-          <div className="space-y-2">
-            <Label htmlFor="orgName">Organization / business name</Label>
+        <div className="glass rounded-[2rem] border-white/5 p-8 space-y-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-1.5 h-6 bg-gold rounded-full" />
+            <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[11px]">Identity</h2>
+          </div>
+          <div className="space-y-3">
+            <Label htmlFor="orgName" className="text-xs font-bold text-white/50 ml-1">Organization / business name</Label>
             <Input
               id="orgName" placeholder="e.g. Downtown Bistro, City Medical Center"
-              value={orgName} onChange={(e) => setOrgName(e.target.value)} required className="max-w-md"
+              value={orgName} onChange={(e) => setOrgName(e.target.value)} required 
+              className="h-14 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-base"
             />
           </div>
         </div>
 
         {/* Departments */}
-        <div className="bg-white rounded-xl border p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Departments</h2>
-            <Button type="button" variant="outline" size="sm" onClick={addDept}>
-              <Plus className="w-4 h-4" /> Add department
+        <div className="glass rounded-[2rem] border-white/5 p-8 space-y-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-gold rounded-full" />
+              <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[11px]">Operational Nodes</h2>
+            </div>
+            <Button type="button" variant="ghost" size="sm" onClick={addDept} className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[10px] uppercase tracking-widest">
+              <Plus className="w-3 h-3 mr-2" /> Add Department
             </Button>
           </div>
-          <div className="space-y-2">
+          
+          <div className="grid gap-3">
             {departments.map((dept, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: dept.color }} />
+              <div key={i} className="flex items-center gap-4 bg-white/[0.02] border border-white/5 p-4 rounded-2xl group transition-all hover:bg-white/[0.04]">
+                <div className="w-4 h-4 rounded-full shrink-0 shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-white/10" style={{ backgroundColor: dept.color }} />
                 <Input
                   value={dept.name}
                   onChange={(e) => updateDeptName(i, e.target.value)}
                   placeholder="Department name"
-                  className="flex-1"
+                  className="bg-transparent border-none focus:ring-0 p-0 text-base font-semibold placeholder:text-white/10"
                 />
-                <span className="text-xs text-muted-foreground shrink-0">
-                  {dept.roles.length} role{dept.roles.length !== 1 ? "s" : ""}
-                </span>
-                <button type="button" onClick={() => removeDept(i)} className="text-muted-foreground hover:text-destructive transition-colors">
+                <div className="text-[10px] font-black uppercase tracking-widest text-white/20 shrink-0 px-3 py-1 bg-white/5 rounded-lg border border-white/5">
+                  {dept.roles.length > 0 ? (
+                    <><span className="text-gold">{dept.roles.length}</span> <span className="hidden sm:inline">Defined Roles</span></>
+                  ) : (
+                    <span className="opacity-50 italic">Configure Roles in Settings</span>
+                  )}
+                </div>
+                <button type="button" onClick={() => removeDept(i)} className="text-white/20 hover:text-red-500 transition-colors p-2">
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground">
-            You can add, rename, and configure roles in Settings after setup.
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest px-1">
+            Additional nodes and complex roles can be configured in Master Settings.
           </p>
         </div>
 
-        <div className="flex justify-between">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            <ChevronLeft className="w-4 h-4" /> Back
+        <div className="flex justify-between items-center pt-8 border-t border-white/5">
+          <Button type="button" variant="ghost" onClick={() => router.back()} className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest">
+             Previous Step
           </Button>
-          <Button type="submit" size="lg" disabled={loading}>
+          <Button type="submit" className="h-14 px-10 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20" disabled={loading}>
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Create organization <ChevronRight className="w-4 h-4" />
+            Initialize Org <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
       </form>
+      <Link href="/onboarding/invite" prefetch className="hidden" aria-hidden tabIndex={-1} />
     </div>
   );
 }

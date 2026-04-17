@@ -33,41 +33,54 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
-        <CardDescription>Sign in to your SwapBoard account</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+    <div className="glass rounded-[2rem] p-6 md:p-8 border-white/5 shadow-2xl">
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
+        <p className="text-white/50 text-sm font-medium">Sign in to your SwapBoard account</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-sm font-semibold text-white/70 ml-1">Email</Label>
             <Input
               id="email" type="email" placeholder="you@company.com"
+              className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
               value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-between ml-1">
+              <Label htmlFor="password" title="" className="text-sm font-semibold text-white/70">Password</Label>
+              <Link href="#" className="text-xs text-gold/60 hover:text-gold transition-colors font-medium">Forgot password?</Link>
+            </div>
             <Input
               id="password" type="password" placeholder="••••••••"
+              className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
               value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
             />
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+        </div>
+
+        <div className="space-y-4 pt-2">
+          <Button 
+            type="submit" 
+            className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20" 
+            disabled={loading}
+          >
+            {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Sign in
           </Button>
-          <p className="text-sm text-muted-foreground text-center">
+
+          <p className="text-xs text-white/40 text-center font-medium">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-primary hover:underline font-medium">
+            <Link href="/register" className="text-gold hover:text-gold-light transition-colors font-bold">
               Start free trial
             </Link>
           </p>
-        </CardFooter>
+        </div>
       </form>
-    </Card>
+      <Link href="/dashboard" prefetch className="hidden" aria-hidden tabIndex={-1} />
+    </div>
   );
 }
