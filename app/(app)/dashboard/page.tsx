@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { ApproveSwapButton } from "@/components/dashboard/ApproveSwapButton";
 import { SwapChart } from "@/components/dashboard/SwapChart";
+import { checkPlanLimit } from "@/lib/plans";
+import { Lock } from "lucide-react";
 
 
 
@@ -175,7 +177,20 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 px-1 md:px-2">
         {/* Chart Column */}
         <div className="lg:col-span-2 space-y-6 md:space-y-8">
-          <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] relative">
+          <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden">
+            {!checkPlanLimit(org?.plan, "hasROIMetrics") && (
+              <div className="absolute inset-0 z-20 bg-[#050505]/40 backdrop-blur-md flex flex-col items-center justify-center text-center p-8">
+                <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mb-4 border border-gold/20">
+                  <Lock className="w-6 h-6 text-gold" />
+                </div>
+                <h3 className="text-xl font-black text-white mb-2 uppercase tracking-tight">ROI Analytics Locked</h3>
+                <p className="text-sm text-white/50 max-w-xs mb-6 font-medium leading-relaxed">Upgrade to the Growth plan to unlock historical trends and deep cost-saving insights.</p>
+                <Button className="btn-gold rounded-full px-8" asChild>
+                  <Link href="/settings?tab=billing">View Plans</Link>
+                </Button>
+              </div>
+            )}
+            
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
                 <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-1">Swap Activity</h2>

@@ -6,8 +6,7 @@ import {
 } from "lucide-react";
 import { cn, INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { signOut } from "@/app/actions";
 import type { Organization, Profile } from "@/lib/database.types";
 
 const NAV_ITEMS = [
@@ -25,13 +24,9 @@ interface SidebarProps {
 
 export function Sidebar({ org, profile }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
 
   async function handleSignOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    await signOut();
   }
 
   const industryIcon = org ? INDUSTRY_ICONS[org.industry] : "🔄";

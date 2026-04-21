@@ -6,20 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Trash2, ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronRight, Loader2, Lock } from "lucide-react";
+import { Organization } from "@/lib/database.types";
+import { checkPlanLimit } from "@/lib/plans";
 
 interface Role { id: string; name: string; min_hours_notice: number }
 interface Dept { id: string; name: string; color: string; roles: Role[] }
 
-export function DepartmentEditor({ departments, orgId }: { departments: Dept[]; orgId: string }) {
+export function DepartmentEditor({ departments, orgId, org }: { departments: Dept[]; orgId: string; org: Organization }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [newDeptName, setNewDeptName] = useState("");
   const [newRoleNames, setNewRoleNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<string | null>(null);
 
+  const maxDepts = checkPlanLimit(org.plan, "maxDepartments");
+  const isAtLimit = departments.length >= maxDepts;
+
   async function addDepartment() {
     if (!newDeptName.trim()) return;
+    if (isAtLimit) {
+      toast({ title: "Limit Reached", description: `Your ${org.plan} plan is limited to ${maxDepts} departments. Upgrade to Growth for unlimited.`, variant: "destructive" });
+      return;
+    }
     setLoading("new-dept");
     try {
       const supabase = createClient();

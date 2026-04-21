@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { TrialBanner } from "@/components/layout/TrialBanner";
+import { needsSubscription } from "@/lib/trial";
+import { headers } from "next/headers";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -16,12 +18,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .eq("id", user.id)
     .single();
 
+  const org = (profile as any)?.organization ?? null;
+
   // If no org yet, redirect to onboarding
   if (!profile?.organization_id) {
     redirect("/onboarding/industry");
   }
 
-  const org = (profile as any)?.organization ?? null;
+  // GATING: If trial expired, redirect to billing (unless already on settings page)
+  const headerList = await headers();
+  const fullPath = headerList.get("x-url") || ""; 
+  const isSettingsPage = fullPath.includes("/settings") || children?.toString().includes("Settings");
+  
+  if (needsSubscription(org) && !isSettingsPage) {
+    redirect("/settings?tab=billing&reason=expired");
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] flex relative overflow-hidden">

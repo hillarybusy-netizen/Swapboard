@@ -8,22 +8,39 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus, X, Send, Loader2 } from "lucide-react";
+import { Plus, X, Send, Loader2, Lock } from "lucide-react";
+import { Organization } from "@/lib/database.types";
+import { checkPlanLimit } from "@/lib/plans";
 
 interface Invite { email: string; role: string; department_id: string }
 
-export function InviteTeam({ orgId, departments }: { orgId: string; departments: any[] }) {
+export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: string; departments: any[]; org: Organization; profileCount: number }) {
   const router = useRouter();
   const [invites, setInvites] = useState<Invite[]>([{ email: "", role: "worker", department_id: "" }]);
   const [loading, setLoading] = useState(false);
 
-  function addRow() { setInvites((v) => [...v, { email: "", role: "worker", department_id: "" }]) }
+  const maxWorkers = checkPlanLimit(org.plan, "maxWorkers");
+  const isAtLimit = profileCount >= maxWorkers;
+
+  function addRow() { 
+    if (profileCount + invites.length >= maxWorkers) {
+      toast({ title: "Limit Reached", description: `Your ${org.plan} plan is limited to ${maxWorkers} workers. Upgrade to Grow for more.`, variant: "destructive" });
+      return;
+    }
+    setInvites((v) => [...v, { email: "", role: "worker", department_id: "" }]) 
+  }
   function removeRow(i: number) { setInvites((v) => v.filter((_, idx) => idx !== i)) }
   function update(i: number, field: keyof Invite, val: string) { setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, [field]: val } : inv)) }
 
   async function sendInvites() {
     const valid = invites.filter((i) => i.email.trim());
     if (valid.length === 0) return;
+    
+    if (profileCount + valid.length > maxWorkers) {
+      toast({ title: "Limit Exceeded", description: `Sending these invites would put you over your ${maxWorkers} worker limit.`, variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
     try {
       const supabase = createClient();

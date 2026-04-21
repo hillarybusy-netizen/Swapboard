@@ -47,3 +47,15 @@ export function getTrialBannerVariant(status: TrialStatus): "destructive" | "war
   if (status.daysRemaining <= 3) return "warning";
   return "default";
 }
+
+export function needsSubscription(org: Organization | null): boolean {
+  if (!org) return false;
+  
+  // If they are on a trial that has expired, they need a subscription
+  if (org.plan === "trial") {
+    const endDate = new Date(org.trial_ends_at);
+    return isPast(endDate);
+  }
+  
+  return false;
+}

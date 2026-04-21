@@ -32,6 +32,11 @@ export default async function SettingsPage(props: {
 
   const departments = (departmentsData ?? []) as any[];
 
+  const { count: profileCount } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true })
+    .eq("organization_id", orgId);
+
   return (
     <div className="space-y-10 max-w-5xl mx-auto pb-10">
       <div className="px-1 md:px-2">
@@ -65,11 +70,11 @@ export default async function SettingsPage(props: {
           </TabsContent>
 
           <TabsContent value="departments" className="mt-0 outline-none">
-            <DepartmentEditor departments={departments as any} orgId={orgId} />
+            <DepartmentEditor departments={departments as any} orgId={orgId} org={org} />
           </TabsContent>
 
           <TabsContent value="team" className="mt-0 outline-none">
-            <InviteTeam orgId={orgId} departments={departments as any} />
+            <InviteTeam orgId={orgId} departments={departments as any} org={org} profileCount={profileCount || 0} />
           </TabsContent>
 
           <TabsContent value="billing" className="mt-0 outline-none">
