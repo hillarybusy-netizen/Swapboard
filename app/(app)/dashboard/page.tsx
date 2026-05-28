@@ -14,8 +14,10 @@ import {
 } from "lucide-react";
 import { ApproveSwapButton } from "@/components/dashboard/ApproveSwapButton";
 import { SwapChart } from "@/components/dashboard/SwapChart";
-import { checkPlanLimit } from "@/lib/plans";
 import { Lock } from "lucide-react";
+import { ExportReportButton } from "@/components/dashboard/ExportReportButton";
+import { PostShiftDialog } from "@/components/dashboard/PostShiftDialog";
+import { checkPlanLimit } from "@/lib/plans";
 
 
 
@@ -41,7 +43,13 @@ export default async function DashboardPage() {
   const in48h = new Date();
   in48h.setHours(in48h.getHours() + 48);
 
-  const [{ data: swapsData }, { data: pendingSwapsData }, { data: atRiskShiftsData }] = await Promise.all([
+  const [
+    { data: swapsData }, 
+    { data: pendingSwapsData }, 
+    { data: atRiskShiftsData },
+    { data: departmentsData },
+    { data: profilesData }
+  ] = await Promise.all([
     // Swap data (last 30 days)
     supabase
       .from("swap_requests")
@@ -67,11 +75,26 @@ export default async function DashboardPage() {
       .gte("start_time", new Date().toISOString())
       .order("start_time", { ascending: true })
       .limit(5),
+    // Departments for PostShiftDialog
+    supabase
+      .from("departments")
+      .select("*")
+      .eq("organization_id", orgId)
+      .order("name"),
+    // Profiles for PostShiftDialog
+    supabase
+      .from("profiles")
+      .select("id, full_name")
+      .eq("organization_id", orgId)
+      .eq("is_active", true)
+      .order("full_name"),
   ]);
 
   const swaps = (swapsData ?? []) as any[];
   const pendingSwaps = (pendingSwapsData ?? []) as any[];
   const atRiskShifts = (atRiskShiftsData ?? []) as any[];
+  const departments = (departmentsData ?? []) as any[];
+  const profiles = (profilesData ?? []) as any[];
 
   const metrics = calculateROI(swaps as any);
   const weeklyData = groupSwapsByWeek(swaps as any);
@@ -123,12 +146,8 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="glass border-white/5 rounded-full text-xs font-bold uppercase tracking-widest px-6 h-10 hover:bg-white/5">
-            Export Report
-          </Button>
-          <Button className="btn-gold rounded-full text-xs font-bold uppercase tracking-widest px-6 h-10 shadow-lg shadow-gold/20">
-            Post Shift
-          </Button>
+          <ExportReportButton data={{ metrics, swaps, orgName: org?.name ?? "Organization" }} />
+          <PostShiftDialog organizationId={orgId} departments={departments} profiles={profiles} />
         </div>
       </div>
 

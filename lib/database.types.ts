@@ -122,7 +122,7 @@ export interface Feedback {
 export interface Invitation {
   id: string;
   organization_id: string;
-  email: string;
+  email: string | null;
   user_role: UserRole;
   department_id: string | null;
   token: string;

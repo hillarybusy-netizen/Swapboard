@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle } from "lucide-react";
+import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 
 export default function LandingPage() {
   return (
@@ -7,12 +8,7 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 glass rounded-full px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center">
-            <RefreshCw className="w-4 h-4 text-gold" />
-          </div>
-          <span className="font-bold text-lg tracking-tight">
-            Swap<span className="text-gold">Board</span>
-          </span>
+          <AnimatedLogo size="sm" showText={true} />
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/50">
           <a href="#features" className="hover:text-gold transition-colors">Features</a>
@@ -275,10 +271,7 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row items-start justify-between gap-12 mb-16">
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center">
-                  <RefreshCw className="w-5 h-5 text-gold" />
-                </div>
-                <span className="font-bold text-2xl tracking-tighter">Swap<span className="text-gold">Board</span></span>
+                <AnimatedLogo size="md" showText={true} />
               </div>
               <p className="text-white/40 max-w-xs text-sm leading-relaxed font-medium">
                 The modern standard for shift management and team coordination. Built for scale, designed for simplicity.

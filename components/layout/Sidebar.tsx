@@ -2,12 +2,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, ArrowUpDown, RefreshCw,
+  LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut,
 } from "lucide-react";
 import { cn, INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/app/actions";
 import type { Organization, Profile } from "@/lib/database.types";
+import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -39,14 +40,8 @@ export function Sidebar({ org, profile }: SidebarProps) {
 
       {/* Org Header */}
       <div className="p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/10 shadow-lg shadow-gold/5 transition-transform group-hover:scale-110 duration-500">
-            <RefreshCw className="w-5 h-5 text-gold" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tighter text-white">Swap<span className="text-gold">Board</span></span>
-            <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold -mt-1">{industryLabel}</span>
-          </div>
+        <div className="flex items-center gap-3 mb-6 group">
+          <AnimatedLogo size="md" showText={true} />
         </div>
 
         {org && (

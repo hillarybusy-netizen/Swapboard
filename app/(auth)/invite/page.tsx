@@ -16,6 +16,7 @@ function InviteForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [invite, setInvite] = useState<any>(null);
+  const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,8 +26,16 @@ function InviteForm() {
     async function loadInvite() {
       if (!token) { setFetching(false); return; }
       const supabase = createClient();
-      const { data } = await supabase.from("invitations").select("*, organization:organizations(*)").eq("token", token).is("accepted_at", null).single();
+      const { data } = await supabase
+        .from("invitations")
+        .select("*, organization:organizations(*)")
+        .eq("token", token)
+        .is("accepted_at", null)
+        .gt("expires_at", new Date().toISOString())
+        .single();
+      
       setInvite(data);
+      if (data?.email) setEmail(data.email);
       setFetching(false);
     }
     loadInvite();
@@ -39,19 +48,25 @@ function InviteForm() {
     try {
       const supabase = createClient();
       const { data: { user }, error } = await supabase.auth.signUp({
-        email: invite.email,
+        email: email,
         password,
         options: { data: { full_name: fullName } },
       });
       if (error) throw error;
+      
       await supabase.from("profiles").update({
         organization_id: invite.organization_id,
         department_id: invite.department_id,
         user_role: invite.user_role,
         onboarding_complete: true,
       }).eq("id", user!.id);
-      await supabase.from("invitations").update({ accepted_at: new Date().toISOString() }).eq("id", invite.id);
-      router.push("/my-shifts");
+      
+      await supabase.from("invitations").update({ 
+        accepted_at: new Date().toISOString(),
+        email: email // Update email if it was a generic link
+      }).eq("id", invite.id);
+      
+      router.push("/dashboard");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -61,44 +76,73 @@ function InviteForm() {
 
   if (fetching) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" /></div>;
   if (!invite) return (
-    <Card>
-      <CardContent className="py-10 text-center text-muted-foreground">
-        <p>This invite link is invalid or has already been used.</p>
+    <Card className="glass border-white/5">
+      <CardContent className="py-16 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
+          <Loader2 className="w-8 h-8 text-red-500/40" />
+        </div>
+        <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">Expired or Invalid</h2>
+        <p className="text-sm text-white/40 font-medium max-w-xs mx-auto">This invitation link has expired or has already been used. Please ask your manager for a new link.</p>
+        <Button className="mt-8 btn-gold rounded-full px-8" asChild>
+          <Link href="/login">Back to Login</Link>
+        </Button>
       </CardContent>
     </Card>
   );
 
   return (
-    <Card>
+    <Card className="glass border-white/5 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
       <CardHeader>
-        <CardTitle>You&apos;ve been invited!</CardTitle>
-        <CardDescription>
-          Join <strong>{(invite.organization as any)?.name}</strong> on SwapBoard as a {invite.user_role}.
+        <CardTitle className="text-2xl font-black uppercase tracking-tight text-white italic">Join the Team</CardTitle>
+        <CardDescription className="text-white/40 text-xs font-medium">
+          You&apos;ve been invited to join <strong>{(invite.organization as any)?.name}</strong> as a {invite.user_role}.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleAccept}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Email</Label>
-            <Input value={invite.email} disabled />
+            <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Email Address</Label>
+            <Input 
+              type="email"
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={!!invite.email} 
+              placeholder="you@example.com"
+              className="bg-white/5 border-white/10 rounded-xl h-11"
+              required
+            />
           </div>
           <div className="space-y-2">
-            <Label>Your name</Label>
-            <Input placeholder="Jane Smith" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+            <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Your Full Name</Label>
+            <Input 
+              placeholder="Jane Smith" 
+              value={fullName} 
+              onChange={(e) => setFullName(e.target.value)} 
+              className="bg-white/5 border-white/10 rounded-xl h-11"
+              required 
+            />
           </div>
           <div className="space-y-2">
-            <Label>Create a password</Label>
-            <Input type="password" placeholder="Min. 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+            <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Create Password</Label>
+            <Input 
+              type="password" 
+              placeholder="Min. 8 characters" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              className="bg-white/5 border-white/10 rounded-xl h-11"
+              required 
+              minLength={8} 
+            />
           </div>
         </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Join {(invite.organization as any)?.name}
+        <CardFooter className="pt-4">
+          <Button type="submit" className="w-full btn-gold rounded-full h-12 uppercase font-black text-xs tracking-widest" disabled={loading}>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            Complete Onboarding
           </Button>
         </CardFooter>
       </form>
-      <Link href="/my-shifts" prefetch className="hidden" aria-hidden tabIndex={-1} />
     </Card>
   );
 }

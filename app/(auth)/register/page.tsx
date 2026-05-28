@@ -10,6 +10,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
+const DISALLOWED_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com"];
+const ALLOWED_EMAILS = ["brendanmebson@gmail.com", "mebugekamsiyochukwu@gmail.com"];
+
 export default function RegisterPage() {
   const router = useRouter();
   const [fullName, setFullName] = useState("");
@@ -23,11 +26,25 @@ export default function RegisterPage() {
       toast({ title: "Password too short", description: "Must be at least 8 characters.", variant: "destructive" });
       return;
     }
+    const emailDomain = email.split("@")[1]?.toLowerCase();
+    const isDisallowedDomain = DISALLOWED_DOMAINS.includes(emailDomain);
+    const isAllowedException = ALLOWED_EMAILS.includes(email.toLowerCase());
+
+    if (isDisallowedDomain && !isAllowedException) {
+      toast({
+        title: "Work email required",
+        description: "Please use your professional email address to sign up.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.signUp({
-        email, password,
+        email,
+        password,
         options: { data: { full_name: fullName } },
       });
       if (error) throw error;

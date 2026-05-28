@@ -48,10 +48,28 @@ export default async function ShiftsPage(props: {
   if (searchParams.status) query = query.eq("status", searchParams.status);
 
   const { data: rawShifts } = await query;
+  
+  const now = new Date();
+
+  const shifts = ((rawShifts ?? []) as any[]).map(s => ({
+    ...s,
+    isEnded: new Date(s.end_time) < now
+  })).sort((a, b) => {
+    // Both active or both ended
+    if (a.isEnded === b.isEnded) {
+      if (a.isEnded) {
+        // Both ended: show most recent first
+        return new Date(b.start_time).getTime() - new Date(a.start_time).getTime();
+      }
+      // Both active: show soonest first
+      return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
+    }
+    // Active before ended
+    return a.isEnded ? 1 : -1;
+  });
 
   const departments = (departmentsData ?? []) as any[];
   const profiles = (profilesData ?? []) as any[];
-  const shifts = (rawShifts ?? []) as any[];
 
   const isManager = profile?.user_role === "manager" || profile?.user_role === "admin";
 
@@ -105,7 +123,7 @@ export default async function ShiftsPage(props: {
             variant="outline" 
             className={cn(
               "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
-              searchParams.status === "open" ? "bg-red-500 text-white border-red-500" : "text-white/40 hover:text-white"
+              searchParams.status === "open" ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
             )}
             size="sm"
           >
@@ -129,14 +147,14 @@ export default async function ShiftsPage(props: {
       ) : (
         <div className="grid gap-4 px-1 md:px-2">
           {(shifts as any[]).map((shift) => (
-            <Link key={shift.id} href={`/shifts/${shift.id}`} className="group">
+            <Link key={shift.id} href={`/shifts/${shift.id}`} className={cn("group", shift.isEnded && "opacity-40 grayscale pointer-events-none")}>
               <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 hover:border-gold/30 hover:bg-gold/[0.02] transition-all duration-300 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.01] blur-3xl group-hover:bg-gold/[0.03] -z-10 transition-colors" />
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                   <div className="flex flex-1 items-center gap-4 md:gap-6 min-w-0">
                     {shift.department && (
-                      <div className="w-1.5 h-10 md:h-12 rounded-full shrink-0 shadow-[0_0_12px_rgba(0,0,0,0.3)] transition-transform group-hover:scale-y-110" style={{ backgroundColor: shift.department.color }} />
+                      <div className="w-1.5 h-10 md:h-12 rounded-full shrink-0 shadow-[0_0_12px_rgba(0,0,0,0.3)] transition-transform group-hover:scale-y-110" style={{ backgroundColor: shift.isEnded ? "#444" : shift.department.color }} />
                     )}
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 md:gap-3 mb-1.5 md:mb-2 flex-wrap">
@@ -184,11 +202,12 @@ export default async function ShiftsPage(props: {
                       <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/20">Status</span>
                       <Badge className={cn(
                         "rounded-full px-3 md:px-4 py-1 md:py-1.5 text-[9px] md:text-[10px] font-black uppercase tracking-widest border-none shadow-lg",
+                        shift.isEnded ? "bg-white/10 text-white/40" :
                         shift.status === "scheduled" ? "bg-gold text-[#050505] shadow-gold/20" : 
                         shift.status === "open" ? "bg-red-500/20 text-red-400 shadow-red-500/10" :
                         "bg-blue-500/20 text-blue-400 shadow-blue-500/10"
                       )}>
-                        {SHIFT_STATUS_LABELS[shift.status] ?? shift.status}
+                        {shift.isEnded ? "Ended" : (SHIFT_STATUS_LABELS[shift.status] ?? shift.status)}
                       </Badge>
                     </div>
                   </div>
