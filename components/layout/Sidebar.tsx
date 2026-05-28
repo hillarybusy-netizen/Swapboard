@@ -38,19 +38,19 @@ export function Sidebar({ org, profile }: SidebarProps) {
       {/* Mesh background */}
       <div className="absolute inset-0 bg-mesh opacity-20 -z-10" />
 
-      {/* Org Header */}
-      <div className="p-8">
-        <div className="flex items-center gap-3 mb-6 group">
-          <AnimatedLogo size="md" showText={true} />
-        </div>
+      {/* Brand Logo - No Padding */}
+      <div className="mb-6">
+        <AnimatedLogo size="xl" showText={false} className="border-b border-white/5" />
+      </div>
 
-        {org && (
+      {org && (
+        <div className="px-8 mb-6">
           <div className="px-4 py-3 rounded-2xl glass border-white/5 shadow-inner">
             <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Organization</p>
             <p className="text-sm font-bold truncate text-white/90">{org.name}</p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2 mt-2">

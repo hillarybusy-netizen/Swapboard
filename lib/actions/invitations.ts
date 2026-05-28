@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { resend } from "@/lib/resend";
 import { revalidatePath } from "next/cache";
+import { PLAN_LIMITS } from "@/lib/plans";
+import { Plan } from "@/lib/database.types";
 
 export async function sendInvitation(inv: {
   email: string;
@@ -17,6 +19,20 @@ export async function sendInvitation(inv: {
   if (authError || !user) {
     console.error("Auth error in sendInvitation:", authError);
     throw new Error("Unauthorized");
+  }
+
+  // Check plan limits
+  const [{ data: org }, { count: profileCount }, { count: inviteCount }] = await Promise.all([
+    supabase.from("organizations").select("plan").eq("id", inv.organization_id).single(),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).eq("is_active", true),
+    supabase.from("invitations").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).is("accepted_at", null)
+  ]);
+
+  const planLimit = PLAN_LIMITS[(org as any)?.plan as Plan]?.maxWorkers ?? 50;
+  const currentTotal = (profileCount ?? 0) + (inviteCount ?? 0);
+
+  if (currentTotal >= planLimit) {
+    throw new Error(`Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Growth to add more.`);
   }
 
   // Create invitation in database
@@ -86,6 +102,20 @@ export async function createManualInvitation(inv: {
   if (authError || !user) {
     console.error("Auth error in createManualInvitation:", authError);
     throw new Error("Unauthorized");
+  }
+
+  // Check plan limits
+  const [{ data: org }, { count: profileCount }, { count: inviteCount }] = await Promise.all([
+    supabase.from("organizations").select("plan").eq("id", inv.organization_id).single(),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).eq("is_active", true),
+    supabase.from("invitations").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).is("accepted_at", null)
+  ]);
+
+  const planLimit = PLAN_LIMITS[(org as any)?.plan as Plan]?.maxWorkers ?? 50;
+  const currentTotal = (profileCount ?? 0) + (inviteCount ?? 0);
+
+  if (currentTotal >= planLimit) {
+    throw new Error(`Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Growth to add more.`);
   }
 
   // Create invitation in database with 30 minute expiry

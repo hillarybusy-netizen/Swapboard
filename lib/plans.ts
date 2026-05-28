@@ -17,7 +17,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     label: "Free Trial",
   },
   starter: {
-    maxWorkers: 50,
+    maxWorkers: 100,
     maxDepartments: 3,
     hasROIMetrics: false,
     hasPrioritySupport: false,

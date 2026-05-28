@@ -16,7 +16,7 @@ export default function LandingPage() {
           <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/login" className="hidden sm:block text-sm font-medium text-white/50 hover:text-white transition-colors">
+          <Link href="/login" className="text-sm font-medium text-white/50 hover:text-white transition-colors">
             Sign in
           </Link>
           <Link
@@ -56,7 +56,7 @@ export default function LandingPage() {
               href="/login"
               className="px-10 py-4 rounded-full text-base font-medium glass hover:bg-white/10 transition-all w-full sm:w-auto text-center"
             >
-              View demo
+              Sign in
             </Link>
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function LandingPage() {
                 name: "Starter",
                 price: "$79",
                 desc: "Perfect for single-location businesses",
-                features: ["Up to 50 workers", "3 departments", "Basic analytics", "Email support"],
+                features: ["Up to 100 workers", "3 departments", "Basic analytics", "Email support"],
                 highlighted: false,
               },
               {

@@ -66,7 +66,12 @@ export default async function TeamPage() {
 
       {/* Add Team Section */}
       <div className="px-1 md:px-2">
-        <InviteTeam orgId={orgId} departments={departments} org={org} profileCount={members.length} />
+        <InviteTeam 
+          orgId={orgId} 
+          departments={departments} 
+          org={org} 
+          profileCount={members.length + pendingInvites.length} 
+        />
       </div>
 
       <div className="px-1 md:px-2 pt-6 border-t border-white/5">
