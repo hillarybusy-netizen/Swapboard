@@ -2,11 +2,36 @@ import Link from "next/link";
 import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Globe, Send, Sparkles, Check, Award } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 
-export default function LandingPage() {
+import { createClient } from "@/lib/supabase/server";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+export default async function LandingPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  let org = null;
+  let initials = "U";
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*, organization:organizations(*)")
+      .eq("id", user.id)
+      .single();
+    
+    org = (profile as any)?.organization;
+    if (org?.name) {
+      initials = org.name.substring(0, 2).toUpperCase();
+    } else if (profile?.full_name) {
+      initials = profile.full_name.substring(0, 2).toUpperCase();
+    }
+  }
+
+  const logoUrl = org?.settings?.logo_url;
+
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-gold/30">
       {/* Navbar */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 glass rounded-full px-6 h-14 flex items-center justify-between">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 glass-nav rounded-full px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <AnimatedLogo size="sm" showText={true} />
         </div>
@@ -16,15 +41,26 @@ export default function LandingPage() {
           <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm font-medium text-white/50 hover:text-white transition-colors">
-            Sign in
-          </Link>
-          <Link
-            href="/register"
-            className="btn-gold px-5 py-2 rounded-full text-sm font-bold"
-          >
-            Try free
-          </Link>
+          {user ? (
+            <Link href="/dashboard" className="flex items-center justify-center hover:scale-105 transition-transform">
+              <Avatar className="w-8 h-8 border border-white/10 shadow-lg">
+                <AvatarImage src={logoUrl || ""} alt="Company Logo" />
+                <AvatarFallback className="bg-gold/10 text-gold text-xs font-bold">{initials}</AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-white/50 hover:text-white transition-colors">
+                Sign in
+              </Link>
+              <Link
+                href="/register"
+                className="btn-gold px-5 py-2 rounded-full text-sm font-bold"
+              >
+                Try free
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -53,20 +89,31 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4">
-            <Link
-              href="/register"
-              className="btn-gold flex items-center justify-center gap-2 px-12 py-4 rounded-full text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
-            >
-              Get started instantly
-            </Link>
-            
-            <Link
-              href="/register"
-              className="flex items-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
-            >
-              <Gift className="w-4 h-4" />
-              <span>Try for free — 14-day premium trial included</span>
-            </Link>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="btn-gold flex items-center justify-center gap-2 px-12 py-4 rounded-full text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
+              >
+                Log back into {org?.name || "your"} dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/register"
+                  className="btn-gold flex items-center justify-center gap-2 px-12 py-4 rounded-full text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
+                >
+                  Get started instantly
+                </Link>
+                
+                <Link
+                  href="/register"
+                  className="flex items-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
+                >
+                  <Gift className="w-4 h-4" />
+                  <span>Try for free — 14-day premium trial included</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>

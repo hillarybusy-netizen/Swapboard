@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, X, CheckCircle2, Loader2, ChevronRight } from "lucide-react";
 
 interface Invite { email: string; role: "manager" | "worker" }
@@ -57,6 +58,8 @@ export default function InvitePage() {
     router.refresh();
   }
 
+  const [showLogoDialog, setShowLogoDialog] = useState(false);
+
   if (done) {
     return (
       <div className="text-center py-24 animate-in fade-in zoom-in duration-700">
@@ -65,9 +68,37 @@ export default function InvitePage() {
         </div>
         <h1 className="text-4xl font-black text-white mb-4 tracking-tighter">Transmission Successful</h1>
         <p className="text-white/40 text-sm font-medium mb-12 max-w-sm mx-auto">Your team invitations have been dispatched. They can join the workspace immediately.</p>
-        <Button className="h-14 px-12 btn-gold rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-gold/20" onClick={goToDashboard}>
+        <Button className="h-14 px-12 btn-gold rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-gold/20" onClick={() => setShowLogoDialog(true)}>
           Enter Workspace <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
+
+        <Dialog open={showLogoDialog} onOpenChange={setShowLogoDialog}>
+          <DialogContent className="glass border-white/5 text-white sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Complete Your Branding</DialogTitle>
+              <DialogDescription className="text-white/60">
+                Would you like to upload your company logo now? It will appear on your workspace dashboard and invitations.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-3 mt-6">
+              <Button 
+                onClick={async () => {
+                  const supabase = createClient();
+                  const { data: { user } } = await supabase.auth.getUser();
+                  await supabase.from("profiles").update({ onboarding_complete: true }).eq("id", user!.id);
+                  router.push("/settings");
+                  router.refresh();
+                }} 
+                className="btn-gold w-full"
+              >
+                Go to Settings
+              </Button>
+              <Button variant="ghost" onClick={goToDashboard} className="w-full text-white/40 hover:text-white">
+                Not Now
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }

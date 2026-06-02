@@ -17,7 +17,7 @@ export function MobileNav() {
 
   return (
     <div className="md:hidden fixed bottom-6 inset-x-6 z-50">
-      <nav className="glass rounded-full border-white/10 shadow-2xl p-2 px-4 shadow-gold/5">
+      <nav className="glass-nav rounded-full border-white/10 shadow-2xl p-2 px-4 shadow-gold/5">
         <div className="flex items-center justify-around h-14">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
