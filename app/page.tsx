@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle } from "lucide-react";
+import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Globe, Send, Sparkles, Check, Award } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 
 export default function LandingPage() {
@@ -29,41 +29,50 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-44 pb-32 px-6 overflow-hidden">
+      <section className="relative pt-44 pb-32 px-6 overflow-hidden bg-gradient-to-b from-[#14120d] via-[#090807] to-[#060606]">
         {/* Glow effect */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/5 blur-[120px] rounded-full -z-10" />
 
-        <div className="max-w-5xl mx-auto text-center relative">
-
-          <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[0.9] text-glow-gold">
-            Shift swapping,<br />
-            <span className="text-gold-gradient">finally solved.</span>
+        <div className="max-w-4xl mx-auto text-center relative">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1] text-center max-w-3xl mx-auto">
+            <span className="text-white">Create </span>
+            <span className="text-white/40 font-light">a system </span>
+            <span className="text-white">of stable </span>
+            <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-1 md:mx-2 align-middle">
+              <RefreshCw className="w-5 h-5 md:w-6 md:h-6 text-gold animate-spin-slow" />
+            </span>
+            <span className="text-white">coverage </span>
+            <span className="text-white/40 font-light">where staff </span>
+            <span className="text-white">trade shifts </span>
+            <span className="text-white">for </span>
+            <span className="text-gold-gradient block sm:inline">your business 24/7</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed">
-            Eliminate the chaos of last-minute shift changes. SwapBoard empowers your team to trade shifts instantly, giving managers time back and ensuring 100% floor coverage.
+          <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
+            Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div className="flex flex-col items-center justify-center gap-4">
             <Link
               href="/register"
-              className="btn-gold flex items-center gap-2 px-10 py-4 rounded-full text-base w-full sm:w-auto justify-center group"
+              className="btn-gold flex items-center justify-center gap-2 px-12 py-4 rounded-full text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
             >
-              Get started for free
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              Get started instantly
             </Link>
+            
             <Link
-              href="/login"
-              className="px-10 py-4 rounded-full text-base font-medium glass hover:bg-white/10 transition-all w-full sm:w-auto text-center"
+              href="/register"
+              className="flex items-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
             >
-              Sign in
+              <Gift className="w-4 h-4" />
+              <span>Try for free — 14-day premium trial included</span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Stats */}
-      <section className="py-24 px-6 relative border-y border-white/5 bg-mesh">
+      <section className="py-24 px-6 relative border-y border-gold/10 bg-gradient-to-r from-[#16130d] via-[#0c0b08] to-[#16130d] bg-mesh">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
           {[
             { value: "94%", label: "Swap fulfillment rate" },
@@ -84,7 +93,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-32 px-6">
+      <section id="features" className="py-32 px-6 bg-[#080808]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
@@ -139,8 +148,172 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Modern Testimonial Section */}
+      <section className="py-24 px-6 relative overflow-hidden bg-gradient-to-b from-[#15120a] to-[#0c0b08] border-y border-gold/15 bg-mesh">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          {/* Star Rating */}
+          <div className="flex items-center justify-center gap-1.5 mb-8">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="w-5 h-5 fill-gold text-gold text-glow-gold" />
+            ))}
+          </div>
+
+          {/* Quote Carousel-like Layout */}
+          <div className="relative px-12 md:px-20">
+            {/* Navigation Arrows */}
+            <button className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass border border-white/10 hover:border-gold/30 hover:bg-gold/5 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            
+            <blockquote className="text-xl md:text-3xl font-medium text-white/90 leading-relaxed tracking-tight max-w-2xl mx-auto font-serif italic">
+              "SwapBoard has completely solved our last-minute callout nightmare. Managers saved over 12 hours a week, and floor coverage reached a solid 100% within the first month."
+            </blockquote>
+
+            <button className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass border border-white/10 hover:border-gold/30 hover:bg-gold/5 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0">
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Laurels & Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 mt-12 opacity-60">
+            <div className="flex items-center gap-3">
+              <Award className="w-8 h-8 text-gold" />
+              <div className="text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/40">G2 Crowd 2026</p>
+                <p className="text-[11px] font-bold text-white">#1 Easiest to Use Tool</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Shield className="w-8 h-8 text-gold" />
+              <div className="text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Fast Company</p>
+                <p className="text-[11px] font-bold text-white">Most Innovative Tech 2026</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* The New Standard Grid Section */}
+      <section className="py-32 px-6 bg-[#0b0a08] relative overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          {/* Header Row */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20">
+            <div className="max-w-2xl">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-4">
+                The new standard for <br />
+                <span className="text-gold-gradient">schedule operations</span>
+              </h2>
+            </div>
+            <div className="max-w-sm">
+              <p className="text-sm text-white/40 leading-relaxed font-semibold">
+                Our automated routing engines ensure complete compliance, certified coverage, and immediate notifications without managers lifting a finger.
+              </p>
+            </div>
+          </div>
+
+          {/* Grid Layout (Liquid Glass Cards) */}
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Card 1: Abstract Global Coverage */}
+            <div className="card-premium p-8 rounded-[2.5rem] flex flex-col h-[400px] justify-between relative overflow-hidden group">
+              <div className="absolute -top-12 -right-12 w-64 h-64 bg-gold/5 rounded-full blur-[60px] group-hover:bg-gold/10 transition-all duration-700" />
+              
+              {/* Graphic container */}
+              <div className="h-44 w-full rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden flex items-center justify-center relative shadow-inner">
+                {/* Simulated Globe graphic */}
+                <div className="w-32 h-32 rounded-full border border-white/10 relative flex items-center justify-center bg-gradient-to-tr from-transparent via-white/5 to-transparent shadow-2xl animate-spin-slow">
+                  <div className="absolute inset-2 rounded-full border border-dashed border-white/20" />
+                  <div className="absolute inset-6 rounded-full border border-white/10" />
+                  <Globe className="w-10 h-10 text-gold opacity-50" />
+                </div>
+                <div className="absolute bottom-4 flex gap-1 bg-[#050505]/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">94% Active Swap Rates</span>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-black text-xl text-white mb-2">Freedom to trade</h3>
+                <p className="text-xs text-white/40 leading-relaxed font-semibold">
+                  Give staff the absolute power to trade and cover shifts on-demand while preserving complete system integrity.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 2: Interactive UI Controls */}
+            <div className="card-premium p-8 rounded-[2.5rem] flex flex-col h-[400px] justify-between relative overflow-hidden group">
+              <div className="absolute -top-12 -right-12 w-64 h-64 bg-gold/5 rounded-full blur-[60px] group-hover:bg-gold/10 transition-all duration-700" />
+
+              {/* Graphic container - Interactive buttons mock */}
+              <div className="h-44 w-full rounded-2xl bg-white/[0.02] border border-white/5 p-4 flex flex-col gap-2 justify-center shadow-inner relative">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
+                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
+                      <Send className="w-3 h-3 text-gold" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Send Request</span>
+                  </div>
+                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
+                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
+                      <RefreshCw className="w-3 h-3 text-gold" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Swap Shift</span>
+                  </div>
+                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
+                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 text-gold" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Verify Cert</span>
+                  </div>
+                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
+                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-3 h-3 text-gold" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">AI Coverage</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-black text-xl text-white mb-2">Automated verification</h3>
+                <p className="text-xs text-white/40 leading-relaxed font-semibold">
+                  Self-service scheduling with automated logic verifying roles, certifications, and shift overlaps instantly.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3: 3D-Like Glass Bar Chart */}
+            <div className="card-premium p-8 rounded-[2.5rem] flex flex-col h-[400px] justify-between relative overflow-hidden group">
+              <div className="absolute -top-12 -right-12 w-64 h-64 bg-gold/5 rounded-full blur-[60px] group-hover:bg-gold/10 transition-all duration-700" />
+
+              {/* Graphic container - 3D Glass bars */}
+              <div className="h-44 w-full rounded-2xl bg-white/[0.02] border border-white/5 p-6 flex items-end justify-center gap-4 shadow-inner relative overflow-hidden">
+                <div className="w-8 bg-gradient-to-t from-gold/5 to-gold/30 border border-gold/20 rounded-t-lg h-16 relative group-hover:h-24 transition-all duration-500 flex items-center justify-center">
+                  <span className="text-[9px] font-bold text-gold absolute -top-5">40%</span>
+                </div>
+                <div className="w-8 bg-gradient-to-t from-gold/10 to-gold/50 border border-gold/30 rounded-t-lg h-24 relative group-hover:h-32 transition-all duration-500 flex items-center justify-center">
+                  <span className="text-[9px] font-bold text-gold absolute -top-5">70%</span>
+                </div>
+                <div className="w-8 bg-gradient-to-t from-gold/20 to-gold/80 border border-gold/50 rounded-t-lg h-32 relative group-hover:h-40 transition-all duration-500 flex items-center justify-center">
+                  <span className="text-[9px] font-bold text-gold absolute -top-5">94%</span>
+                </div>
+                
+                <div className="absolute top-4 right-4 text-[9px] font-black uppercase tracking-widest text-white/30">Fulfillment Ascend</div>
+              </div>
+
+              <div>
+                <h3 className="font-black text-xl text-white mb-2">Unparalleled performance</h3>
+                <p className="text-xs text-white/40 leading-relaxed font-semibold">
+                  Gain instant insight into schedule health, cost-benefit savings, and manager time recovery on a unified dashboard.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
-      <section id="how-it-works" className="py-32 px-6 relative overflow-hidden">
+      <section id="how-it-works" className="py-32 px-6 relative overflow-hidden bg-[#070707]">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-gold/[0.02] blur-[150px] -z-10" />
 
         <div className="max-w-5xl mx-auto text-center">
@@ -169,7 +342,7 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-32 px-6 bg-mesh">
+      <section id="pricing" className="py-32 px-6 bg-gradient-to-b from-[#13110d] to-[#060606] border-t border-white/5 bg-mesh">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">Simple, honest pricing</h2>
@@ -244,7 +417,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-32 px-6">
+      <section className="py-32 px-6 bg-gradient-to-b from-[#060606] to-[#110e0a]">
         <div className="max-w-4xl mx-auto rounded-[3rem] glass p-16 md:p-24 text-center relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] rounded-full group-hover:bg-gold/20 transition-all duration-700" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full" />

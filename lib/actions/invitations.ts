@@ -54,9 +54,9 @@ export async function sendInvitation(inv: {
   const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/invite?token=${invitation.token}`;
 
   try {
-    if (process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_123")) {
+    if (resend && process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_123")) {
       await resend.emails.send({
-        from: 'SwapBoard <onboarding@resend.dev>',
+        from: 'SwapBoard <no-reply@swapboard.ca>',
         to: inv.email,
         subject: `Join ${inv.organization_name} on SwapBoard`,
         html: `
