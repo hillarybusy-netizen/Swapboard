@@ -8,6 +8,8 @@ import { InviteTeam } from "@/components/settings/InviteTeam";
 
 export const dynamic = "force-dynamic";
 
+import { signOut } from "@/app/actions";
+import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default async function SettingsPage(props: {
@@ -82,6 +84,15 @@ export default async function SettingsPage(props: {
           </TabsContent>
         </div>
       </Tabs>
+
+      <div className="flex justify-end px-1 md:px-2 pt-4">
+        <form action={signOut}>
+          <button type="submit" className="flex items-center gap-2 text-red-500 hover:text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest">
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

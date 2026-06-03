@@ -52,20 +52,24 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
     setLoading(true);
     try {
       for (const inv of valid) {
-        await sendInvitation({
+        const res = await sendInvitation({
           email: inv.email,
           role: inv.role,
           department_id: inv.department_id,
           organization_id: orgId,
           organization_name: org.name,
         });
+        if (!res.success) {
+          toast({ title: "Failed to send invitation", description: res.error, variant: "destructive" });
+          return;
+        }
       }
       
       toast({ title: `${valid.length} invite${valid.length > 1 ? "s" : ""} sent!`, variant: "success" });
       setInvites([{ email: "", role: "worker", department_id: "" }]);
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: err?.message || "An unexpected error occurred", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -74,17 +78,22 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
   async function handleGenerateLink() {
     setLoading(true);
     try {
-      const { invitation } = await createManualInvitation({
+      const res = await createManualInvitation({
         role: linkRole,
         department_id: linkDept,
         organization_id: orgId,
       });
       
-      const link = `${window.location.origin}/invite?token=${invitation.token}`;
+      if (!res.success || !res.invitation) {
+        toast({ title: "Failed to generate link", description: res.error, variant: "destructive" });
+        return;
+      }
+      
+      const link = `${window.location.origin}/invite?token=${res.invitation.token}`;
       setGeneratedLink(link);
       toast({ title: "Invitation link generated!" });
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: err?.message || "An unexpected error occurred", variant: "destructive" });
     } finally {
       setLoading(false);
     }

@@ -18,7 +18,7 @@ export async function sendInvitation(inv: {
 
   if (authError || !user) {
     console.error("Auth error in sendInvitation:", authError);
-    throw new Error("Unauthorized");
+    return { success: false, error: "Unauthorized" };
   }
 
   // Check plan limits
@@ -32,7 +32,7 @@ export async function sendInvitation(inv: {
   const currentTotal = (profileCount ?? 0) + (inviteCount ?? 0);
 
   if (currentTotal >= planLimit) {
-    throw new Error(`Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Growth to add more.`);
+    return { success: false, error: `Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Grow to add more.` };
   }
 
   // Create invitation in database
@@ -48,7 +48,7 @@ export async function sendInvitation(inv: {
     .select()
     .single();
 
-  if (dbError) throw dbError;
+  if (dbError) return { success: false, error: dbError.message };
 
   // Send email via Resend
   const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/invite?token=${invitation.token}`;
@@ -101,7 +101,7 @@ export async function createManualInvitation(inv: {
 
   if (authError || !user) {
     console.error("Auth error in createManualInvitation:", authError);
-    throw new Error("Unauthorized");
+    return { success: false, error: "Unauthorized" };
   }
 
   // Check plan limits
@@ -115,7 +115,7 @@ export async function createManualInvitation(inv: {
   const currentTotal = (profileCount ?? 0) + (inviteCount ?? 0);
 
   if (currentTotal >= planLimit) {
-    throw new Error(`Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Growth to add more.`);
+    return { success: false, error: `Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Grow to add more.` };
   }
 
   // Create invitation in database with 30 minute expiry
@@ -135,7 +135,7 @@ export async function createManualInvitation(inv: {
     .select()
     .single();
 
-  if (dbError) throw dbError;
+  if (dbError) return { success: false, error: dbError.message };
 
   revalidatePath("/team");
   revalidatePath("/settings");
