@@ -63,49 +63,70 @@ export function BillingSettings({ org }: { org: Organization | null }) {
   return (
     <div className="space-y-6">
       {trial.isOnTrial && (
-        <Card className="border-amber-200 bg-amber-50 shadow-sm">
+        <Card className="border-amber-500/20 bg-amber-500/5 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-2xl -z-10" />
           <CardHeader>
-            <CardTitle className="text-base text-amber-900">Trial Period</CardTitle>
-            <CardDescription className="text-amber-700">{trial.daysRemaining} days remaining</CardDescription>
+            <CardTitle className="text-base text-amber-400 font-bold">Trial Period</CardTitle>
+            <CardDescription className="text-amber-300/60">{trial.daysRemaining} days remaining</CardDescription>
           </CardHeader>
           <CardContent>
-            <Progress value={trial.percentUsed} className="h-2 bg-amber-200 [&>div]:bg-amber-500" />
-            <p className="text-[10px] text-amber-600 mt-2 font-medium uppercase tracking-wider">
+            <Progress value={trial.percentUsed} className="h-2 bg-amber-950/50 [&>div]:bg-amber-500" />
+            <p className="text-[10px] text-amber-400/80 mt-2 font-black uppercase tracking-widest">
               Previewing Growth Features
             </p>
           </CardContent>
         </Card>
       )}
 
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-6">
         {PLANS.map((plan) => {
           const isCurrent = org?.plan === plan.id;
           return (
-            <Card key={plan.id} className={plan.highlight ? "border-primary shadow-md ring-1 ring-primary" : ""}>
-              <CardHeader className="pb-3">
-                {plan.highlight && <Badge className="w-fit mb-1">Most popular</Badge>}
-                <CardTitle className="text-lg">{plan.name}</CardTitle>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground text-sm">{plan.period}</span>
+            <Card 
+              key={plan.id} 
+              className={plan.highlight 
+                ? "border-gold/40 bg-gold/5 shadow-2xl shadow-gold/5 relative overflow-hidden rounded-3xl" 
+                : "border-white/5 bg-white/[0.02] relative overflow-hidden rounded-3xl"
+              }
+            >
+              {plan.highlight && (
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-2xl -z-10" />
+              )}
+              <CardHeader className="pb-4">
+                {plan.highlight && (
+                  <Badge className="w-fit mb-2 bg-gold text-[#050505] font-black uppercase tracking-widest text-[9px] hover:bg-gold/90">
+                    Most popular
+                  </Badge>
+                )}
+                <CardTitle className="text-lg font-black text-white">{plan.name}</CardTitle>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-3xl font-black text-white">{plan.price}</span>
+                  <span className="text-white/40 text-xs font-medium">{plan.period}</span>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2">
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <li key={f} className="flex items-center gap-2 text-xs text-white/70">
+                      <CheckCircle2 className="w-4 h-4 text-gold shrink-0" />
                       {f}
                     </li>
                   ))}
                 </ul>
                 <Button 
-                  className="w-full" 
+                  className={plan.highlight
+                    ? "w-full rounded-full bg-gold text-[#050505] font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all h-11"
+                    : "w-full rounded-full bg-white/5 text-white border-white/5 font-black text-xs uppercase tracking-widest hover:bg-white/10 active:scale-[0.98] transition-all h-11"
+                  }
                   variant={plan.highlight ? "default" : "outline"}
                   disabled={isCurrent || !!loading}
                   onClick={() => handleSelectPlan(plan)}
                 >
-                  {loading === plan.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                  {loading === plan.id ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Zap className="w-3.5 h-3.5 mr-1" />
+                  )}
                   {isCurrent ? "Current Plan" : "Choose " + plan.name}
                 </Button>
               </CardContent>

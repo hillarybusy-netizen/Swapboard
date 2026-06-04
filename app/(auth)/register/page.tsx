@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const DISALLOWED_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com"];
 const ALLOWED_EMAILS = ["brendanmebson@gmail.com", "mebugekamsiyochukwu@gmail.com"];
@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -85,11 +86,21 @@ export default function RegisterPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password" title="" className="text-sm font-semibold text-white/70 ml-1">Password</Label>
-            <Input
-              id="password" type="password" placeholder="Min. 8 characters"
-              className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
-              value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
-            />
+            <div className="relative">
+              <Input
+                id="password" type={showPassword ? "text" : "password"} placeholder="Min. 8 characters"
+                className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 pr-12"
+                value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
         </div>
 
