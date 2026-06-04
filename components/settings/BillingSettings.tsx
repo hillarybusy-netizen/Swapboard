@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,15 +22,75 @@ import { updatePlan } from "@/app/actions";
 import { toast } from "@/hooks/use-toast";
 
 const PLANS = [
-  { id: "starter", name: "Starter", price: "$79", period: "/mo", features: ["Up to 50 workers", "3 departments", "Basic analytics", "Email support"] },
-  { id: "pro", name: "Growth", price: "$199", period: "/mo", features: ["Up to 200 workers", "Unlimited departments", "ROI analytics", "Priority support", "Custom roles"], highlight: true },
-  { id: "enterprise", name: "Enterprise", price: "$499", period: "/mo", features: ["Unlimited workers", "Multi-location", "Advanced analytics", "Dedicated support", "SSO & compliance"] },
+  { id: "starter", name: "Starter", price: "$79", priceNumeric: 79, period: "/mo", features: ["Up to 50 workers", "3 departments", "Basic analytics", "Email support"] },
+  { id: "pro", name: "Growth", price: "$199", priceNumeric: 199, period: "/mo", features: ["Up to 200 workers", "Unlimited departments", "ROI analytics", "Priority support", "Custom roles"], highlight: true },
+  { id: "enterprise", name: "Enterprise", price: "$499", priceNumeric: 499, period: "/mo", features: ["Unlimited workers", "Multi-location", "Advanced analytics", "Dedicated support", "SSO & compliance"] },
 ];
 
-export function BillingSettings({ org }: { org: Organization | null }) {
+export function BillingSettings({ org, userEmail }: { org: Organization | null; userEmail?: string }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [confirmPlan, setConfirmPlan] = useState<typeof PLANS[0] | null>(null);
   const trial = getTrialStatus(org);
+
+  // Load Paystack script dynamically
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  function payWithPaystack(plan: typeof PLANS[0], onCompleted: () => void) {
+    // @ts-ignore
+    if (typeof window === "undefined" || !window.PaystackPop) {
+      toast({
+        title: "Paystack loading...",
+        description: "Please wait a moment for the payment window to load.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_a6f23be3a7f805a5a1f64f2b05b8a531cfd03422";
+    setLoading(plan.id);
+
+    try {
+      // @ts-ignore
+      const handler = window.PaystackPop.setup({
+        key: paystackKey,
+        email: userEmail || "customer@example.com",
+        amount: plan.priceNumeric * 100, // minor units (cents)
+        currency: "USD",
+        ref: "SB-" + Math.floor(Math.random() * 1000000000 + 1),
+        callback: function(response: any) {
+          toast({
+            title: "Payment Successful!",
+            description: `Reference: ${response.reference}. Updating your plan...`,
+            variant: "success",
+          });
+          onCompleted();
+        },
+        onClose: function() {
+          setLoading(null);
+          toast({
+            title: "Payment Cancelled",
+            description: "You closed the payment screen.",
+          });
+        }
+      });
+      handler.openIframe();
+    } catch (e: any) {
+      setLoading(null);
+      toast({
+        title: "Paystack Error",
+        description: e.message || "Failed to initialize payment.",
+        variant: "destructive",
+      });
+    }
+  }
 
   async function handleSelectPlan(plan: typeof PLANS[0]) {
     if (!org) return;
@@ -43,7 +103,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
       return;
     }
 
-    executeUpgrade(plan.id);
+    payWithPaystack(plan, () => executeUpgrade(plan.id));
   }
 
   async function executeUpgrade(planId: string) {
