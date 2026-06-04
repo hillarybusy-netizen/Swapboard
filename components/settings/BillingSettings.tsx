@@ -215,7 +215,7 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
             <AlertDialogAction 
-              onClick={() => confirmPlan && executeUpgrade(confirmPlan.id)}
+              onClick={() => confirmPlan && payWithPaystack(confirmPlan, () => executeUpgrade(confirmPlan.id))}
               className="bg-red-500 hover:bg-red-600 text-white rounded-full"
             >
               Yes, Downgrade
