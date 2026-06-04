@@ -38,7 +38,20 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
     setInvites((v) => [...v, { email: "", role: "worker", department_id: "" }]) 
   }
   function removeRow(i: number) { setInvites((v) => v.filter((_, idx) => idx !== i)) }
-  function update(i: number, field: keyof Invite, val: string) { setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, [field]: val } : inv)) }
+  
+  function update(i: number, field: keyof Invite, val: string) {
+    setInvites((v) => v.map((inv, idx) => {
+      if (idx === i) {
+        const updated = { ...inv, [field]: val };
+        // If role becomes manager/admin, clear department_id
+        if (field === "role" && (val === "manager" || val === "admin")) {
+          updated.department_id = "";
+        }
+        return updated;
+      }
+      return inv;
+    }));
+  }
 
   async function sendInvites() {
     const valid = invites.filter((i) => i.email.trim());
@@ -55,7 +68,7 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
         const res = await sendInvitation({
           email: inv.email,
           role: inv.role,
-          department_id: inv.department_id,
+          department_id: (inv.role === "manager" || inv.role === "admin") ? "" : inv.department_id,
           organization_id: orgId,
           organization_name: org.name,
         });
@@ -80,7 +93,7 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
     try {
       const res = await createManualInvitation({
         role: linkRole,
-        department_id: linkDept,
+        department_id: (linkRole === "manager" || linkRole === "admin") ? "" : linkDept,
         organization_id: orgId,
       });
       
@@ -143,14 +156,20 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
                       <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={inv.department_id} onValueChange={(v) => update(i, "department_id", v)}>
-                    <SelectTrigger className="h-10 bg-white/5 border-white/10 rounded-xl">
-                      <SelectValue placeholder="Department" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#050505] border-white/10">
-                      {departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  {inv.role === "manager" || inv.role === "admin" ? (
+                    <div className="h-10 bg-white/[0.02] border border-white/5 rounded-xl flex items-center px-3 text-[10px] font-bold text-white/30 uppercase tracking-wider select-none cursor-not-allowed">
+                      All Access (N/A)
+                    </div>
+                  ) : (
+                    <Select value={inv.department_id} onValueChange={(v) => update(i, "department_id", v)}>
+                      <SelectTrigger className="h-10 bg-white/5 border-white/10 rounded-xl">
+                        <SelectValue placeholder="Department" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#050505] border-white/10">
+                        {departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  )}
                   <button onClick={() => removeRow(i)} disabled={invites.length === 1} className="text-white/20 hover:text-red-500 disabled:opacity-30 flex justify-center">
                     <X className="w-5 h-5" />
                   </button>
@@ -168,13 +187,21 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
             </div>
           </div>
         </TabsContent>
-
+ 
         <TabsContent value="link" className="p-6 focus-visible:ring-0">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Target Access</Label>
-                <Select value={linkRole} onValueChange={setLinkRole}>
+                <Select 
+                  value={linkRole} 
+                  onValueChange={(v) => {
+                    setLinkRole(v);
+                    if (v === "manager" || v === "admin") {
+                      setLinkDept("");
+                    }
+                  }}
+                >
                   <SelectTrigger className="bg-white/5 border-white/10 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
@@ -187,14 +214,20 @@ export function InviteTeam({ orgId, departments, org, profileCount }: { orgId: s
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Target Department</Label>
-                <Select value={linkDept} onValueChange={setLinkDept}>
-                  <SelectTrigger className="bg-white/5 border-white/10 rounded-xl">
-                    <SelectValue placeholder="Social (Default)" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#050505] border-white/10">
-                    {departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                {linkRole === "manager" || linkRole === "admin" ? (
+                  <div className="h-10 bg-white/[0.02] border border-white/5 rounded-xl flex items-center px-4 text-[10px] font-bold text-white/30 uppercase tracking-wider select-none cursor-not-allowed">
+                    All Access (N/A)
+                  </div>
+                ) : (
+                  <Select value={linkDept} onValueChange={setLinkDept}>
+                    <SelectTrigger className="bg-white/5 border-white/10 rounded-xl">
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#050505] border-white/10">
+                      {departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
 

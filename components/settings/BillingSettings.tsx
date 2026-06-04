@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Script from "next/script";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,19 +30,16 @@ const PLANS = [
 
 export function BillingSettings({ org, userEmail }: { org: Organization | null; userEmail?: string }) {
   const [loading, setLoading] = useState<string | null>(null);
-  const [confirmPlan, setConfirmPlan] = useState<typeof PLANS[0] | null>(null);
+  const [confirmUpgrade, setConfirmUpgrade] = useState<typeof PLANS[0] | null>(null);
+  const [confirmDowngrade, setConfirmDowngrade] = useState<typeof PLANS[0] | null>(null);
   const trial = getTrialStatus(org);
 
-  // Load Paystack script dynamically
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://js.paystack.co/v1/inline.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  const PLAN_LEVELS: Record<string, number> = {
+    trial: 0,
+    starter: 1,
+    pro: 2,
+    enterprise: 3,
+  };
 
   function payWithPaystack(plan: typeof PLANS[0], onCompleted: () => void) {
     // @ts-ignore
@@ -59,13 +57,14 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
 
     try {
       // @ts-ignore
-      const handler = window.PaystackPop.setup({
+      const paystack = new window.PaystackPop();
+      paystack.newTransaction({
         key: paystackKey,
         email: userEmail || "customer@example.com",
-        amount: plan.priceNumeric * 100, // minor units (cents)
+        amount: plan.priceNumeric * 100, // minor units (cents for USD)
         currency: "USD",
         ref: "SB-" + Math.floor(Math.random() * 1000000000 + 1),
-        callback: function(response: any) {
+        onSuccess: function(response: any) {
           toast({
             title: "Payment Successful!",
             description: `Reference: ${response.reference}. Updating your plan...`,
@@ -73,7 +72,7 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
           });
           onCompleted();
         },
-        onClose: function() {
+        onCancel: function() {
           setLoading(null);
           toast({
             title: "Payment Cancelled",
@@ -81,7 +80,6 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
           });
         }
       });
-      handler.openIframe();
     } catch (e: any) {
       setLoading(null);
       toast({
@@ -95,15 +93,16 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
   async function handleSelectPlan(plan: typeof PLANS[0]) {
     if (!org) return;
 
-    // Check for downgrade
-    const missingFeatures = getMissingFeatures(org.plan, plan.id as Plan);
-    
-    if (missingFeatures.length > 0) {
-      setConfirmPlan(plan);
-      return;
-    }
+    const currentLevel = PLAN_LEVELS[org.plan] ?? 0;
+    const targetLevel = PLAN_LEVELS[plan.id] ?? 0;
 
-    payWithPaystack(plan, () => executeUpgrade(plan.id));
+    if (targetLevel > currentLevel) {
+      // Upgrade
+      setConfirmUpgrade(plan);
+    } else if (targetLevel < currentLevel) {
+      // Downgrade
+      setConfirmDowngrade(plan);
+    }
   }
 
   async function executeUpgrade(planId: string) {
@@ -116,12 +115,18 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
       setLoading(null);
-      setConfirmPlan(null);
+      setConfirmUpgrade(null);
+      setConfirmDowngrade(null);
     }
   }
 
   return (
     <div className="space-y-6">
+      <Script 
+        src="https://js.paystack.co/v2/inline.js" 
+        strategy="afterInteractive"
+      />
+
       {trial.isOnTrial && (
         <Card className="border-amber-500/20 bg-amber-500/5 shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-2xl -z-10" />
@@ -195,28 +200,72 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
         })}
       </div>
 
-      <AlertDialog open={!!confirmPlan} onOpenChange={() => setConfirmPlan(null)}>
-        <AlertDialogContent className="glass border-red-500/20">
+      {/* Upgrade Dialog */}
+      <AlertDialog open={!!confirmUpgrade} onOpenChange={() => setConfirmUpgrade(null)}>
+        <AlertDialogContent className="glass bg-[#0a0a0a]/95 border-gold/20">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-red-500">
-              <AlertTriangle className="w-5 h-5" />
-              Confirm Plan Downgrade
+            <AlertDialogTitle className="flex items-center gap-2 text-gold font-black uppercase tracking-wider text-base">
+              <Zap className="w-5 h-5 text-gold" />
+              Confirm Plan Upgrade
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-4">
-              <p>You are moving to a lower tier than your current plan. You will lose access to the following features:</p>
-              <ul className="list-disc pl-5 space-y-1 text-white/70">
-                {confirmPlan && getMissingFeatures(org?.plan || "trial", confirmPlan.id as Plan).map(f => (
-                  <li key={f} className="text-sm">{f}</li>
-                ))}
-              </ul>
-              <p className="font-bold text-white">Are you sure you want to proceed?</p>
+              <p className="text-white text-sm">
+                You are upgrading to the <span className="font-bold text-gold">{confirmUpgrade?.name}</span> plan ({confirmUpgrade?.price}/mo).
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed">
+                Proceeding will launch Paystack secure payment window. Once payment is confirmed, your new limits will take effect immediately.
+              </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white">Cancel</AlertDialogCancel>
             <AlertDialogAction 
-              onClick={() => confirmPlan && payWithPaystack(confirmPlan, () => executeUpgrade(confirmPlan.id))}
-              className="bg-red-500 hover:bg-red-600 text-white rounded-full"
+              onClick={() => {
+                if (confirmUpgrade) {
+                  const targetPlan = confirmUpgrade;
+                  setConfirmUpgrade(null); // Close dialog first to avoid stuck dialog UI
+                  payWithPaystack(targetPlan, () => executeUpgrade(targetPlan.id));
+                }
+              }}
+              className="bg-gold hover:bg-gold/90 text-[#050505] font-black uppercase tracking-widest text-[10px] rounded-full px-6"
+            >
+              Proceed to Payment
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Downgrade Dialog */}
+      <AlertDialog open={!!confirmDowngrade} onOpenChange={() => setConfirmDowngrade(null)}>
+        <AlertDialogContent className="glass bg-[#0a0a0a]/95 border-red-500/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-500 font-black uppercase tracking-wider text-base">
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+              Confirm Plan Downgrade
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <p className="text-white text-sm">
+                You are moving to a lower tier than your current plan. You will lose access to the following features:
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-white/70">
+                {confirmDowngrade && getMissingFeatures(org?.plan || "trial", confirmDowngrade.id as Plan).map(f => (
+                  <li key={f} className="text-sm">{f}</li>
+                ))}
+              </ul>
+              <p className="font-bold text-white text-sm">Are you sure you want to proceed?</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                if (confirmDowngrade) {
+                  const targetPlan = confirmDowngrade;
+                  setConfirmDowngrade(null); // Close dialog first to avoid stuck dialog UI
+                  payWithPaystack(targetPlan, () => executeUpgrade(targetPlan.id));
+                }
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white rounded-full px-6 font-black uppercase tracking-widest text-[10px]"
             >
               Yes, Downgrade
             </AlertDialogAction>

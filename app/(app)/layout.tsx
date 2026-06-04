@@ -40,7 +40,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     return (
       <div className="min-h-screen bg-[#050505] flex relative overflow-hidden">
         <div className="absolute inset-0 bg-mesh opacity-10 -z-10 pointer-events-none" />
-        <Sidebar org={org} profile={profile} />
         <div className="flex-1 flex flex-col min-w-0 items-center justify-center px-6 py-12">
           <div className="max-w-lg w-full text-center space-y-8">
             {/* Icon */}
@@ -103,7 +102,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </div>
           </div>
         </div>
-        <MobileNav />
       </div>
     );
   }
