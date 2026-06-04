@@ -111,6 +111,12 @@ export default async function TeamPage() {
                           <span className="text-gold/40">{member.role.name}</span>
                         </>
                       )}
+                      {member.member_id && (
+                        <>
+                          <span>·</span>
+                          <span className="text-white/40">{member.member_id}</span>
+                        </>
+                      )}
                     </div>
                   </div>
 

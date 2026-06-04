@@ -34,6 +34,10 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .single();
 
+  if (profile?.user_role === "worker") {
+    redirect("/my-shifts");
+  }
+
   const org = (profile as any)?.organization;
   const orgId = profile?.organization_id ?? "";
 

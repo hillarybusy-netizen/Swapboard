@@ -84,6 +84,9 @@ export function Sidebar({ org, profile }: SidebarProps) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-white truncate">{profile?.full_name ?? "User"}</p>
               <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">{profile?.user_role ?? "worker"}</p>
+              {(profile as any)?.member_id && (
+                <p className="text-[9px] text-white/40 font-semibold tracking-wider mt-0.5">{(profile as any).member_id}</p>
+              )}
             </div>
           </div>
           

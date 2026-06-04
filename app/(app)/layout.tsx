@@ -21,6 +21,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .eq("id", user.id)
     .single();
 
+  if (profile?.user_role === "worker") {
+    redirect("/my-shifts");
+  }
+
   const org = (profile as any)?.organization ?? null;
 
   // If no org yet, redirect to onboarding

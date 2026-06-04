@@ -9,11 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [memberId, setMemberId] = useState("");
   const [password, setPassword] = useState("");
+  const [loginMode, setLoginMode] = useState<"email" | "member">("email");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -22,9 +25,32 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      let targetEmail = email;
+
+      if (loginMode === "member") {
+        const { data: lookedUpEmail, error: rpcError } = await supabase
+          .rpc("get_email_by_member_id", { p_member_id: memberId });
+        if (rpcError) throw rpcError;
+        if (!lookedUpEmail) {
+          throw new Error("Invalid Member ID. Please check and try again.");
+        }
+        targetEmail = lookedUpEmail;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email: targetEmail, password });
       if (error) throw error;
-      router.push("/dashboard");
+
+      // Get profile role to redirect to relevant dashboard
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("user_role")
+        .single();
+
+      if (profile?.user_role === "worker") {
+        router.push("/my-shifts");
+      } else {
+        router.push("/dashboard");
+      }
       router.refresh();
     } catch (err: any) {
       toast({ title: "Sign in failed", description: err.message, variant: "destructive" });
@@ -41,15 +67,51 @@ export default function LoginPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Toggle Mode */}
+        <div className="flex bg-white/5 p-1 rounded-full border border-white/5 mb-6">
+          <button
+            type="button"
+            onClick={() => setLoginMode("email")}
+            className={cn(
+              "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
+              loginMode === "email" ? "bg-gold text-[#050505] shadow-lg shadow-gold/20" : "text-white/40 hover:text-white"
+            )}
+          >
+            Email
+          </button>
+          <button
+            type="button"
+            onClick={() => setLoginMode("member")}
+            className={cn(
+              "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
+              loginMode === "member" ? "bg-gold text-[#050505] shadow-lg shadow-gold/20" : "text-white/40 hover:text-white"
+            )}
+          >
+            Member ID
+          </button>
+        </div>
+
         <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-sm font-semibold text-white/70 ml-1">Email</Label>
-            <Input
-              id="email" type="email" placeholder="you@company.com"
-              className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
-              value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
-            />
-          </div>
+          {loginMode === "email" ? (
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-semibold text-white/70 ml-1">Email</Label>
+              <Input
+                id="email" type="email" placeholder="you@company.com"
+                className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
+                value={email} onChange={(e) => setEmail(e.target.value)} required={loginMode === "email"} autoComplete="email"
+              />
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              <Label htmlFor="memberId" className="text-sm font-semibold text-white/70 ml-1">Member ID</Label>
+              <Input
+                id="memberId" type="text" placeholder="CO001"
+                className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 uppercase"
+                value={memberId} onChange={(e) => setMemberId(e.target.value)} required={loginMode === "member"}
+                autoCapitalize="characters"
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <div className="flex items-center justify-between ml-1">
               <Label htmlFor="password" title="" className="text-sm font-semibold text-white/70">Password</Label>

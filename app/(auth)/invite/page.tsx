@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 
 function InviteForm() {
   const router = useRouter();
@@ -19,6 +19,7 @@ function InviteForm() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [successId, setSuccessId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
@@ -65,8 +66,17 @@ function InviteForm() {
         accepted_at: new Date().toISOString(),
         email: email // Update email if it was a generic link
       }).eq("id", invite.id);
+
+      // Fetch the newly generated member ID from the profile (populated by trigger)
+      const { data: prof, error: profError } = await supabase
+        .from("profiles")
+        .select("member_id")
+        .eq("id", user!.id)
+        .single();
+        
+      if (profError) throw profError;
       
-      router.push("/dashboard");
+      setSuccessId(prof?.member_id || "");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -89,6 +99,47 @@ function InviteForm() {
       </CardContent>
     </Card>
   );
+
+  if (successId !== null) {
+    return (
+      <Card className="glass border-white/5 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
+        <CardHeader className="text-center">
+          <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-8 h-8 text-gold" />
+          </div>
+          <CardTitle className="text-2xl font-black uppercase tracking-tight text-white italic">Welcome to the Team!</CardTitle>
+          <CardDescription className="text-white/40 text-xs font-medium">
+            Your account has been created successfully.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6 text-center pb-8">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Your Member ID</p>
+            <p className="text-3xl font-black text-gold tracking-widest">{successId || "Generating..."}</p>
+            <p className="text-[11px] text-white/40 font-medium">
+              Please save this ID. You can use it along with your password to log in in the future.
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button 
+            onClick={() => {
+              if (invite.user_role === "worker") {
+                router.push("/my-shifts");
+              } else {
+                router.push("/dashboard");
+              }
+              router.refresh();
+            }} 
+            className="w-full btn-gold rounded-full h-12 uppercase font-black text-xs tracking-widest"
+          >
+            Go to My Dashboard
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
 
   return (
     <Card className="glass border-white/5 relative overflow-hidden">
