@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCachedSession } from "@/lib/supabase/cached";
 import { redirect } from "next/navigation";
 import { calculateROI, groupSwapsByWeek } from "@/lib/analytics";
 import { getTrialStatus } from "@/lib/trial";
@@ -24,20 +25,14 @@ import { checkPlanLimit } from "@/lib/plans";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*, organization:organizations(*)")
-    .eq("id", user.id)
-    .single();
 
   if (profile?.user_role === "worker") {
     redirect("/my-shifts");
   }
 
+  const supabase = await createClient();
   const org = (profile as any)?.organization;
   const orgId = profile?.organization_id ?? "";
 

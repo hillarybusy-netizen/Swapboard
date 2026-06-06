@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCachedSession } from "@/lib/supabase/cached";
 import { redirect } from "next/navigation";
 import { formatShiftDate, formatShiftTime, formatShiftDuration, SHIFT_STATUS_LABELS, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -23,16 +24,13 @@ export default async function ShiftsPage(props: {
   searchParams: Promise<{ dept?: string; status?: string }>;
 }) {
   const searchParams = await props.searchParams;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("organization_id, user_role").eq("id", user.id).single();
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
 
-  const { data: departmentsData } = await supabase.from("departments").select("*").eq("organization_id", orgId).order("sort_order");
-  const { data: profilesData } = await supabase.from("profiles").select("id, full_name").eq("organization_id", orgId).eq("is_active", true);
+  const supabase = await createClient();
 
   let query = supabase
     .from("shifts")
@@ -47,7 +45,15 @@ export default async function ShiftsPage(props: {
   if (searchParams.dept) query = query.eq("department_id", searchParams.dept);
   if (searchParams.status) query = query.eq("status", searchParams.status);
 
-  const { data: rawShifts } = await query;
+  const [departmentsRes, profilesRes, shiftsRes] = await Promise.all([
+    supabase.from("departments").select("*").eq("organization_id", orgId).order("sort_order"),
+    supabase.from("profiles").select("id, full_name").eq("organization_id", orgId).eq("is_active", true),
+    query
+  ]);
+
+  const departments = (departmentsRes.data ?? []) as any[];
+  const profiles = (profilesRes.data ?? []) as any[];
+  const rawShifts = shiftsRes.data;
   
   const now = new Date();
 
@@ -67,9 +73,6 @@ export default async function ShiftsPage(props: {
     // Active before ended
     return a.isEnded ? 1 : -1;
   });
-
-  const departments = (departmentsData ?? []) as any[];
-  const profiles = (profilesData ?? []) as any[];
 
   const isManager = profile?.user_role === "manager" || profile?.user_role === "admin";
 

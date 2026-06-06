@@ -4,25 +4,34 @@ import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 
 import { createClient } from "@/lib/supabase/server";
 import { LandingProfileDropdown } from "@/components/layout/LandingProfileDropdown";
+import { cookies } from "next/headers";
 
 export default async function LandingPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const cookieStore = await cookies();
+  const hasSession = cookieStore.getAll().some(c => c.name.includes("-auth-token"));
+
+  let user = null;
   let org = null;
   let initials = "U";
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*, organization:organizations(*)")
-      .eq("id", user.id)
-      .single();
-    
-    org = (profile as any)?.organization;
-    if (org?.name) {
-      initials = org.name.substring(0, 2).toUpperCase();
-    } else if (profile?.full_name) {
-      initials = profile.full_name.substring(0, 2).toUpperCase();
+
+  if (hasSession) {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*, organization:organizations(*)")
+        .eq("id", user.id)
+        .single();
+      
+      org = (profile as any)?.organization;
+      if (org?.name) {
+        initials = org.name.substring(0, 2).toUpperCase();
+      } else if (profile?.full_name) {
+        initials = profile.full_name.substring(0, 2).toUpperCase();
+      }
     }
   }
 

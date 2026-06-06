@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCachedSession } from "@/lib/supabase/cached";
 import { redirect } from "next/navigation";
 import { formatShiftDate, formatShiftTime, timeAgo, SWAP_STATUS_LABELS } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -23,14 +24,13 @@ export default async function SwapsPage(props: {
   searchParams: Promise<{ status?: string }>;
 }) {
   const searchParams = await props.searchParams;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("organization_id, user_role").eq("id", user.id).single();
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
 
+  const supabase = await createClient();
   const { data: allSwapsData } = await supabase
     .from("swap_requests")
     .select(`

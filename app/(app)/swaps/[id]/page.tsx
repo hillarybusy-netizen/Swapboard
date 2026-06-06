@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCachedSession } from "@/lib/supabase/cached";
 import { redirect, notFound } from "next/navigation";
 import { formatShiftDate, formatShiftTime, timeAgo, SWAP_STATUS_LABELS, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -14,24 +15,25 @@ export const dynamic = "force-dynamic";
 export default async function SwapDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const [{ user, profile }, { data: swap }] = await Promise.all([
+    getCachedSession(),
+    supabase
+      .from("swap_requests")
+      .select(`
+        *,
+        shift:shifts(*, department:departments(*)),
+        requester:profiles!swap_requests_requester_id_fkey(*),
+        covering_worker:profiles!swap_requests_covering_worker_id_fkey(*),
+        approver:profiles!swap_requests_approved_by_fkey(*)
+      `)
+      .eq("id", params.id)
+      .single()
+  ]);
+
   if (!user) redirect("/login");
-
-  const { data: swap } = await supabase
-    .from("swap_requests")
-    .select(`
-      *,
-      shift:shifts(*, department:departments(*)),
-      requester:profiles!swap_requests_requester_id_fkey(*),
-      covering_worker:profiles!swap_requests_covering_worker_id_fkey(*),
-      approver:profiles!swap_requests_approved_by_fkey(*)
-    `)
-    .eq("id", params.id)
-    .single();
-
   if (!swap) notFound();
 
-  const { data: profile } = await supabase.from("profiles").select("user_role").eq("id", user.id).single();
   const isManager = profile?.user_role === "manager" || profile?.user_role === "admin";
   const isRequester = (swap as any).requester_id === user.id;
   const isCovering = (swap as any).covering_worker_id === user.id;

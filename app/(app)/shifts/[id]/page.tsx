@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCachedSession } from "@/lib/supabase/cached";
 import { redirect, notFound } from "next/navigation";
 import { formatShiftDate, formatShiftTime, formatShiftDuration, SHIFT_STATUS_LABELS } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -17,18 +18,19 @@ import { cn } from "@/lib/utils";
 export default async function ShiftDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const [{ user, profile }, { data: shift }] = await Promise.all([
+    getCachedSession(),
+    supabase
+      .from("shifts")
+      .select("*, department:departments(*), role:roles(*), profile:profiles!shifts_user_id_fkey(*), creator:profiles!shifts_created_by_fkey(*)")
+      .eq("id", params.id)
+      .single()
+  ]);
+
   if (!user) redirect("/login");
-
-  const { data: shift } = await supabase
-    .from("shifts")
-    .select("*, department:departments(*), role:roles(*), profile:profiles!shifts_user_id_fkey(*), creator:profiles!shifts_created_by_fkey(*)")
-    .eq("id", params.id)
-    .single();
-
   if (!shift) notFound();
 
-  const { data: profile } = await supabase.from("profiles").select("organization_id, user_role").eq("id", user.id).single();
   const isManager = profile?.user_role === "manager" || profile?.user_role === "admin";
   const isOwner = shift.assigned_to === user.id;
 

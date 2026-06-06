@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCachedSession } from "@/lib/supabase/cached";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrgSettings } from "@/components/settings/OrgSettings";
@@ -17,11 +18,9 @@ export default async function SettingsPage(props: {
   searchParams: Promise<{ tab?: string }>;
 }) {
   const searchParams = await props.searchParams;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("*, organization:organizations(*)").eq("id", user.id).single();
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
 
@@ -29,18 +28,22 @@ export default async function SettingsPage(props: {
   const expired = needsSubscription(org);
   const activeTab = expired ? "billing" : (searchParams.tab ?? "org");
 
-  const { data: departmentsData } = await supabase
-    .from("departments")
-    .select("*, roles(*)")
-    .eq("organization_id", orgId)
-    .order("sort_order");
+  const supabase = await createClient();
 
-  const departments = (departmentsData ?? []) as any[];
+  const [departmentsRes, profileCountRes] = await Promise.all([
+    supabase
+      .from("departments")
+      .select("*, roles(*)")
+      .eq("organization_id", orgId)
+      .order("sort_order"),
+    supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", orgId)
+  ]);
 
-  const { count: profileCount } = await supabase
-    .from("profiles")
-    .select("*", { count: "exact", head: true })
-    .eq("organization_id", orgId);
+  const departments = (departmentsRes.data ?? []) as any[];
+  const profileCount = profileCountRes.count;
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto pb-10">

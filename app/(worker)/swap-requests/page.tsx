@@ -13,13 +13,16 @@ export default async function SwapRequestsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("organization_id, department_id").eq("id", user.id).single();
+  const [profileRes, myRequestsRes] = await Promise.all([
+    supabase.from("profiles").select("organization_id, department_id").eq("id", user.id).single(),
+    supabase.from("swap_requests")
+      .select("*, shift:shifts(*, department:departments(*)), covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)")
+      .eq("requester_id", user.id)
+      .order("requested_at", { ascending: false })
+  ]);
 
-  const { data: myRequestsData } = await supabase
-    .from("swap_requests")
-    .select("*, shift:shifts(*, department:departments(*)), covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)")
-    .eq("requester_id", user.id)
-    .order("requested_at", { ascending: false });
+  const profile = profileRes.data;
+  const myRequests = (myRequestsRes.data ?? []) as any[];
 
   const { data: availableSwapsData } = await supabase
     .from("swap_requests")
@@ -30,7 +33,6 @@ export default async function SwapRequestsPage() {
     .is("covering_worker_id", null)
     .order("requested_at", { ascending: false });
 
-  const myRequests = (myRequestsData ?? []) as any[];
   const availableSwaps = (availableSwapsData ?? []) as any[];
 
   return (

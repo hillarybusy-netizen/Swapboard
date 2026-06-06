@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getCachedSession } from "@/lib/supabase/cached";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { TrialBanner } from "@/components/layout/TrialBanner";
@@ -10,16 +10,8 @@ import { signOut } from "@/app/actions";
 import { AlertTriangle, LogOut, ArrowRight } from "lucide-react";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*, organization:organizations(*)")
-    .eq("id", user.id)
-    .single();
 
   if (profile?.user_role === "worker") {
     redirect("/my-shifts");
