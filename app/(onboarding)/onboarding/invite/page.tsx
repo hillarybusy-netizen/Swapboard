@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { sendInvitation } from "@/lib/actions/invitations";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, X, CheckCircle2, Loader2, ChevronRight } from "lucide-react";
 
@@ -34,13 +35,20 @@ export default function InvitePage() {
       const { data: profile } = await supabase.from("profiles").select("organization_id").eq("id", user!.id).single();
       if (!profile?.organization_id) throw new Error("No organization found");
 
+      const { data: org } = await supabase.from("organizations").select("name").eq("id", profile.organization_id).single();
+      const orgName = org?.name || "Your Organization";
+
       for (const inv of valid) {
-        await supabase.from("invitations").insert({
-          organization_id: profile.organization_id,
+        const res = await sendInvitation({
           email: inv.email.trim(),
-          user_role: inv.role,
-          invited_by: user!.id,
+          role: inv.role,
+          department_id: "",
+          organization_id: profile.organization_id,
+          organization_name: orgName,
         });
+        if (!res.success) {
+          throw new Error(res.error || "Failed to send invitation");
+        }
       }
       setDone(true);
     } catch (err: any) {
