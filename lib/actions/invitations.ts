@@ -1,10 +1,119 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { resend } from "@/lib/resend";
 import { revalidatePath } from "next/cache";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { Plan } from "@/lib/database.types";
+
+export async function getInvitationByToken(token: string) {
+  const normalizedToken = token?.trim();
+  if (!normalizedToken) {
+    return { success: false as const, error: "missing_token" };
+  }
+
+  const supabase = createAdminClient();
+  const { data: invitation, error } = await supabase
+    .from("invitations")
+    .select("*")
+    .eq("token", normalizedToken)
+    .is("accepted_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+
+  if (error) {
+    console.error("getInvitationByToken error:", error);
+    return { success: false as const, error: "fetch_failed" };
+  }
+
+  if (!invitation) {
+    return { success: false as const, error: "invalid_or_expired" };
+  }
+
+  const { data: organization } = await supabase
+    .from("organizations")
+    .select("id, name")
+    .eq("id", invitation.organization_id)
+    .single();
+
+  return {
+    success: true as const,
+    invitation: { ...invitation, organization },
+  };
+}
+
+export async function acceptInvitation({
+  token,
+  email,
+  fullName,
+  password,
+}: {
+  token: string;
+  email: string;
+  fullName: string;
+  password: string;
+}) {
+  const inviteResult = await getInvitationByToken(token);
+  if (!inviteResult.success) {
+    return { success: false, error: "This invitation link has expired or is invalid." };
+  }
+
+  const invite = inviteResult.invitation;
+  const supabase = createAdminClient();
+
+  const { data: userData, error: signUpError } = await supabase.auth.admin.createUser({
+    email: email.trim().toLowerCase(),
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: fullName.trim() },
+  });
+
+  if (signUpError) {
+    return { success: false, error: signUpError.message };
+  }
+
+  const userId = userData.user.id;
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      organization_id: invite.organization_id,
+      department_id: invite.department_id,
+      user_role: invite.user_role,
+      onboarding_complete: true,
+    })
+    .eq("id", userId);
+
+  if (profileError) {
+    console.error("acceptInvitation profile update error:", profileError);
+    return { success: false, error: "Failed to complete onboarding. Please contact your manager." };
+  }
+
+  const { error: inviteError } = await supabase
+    .from("invitations")
+    .update({
+      accepted_at: new Date().toISOString(),
+      email: email.trim().toLowerCase(),
+    })
+    .eq("id", invite.id);
+
+  if (inviteError) {
+    console.error("acceptInvitation invite update error:", inviteError);
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("member_id")
+    .eq("id", userId)
+    .single();
+
+  return {
+    success: true,
+    memberId: profile?.member_id ?? "",
+    userRole: invite.user_role,
+  };
+}
 
 export async function sendInvitation(inv: {
   email: string;

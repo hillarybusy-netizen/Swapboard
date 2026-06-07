@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { sendPasswordResetEmail } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,11 +18,8 @@ export default function ForgotPasswordPage() {
     if (!email.trim()) return;
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      if (error) throw error;
+      const result = await sendPasswordResetEmail(email.trim());
+      if (!result.success) throw new Error(result.error ?? "Failed to send reset email");
       setSent(true);
     } catch (err: any) {
       toast({ title: "Failed to send reset email", description: err.message, variant: "destructive" });

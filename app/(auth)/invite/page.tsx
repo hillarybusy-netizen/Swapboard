@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { getInvitationByToken, acceptInvitation } from "@/lib/actions/invitations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,23 +20,25 @@ function InviteForm() {
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [successId, setSuccessId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     async function loadInvite() {
-      if (!token) { setFetching(false); return; }
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("invitations")
-        .select("*, organization:organizations(*)")
-        .eq("token", token)
-        .is("accepted_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .single();
-      
-      setInvite(data);
-      if (data?.email) setEmail(data.email);
+      if (!token) {
+        setLoadError("missing_token");
+        setFetching(false);
+        return;
+      }
+      const result = await getInvitationByToken(token);
+      if (!result.success) {
+        setLoadError(result.error);
+        setFetching(false);
+        return;
+      }
+      setInvite(result.invitation);
+      if (result.invitation.email) setEmail(result.invitation.email);
       setFetching(false);
     }
     loadInvite();
@@ -47,36 +49,14 @@ function InviteForm() {
     if (!invite) return;
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data: { user }, error } = await supabase.auth.signUp({
-        email: email,
+      const result = await acceptInvitation({
+        token: token!,
+        email,
+        fullName,
         password,
-        options: { data: { full_name: fullName } },
       });
-      if (error) throw error;
-      
-      await supabase.from("profiles").update({
-        organization_id: invite.organization_id,
-        department_id: invite.department_id,
-        user_role: invite.user_role,
-        onboarding_complete: true,
-      }).eq("id", user!.id);
-      
-      await supabase.from("invitations").update({ 
-        accepted_at: new Date().toISOString(),
-        email: email // Update email if it was a generic link
-      }).eq("id", invite.id);
-
-      // Fetch the newly generated member ID from the profile (populated by trigger)
-      const { data: prof, error: profError } = await supabase
-        .from("profiles")
-        .select("member_id")
-        .eq("id", user!.id)
-        .single();
-        
-      if (profError) throw profError;
-      
-      setSuccessId(prof?.member_id || "");
+      if (!result.success) throw new Error(result.error);
+      setSuccessId(result.memberId || "");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -91,8 +71,14 @@ function InviteForm() {
         <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
           <Loader2 className="w-8 h-8 text-red-500/40" />
         </div>
-        <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">Expired or Invalid</h2>
-        <p className="text-sm text-white/40 font-medium max-w-xs mx-auto">This invitation link has expired or has already been used. Please ask your manager for a new link.</p>
+        <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">
+          {loadError === "missing_token" ? "Invalid Link" : "Expired or Invalid"}
+        </h2>
+        <p className="text-sm text-white/40 font-medium max-w-xs mx-auto">
+          {loadError === "missing_token"
+            ? "This invitation link is missing a token. Please use the full link from your email or manager."
+            : "This invitation link has expired or has already been used. Please ask your manager for a new link."}
+        </p>
         <Button className="mt-8 btn-gold rounded-full px-8" asChild>
           <Link href="/login">Back to Login</Link>
         </Button>
