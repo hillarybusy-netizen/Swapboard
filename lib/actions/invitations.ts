@@ -6,6 +6,8 @@ import { resend } from "@/lib/resend";
 import { revalidatePath } from "next/cache";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { Plan } from "@/lib/database.types";
+import { requireManager } from "@/lib/auth-helpers";
+import { swapboardEmailHtml, isResendConfigured } from "@/lib/email-template";
 
 export async function getInvitationByToken(token: string) {
   const normalizedToken = token?.trim();
@@ -60,10 +62,20 @@ export async function acceptInvitation({
   }
 
   const invite = inviteResult.invitation;
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (invite.email && invite.email.toLowerCase() !== normalizedEmail) {
+    return { success: false, error: "This invitation was sent to a different email address." };
+  }
+
+  if (password.length < 8) {
+    return { success: false, error: "Password must be at least 8 characters." };
+  }
+
   const supabase = createAdminClient();
 
   const { data: userData, error: signUpError } = await supabase.auth.admin.createUser({
-    email: email.trim().toLowerCase(),
+    email: normalizedEmail,
     password,
     email_confirm: true,
     user_metadata: { full_name: fullName.trim() },
@@ -94,7 +106,7 @@ export async function acceptInvitation({
     .from("invitations")
     .update({
       accepted_at: new Date().toISOString(),
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
     })
     .eq("id", invite.id);
 
@@ -112,7 +124,25 @@ export async function acceptInvitation({
     success: true,
     memberId: profile?.member_id ?? "",
     userRole: invite.user_role,
+    email: normalizedEmail,
   };
+}
+
+async function checkInviteLimits(supabase: Awaited<ReturnType<typeof createClient>>, organizationId: string) {
+  const [{ data: org }, { count: profileCount }, { count: inviteCount }] = await Promise.all([
+    supabase.from("organizations").select("plan").eq("id", organizationId).single(),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("organization_id", organizationId).eq("is_active", true),
+    supabase.from("invitations").select("*", { count: "exact", head: true }).eq("organization_id", organizationId).is("accepted_at", null),
+  ]);
+
+  const planLimit = PLAN_LIMITS[(org?.plan as Plan) ?? "trial"].maxWorkers;
+  const currentTotal = (profileCount ?? 0) + (inviteCount ?? 0);
+
+  if (currentTotal >= planLimit) {
+    return { ok: false as const, error: `Limit reached: Your ${org?.plan ?? "current"} plan is limited to ${planLimit} workers. Upgrade to Grow to add more.` };
+  }
+
+  return { ok: true as const, org };
 }
 
 export async function sendInvitation(inv: {
@@ -122,29 +152,11 @@ export async function sendInvitation(inv: {
   organization_id: string;
   organization_name: string;
 }) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const { supabase, user } = await requireManager(inv.organization_id);
 
-  if (authError || !user) {
-    console.error("Auth error in sendInvitation:", authError);
-    return { success: false, error: "Unauthorized" };
-  }
+  const limits = await checkInviteLimits(supabase, inv.organization_id);
+  if (!limits.ok) return { success: false, error: limits.error };
 
-  // Check plan limits
-  const [{ data: org }, { count: profileCount }, { count: inviteCount }] = await Promise.all([
-    supabase.from("organizations").select("plan").eq("id", inv.organization_id).single(),
-    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).eq("is_active", true),
-    supabase.from("invitations").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).is("accepted_at", null)
-  ]);
-
-  const planLimit = PLAN_LIMITS[(org as any)?.plan as Plan]?.maxWorkers ?? 50;
-  const currentTotal = (profileCount ?? 0) + (inviteCount ?? 0);
-
-  if (currentTotal >= planLimit) {
-    return { success: false, error: `Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Grow to add more.` };
-  }
-
-  // Create invitation in database with 7-day expiry
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -163,44 +175,33 @@ export async function sendInvitation(inv: {
 
   if (dbError) return { success: false, error: dbError.message };
 
-  // Send email via Resend
+  if (!isResendConfigured() || !resend) {
+    await supabase.from("invitations").delete().eq("id", invitation.id);
+    return { success: false, error: "Email service is not configured. Invitation was not created." };
+  }
+
   const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/invite?token=${invitation.token}`;
 
   try {
-    if (resend && process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_123")) {
-      await resend.emails.send({
-        from: 'SwapBoard <no-reply@swapboard.ca>',
-        to: inv.email,
-        subject: `Join ${inv.organization_name} on SwapBoard`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #050505; color: white; border-radius: 20px;">
-            <h1 style="color: #FFD700; margin-bottom: 20px;">SwapBoard</h1>
-            <p style="font-size: 16px; line-height: 1.5; color: rgba(255,255,255,0.7);">
-              You've been invited to join <strong>${inv.organization_name}</strong> on SwapBoard as a <strong>${inv.role}</strong>.
-            </p>
-            <div style="margin-top: 30px; margin-bottom: 30px;">
-              <a href="${inviteLink}" style="background-color: #FFD700; color: #050505; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block;">
-                Accept Invitation
-              </a>
-            </div>
-            <p style="font-size: 12px; color: rgba(255,255,255,0.3);">
-              If the button above doesn't work, copy and paste this link into your browser:<br/>
-              <a href="${inviteLink}" style="color: #FFD700;">${inviteLink}</a>
-            </p>
-          </div>
-        `,
-      });
-    } else {
-      console.warn("RESEND_API_KEY not configured correctly. Email not sent.");
-    }
+    await resend.emails.send({
+      from: "SwapBoard <no-reply@swapboard.ca>",
+      to: inv.email,
+      subject: `Join ${inv.organization_name} on SwapBoard`,
+      html: swapboardEmailHtml({
+        body: `You've been invited to join <strong>${inv.organization_name}</strong> on SwapBoard as a <strong>${inv.role}</strong>.`,
+        buttonText: "Accept Invitation",
+        buttonUrl: inviteLink,
+      }),
+    });
   } catch (emailError) {
     console.error("Failed to send email:", emailError);
-    // We don't throw here because the DB record was created successfully
+    await supabase.from("invitations").delete().eq("id", invitation.id);
+    return { success: false, error: "Failed to send invitation email. Please try again." };
   }
 
   revalidatePath("/team");
   revalidatePath("/settings");
-  
+
   return { success: true, invitation };
 }
 
@@ -209,29 +210,11 @@ export async function createManualInvitation(inv: {
   department_id: string;
   organization_id: string;
 }) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const { supabase, user } = await requireManager(inv.organization_id);
 
-  if (authError || !user) {
-    console.error("Auth error in createManualInvitation:", authError);
-    return { success: false, error: "Unauthorized" };
-  }
+  const limits = await checkInviteLimits(supabase, inv.organization_id);
+  if (!limits.ok) return { success: false, error: limits.error };
 
-  // Check plan limits
-  const [{ data: org }, { count: profileCount }, { count: inviteCount }] = await Promise.all([
-    supabase.from("organizations").select("plan").eq("id", inv.organization_id).single(),
-    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).eq("is_active", true),
-    supabase.from("invitations").select("*", { count: "exact", head: true }).eq("organization_id", inv.organization_id).is("accepted_at", null)
-  ]);
-
-  const planLimit = PLAN_LIMITS[(org as any)?.plan as Plan]?.maxWorkers ?? 50;
-  const currentTotal = (profileCount ?? 0) + (inviteCount ?? 0);
-
-  if (currentTotal >= planLimit) {
-    return { success: false, error: `Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Grow to add more.` };
-  }
-
-  // Create invitation in database with 7-day expiry
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -239,7 +222,7 @@ export async function createManualInvitation(inv: {
     .from("invitations")
     .insert({
       organization_id: inv.organization_id,
-      email: null, // Generic link
+      email: null,
       user_role: inv.role,
       department_id: inv.department_id || null,
       invited_by: user.id,
@@ -252,30 +235,25 @@ export async function createManualInvitation(inv: {
 
   revalidatePath("/team");
   revalidatePath("/settings");
-  
+
   return { success: true, invitation };
 }
 
 export async function deleteInvitation(id: string) {
   const supabase = await createClient();
-  
-  // Use getSession as a backup check for the user ID if getUser fails with a weird cookie issue
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    console.error("Auth error in deleteInvitation:", authError);
     return { success: false, error: "Unauthorized: Please log in again." };
   }
 
-  // Get user's org to ensure they only delete their own org's invites
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("organization_id, user_role")
     .eq("id", user.id)
     .single();
 
-  if (profileError || !profile || (profile.user_role !== 'manager' && profile.user_role !== 'admin')) {
-    console.error("Profile check error in deleteInvitation:", profileError);
+  if (profileError || !profile || (profile.user_role !== "manager" && profile.user_role !== "admin")) {
     return { success: false, error: "Only managers can revoke invitations" };
   }
 
@@ -286,12 +264,11 @@ export async function deleteInvitation(id: string) {
     .eq("organization_id", profile.organization_id);
 
   if (deleteError) {
-    console.error("Delete invitation error:", deleteError);
     return { success: false, error: deleteError.message };
   }
 
   revalidatePath("/team");
   revalidatePath("/settings");
-  
+
   return { success: true };
 }

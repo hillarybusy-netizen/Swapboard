@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getInvitationByToken, acceptInvitation } from "@/lib/actions/invitations";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,6 +57,14 @@ function InviteForm() {
         password,
       });
       if (!result.success) throw new Error(result.error);
+
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: result.email!,
+        password,
+      });
+      if (signInError) throw new Error("Account created but sign-in failed. Please log in manually.");
+
       setSuccessId(result.memberId || "");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });

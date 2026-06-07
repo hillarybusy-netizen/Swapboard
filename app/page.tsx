@@ -512,14 +512,14 @@ export default async function LandingPage() {
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="text-white font-bold text-sm tracking-wider uppercase">Company</h4>
-                <a href="#" className="text-white/40 text-sm hover:text-gold transition-colors">About</a>
-                <a href="#" className="text-white/40 text-sm hover:text-gold transition-colors">Careers</a>
-                <a href="#" className="text-white/40 text-sm hover:text-gold transition-colors">Contact</a>
+                <a href="mailto:hello@swapboard.app" className="text-white/40 text-sm hover:text-gold transition-colors">About</a>
+                <a href="mailto:hello@swapboard.app?subject=Careers" className="text-white/40 text-sm hover:text-gold transition-colors">Careers</a>
+                <a href="mailto:hello@swapboard.app" className="text-white/40 text-sm hover:text-gold transition-colors">Contact</a>
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="text-white font-bold text-sm tracking-wider uppercase">Legal</h4>
-                <a href="#" className="text-white/40 text-sm hover:text-gold transition-colors">Privacy</a>
-                <a href="#" className="text-white/40 text-sm hover:text-gold transition-colors">Terms</a>
+                <a href="/privacy" className="text-white/40 text-sm hover:text-gold transition-colors">Privacy</a>
+                <a href="/terms" className="text-white/40 text-sm hover:text-gold transition-colors">Terms</a>
               </div>
             </div>
           </div>

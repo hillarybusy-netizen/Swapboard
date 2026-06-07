@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
+import { updateOrganizationName, updateOrganizationLogo } from "@/lib/actions/org";
 import { toast } from "@/hooks/use-toast";
 import { INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
 import { Loader2, Upload } from "lucide-react";
@@ -48,27 +49,19 @@ export function OrgSettings({ org, userId }: { org: Organization | null; userId:
       const supabase = createClient();
       
       const fileExt = file.name.split(".").pop();
-      const fileName = `${org.id}-${Date.now()}.${fileExt}`;
-      
+      const filePath = `${org.id}/logo-${Date.now()}.${fileExt}`;
+
       const { error: uploadError } = await supabase.storage
         .from("logos")
-        .upload(fileName, file);
-        
+        .upload(filePath, file, { upsert: true });
+
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from("logos")
-        .getPublicUrl(fileName);
+        .getPublicUrl(filePath);
 
-      const currentSettings = (org.settings as any) || {};
-      const newSettings = { ...currentSettings, logo_url: publicUrl };
-
-      const { error: updateError } = await supabase
-        .from("organizations")
-        .update({ settings: newSettings as any })
-        .eq("id", org.id);
-
-      if (updateError) throw updateError;
+      await updateOrganizationLogo(org.id, publicUrl);
       
       toast({ title: "Logo uploaded!", variant: "success" });
       router.refresh();

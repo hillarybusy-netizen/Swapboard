@@ -1,7 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isPlatformAdmin } from "@/lib/admin-config";
+import { PLAN_LIMITS } from "@/lib/plans";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -11,52 +13,44 @@ async function ensureAdmin() {
   if (!user || !(await isPlatformAdmin(user.email))) {
     redirect("/dashboard");
   }
-  return { supabase, user };
+  return { user };
 }
 
 export async function getAdminStats() {
-  const { supabase } = await ensureAdmin();
+  await ensureAdmin();
+  const admin = createAdminClient();
 
-  const { count: orgCount } = await supabase
+  const { count: orgCount } = await admin
     .from("organizations")
     .select("*", { count: "exact", head: true });
 
-  const { count: userCount } = await supabase
+  const { count: userCount } = await admin
     .from("profiles")
     .select("*", { count: "exact", head: true });
 
-  const { data: plansData } = await supabase
-    .from("organizations")
-    .select("plan");
+  const { data: plansData } = await admin.from("organizations").select("plan");
 
-  const planCounts = (plansData ?? []).reduce((acc: any, org: any) => {
+  const planCounts = (plansData ?? []).reduce((acc: Record<string, number>, org: { plan: string }) => {
     acc[org.plan] = (acc[org.plan] || 0) + 1;
     return acc;
   }, {});
 
-  // Revenue estimation
-  const prices: any = {
-    starter: 49,
-    pro: 199,
-    enterprise: 999,
-    trial: 0
-  };
-
-  const estimatedMRR = (plansData ?? []).reduce((total: number, org: any) => {
-    return total + (prices[org.plan] || 0);
+  const estimatedMRR = (plansData ?? []).reduce((total: number, org: { plan: string }) => {
+    return total + (PLAN_LIMITS[org.plan as keyof typeof PLAN_LIMITS]?.price || 0);
   }, 0);
 
   return {
     orgCount: orgCount || 0,
     userCount: userCount || 0,
     planCounts,
-    estimatedMRR
+    estimatedMRR,
   };
 }
 
 export async function getOrganizations() {
-  const { supabase } = await ensureAdmin();
-  const { data } = await supabase
+  await ensureAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
     .from("organizations")
     .select("*")
     .order("created_at", { ascending: false });
@@ -64,8 +58,9 @@ export async function getOrganizations() {
 }
 
 export async function getAllUsers() {
-  const { supabase } = await ensureAdmin();
-  const { data } = await supabase
+  await ensureAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
     .from("profiles")
     .select("*, organization:organizations(name)")
     .order("created_at", { ascending: false });
@@ -73,8 +68,9 @@ export async function getAllUsers() {
 }
 
 export async function deactivateUser(userId: string, isActive: boolean) {
-  const { supabase } = await ensureAdmin();
-  const { error } = await supabase
+  await ensureAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("profiles")
     .update({ is_active: isActive })
     .eq("id", userId);

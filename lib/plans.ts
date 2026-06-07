@@ -6,15 +6,22 @@ export interface PlanLimits {
   hasROIMetrics: boolean;
   hasPrioritySupport: boolean;
   label: string;
+  price: number;
+  priceLabel: string;
+  features: string[];
+  highlight?: boolean;
 }
 
 export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   trial: {
-    maxWorkers: 200, // Trial matches Growth
+    maxWorkers: 200,
     maxDepartments: 100,
     hasROIMetrics: true,
     hasPrioritySupport: true,
     label: "Free Trial",
+    price: 0,
+    priceLabel: "$0",
+    features: ["All Growth features", "14-day trial", "No credit card required"],
   },
   starter: {
     maxWorkers: 100,
@@ -22,6 +29,9 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     hasROIMetrics: false,
     hasPrioritySupport: false,
     label: "Starter",
+    price: 79,
+    priceLabel: "$79",
+    features: ["Up to 100 workers", "3 departments", "Basic analytics", "Email support"],
   },
   pro: {
     maxWorkers: 200,
@@ -29,6 +39,10 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     hasROIMetrics: true,
     hasPrioritySupport: true,
     label: "Growth",
+    price: 199,
+    priceLabel: "$199",
+    features: ["Up to 200 workers", "Unlimited departments", "ROI analytics", "Priority support", "Custom roles"],
+    highlight: true,
   },
   enterprise: {
     maxWorkers: 10000,
@@ -36,8 +50,13 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     hasROIMetrics: true,
     hasPrioritySupport: true,
     label: "Enterprise",
+    price: 499,
+    priceLabel: "$499",
+    features: ["Unlimited workers", "Multi-location", "Advanced analytics", "Dedicated support", "SSO & compliance"],
   },
 };
+
+export const BILLABLE_PLANS: Plan[] = ["starter", "pro", "enterprise"];
 
 export function checkPlanLimit(orgPlan: Plan, metric: keyof PlanLimits): any {
   return PLAN_LIMITS[orgPlan][metric];

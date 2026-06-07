@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/supabase/client";
+import { requestSwap } from "@/lib/actions/swaps";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeftRight, Loader2 } from "lucide-react";
 
@@ -32,19 +32,8 @@ export function RequestSwapButton({ shiftId, shiftTitle }: { shiftId: string; sh
     if (!finalReason) return;
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: profile } = await supabase.from("profiles").select("organization_id").eq("id", user!.id).single();
-      const { error } = await supabase.from("swap_requests").insert({
-        organization_id: profile!.organization_id,
-        requester_id: user!.id,
-        shift_id: shiftId,
-        reason: finalReason,
-        status: "pending",
-      });
-      if (error) throw error;
-      await supabase.from("shifts").update({ status: "swap_pending" }).eq("id", shiftId);
-      toast({ title: "Swap requested!", description: "Your manager and available teammates have been notified." });
+      await requestSwap(shiftId, finalReason);
+      toast({ title: "Swap requested!", description: "Your manager will review your request." });
       setOpen(false);
       router.refresh();
     } catch (err: any) {
@@ -57,16 +46,18 @@ export function RequestSwapButton({ shiftId, shiftTitle }: { shiftId: string; sh
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline"><ArrowLeftRight className="w-4 h-4" /> Request swap</Button>
+        <Button size="sm" variant="outline" className="gap-2">
+          <ArrowLeftRight className="w-3.5 h-3.5" />
+          Request swap
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Request a shift swap</DialogTitle>
+          <DialogTitle>Request swap for {shiftTitle}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-2">
-          <p className="text-sm text-muted-foreground">Shift: <span className="font-medium text-foreground">{shiftTitle}</span></p>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Reason for swap</Label>
+            <Label>Reason</Label>
             <Select value={reason} onValueChange={setReason} required>
               <SelectTrigger><SelectValue placeholder="Select a reason" /></SelectTrigger>
               <SelectContent>
@@ -76,14 +67,14 @@ export function RequestSwapButton({ shiftId, shiftTitle }: { shiftId: string; sh
           </div>
           {reason === "Other" && (
             <div className="space-y-2">
-              <Label>Please describe</Label>
+              <Label>Details</Label>
               <Input value={customReason} onChange={(e) => setCustomReason(e.target.value)} placeholder="Brief description..." required />
             </div>
           )}
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={loading || !reason}>
-              {loading && <Loader2 className="w-4 h-4 animate-spin" />} Submit request
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Submit request
             </Button>
           </DialogFooter>
         </form>

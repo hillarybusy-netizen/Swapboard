@@ -3,15 +3,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { registerUser } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-
-const DISALLOWED_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com"];
-const ALLOWED_EMAILS = ["brendanmebson@gmail.com", "mebugekamsiyochukwu@gmail.com"];
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -23,36 +20,21 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 8) {
-      toast({ title: "Password too short", description: "Must be at least 8 characters.", variant: "destructive" });
-      return;
-    }
-    const emailDomain = email.split("@")[1]?.toLowerCase();
-    const isDisallowedDomain = DISALLOWED_DOMAINS.includes(emailDomain);
-    const isAllowedException = ALLOWED_EMAILS.includes(email.toLowerCase());
-
-    if (isDisallowedDomain && !isAllowedException) {
-      toast({
-        title: "Work email required",
-        description: "Please use your professional email address to sign up.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
     try {
+      const result = await registerUser({ email, password, fullName });
+      if (!result.success) throw new Error(result.error);
+
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
-        email,
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
         password,
-        options: { data: { full_name: fullName } },
       });
-      if (error) throw error;
+      if (signInError) throw new Error("Account created but sign-in failed. Please log in manually.");
+
       router.push("/onboarding/industry");
       router.refresh();
     } catch (err: any) {
-      console.error("Signup error details:", err);
       toast({ title: "Registration failed", description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
@@ -85,7 +67,7 @@ export default function RegisterPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" title="" className="text-sm font-semibold text-white/70 ml-1">Password</Label>
+            <Label htmlFor="password" className="text-sm font-semibold text-white/70 ml-1">Password</Label>
             <div className="relative">
               <Input
                 id="password" type={showPassword ? "text" : "password"} placeholder="Min. 8 characters"
@@ -105,9 +87,9 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-4 pt-2">
-          <Button 
-            type="submit" 
-            className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20" 
+          <Button
+            type="submit"
+            className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20"
             disabled={loading}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
@@ -121,11 +103,10 @@ export default function RegisterPage() {
 
           <p className="text-[9px] text-white/20 text-center leading-relaxed">
             By creating an account you agree to our <br/>
-            <Link href="#" className="underline hover:text-white/40">Terms of Service</Link> and <Link href="#" className="underline hover:text-white/40">Privacy Policy</Link>.
+            <Link href="/terms" className="underline hover:text-white/40">Terms of Service</Link> and <Link href="/privacy" className="underline hover:text-white/40">Privacy Policy</Link>.
           </p>
         </div>
       </form>
-      <Link href="/onboarding/industry" prefetch className="hidden" aria-hidden tabIndex={-1} />
     </div>
   );
 }

@@ -2,14 +2,14 @@
 
 ## Prerequisites
 
-1. **Install Node.js** — Download from https://nodejs.org (LTS version recommended)
-2. **Supabase project** — https://supabase.com/dashboard (free tier works)
+1. **Node.js** (LTS) — https://nodejs.org
+2. **Supabase project** — https://supabase.com/dashboard
+3. **Resend account** — https://resend.com (for emails)
+4. **Paystack account** — https://paystack.com (for billing, optional in dev)
 
 ---
 
 ## Step 1: Install dependencies
-
-Open a terminal in the project folder and run:
 
 ```bash
 npm install
@@ -19,34 +19,58 @@ npm install
 
 ## Step 2: Configure environment variables
 
-Copy the example file:
-
 ```bash
 cp .env.local.example .env.local
 ```
 
-Then open `.env.local` and fill in your Supabase credentials:
+Fill in `.env.local`:
 
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-Find these in: **Supabase Dashboard → Your Project → Settings → API**
+| Variable | Where to find it |
+|----------|------------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API (keep secret, server-only) |
+| `NEXT_PUBLIC_APP_URL` | Your app URL (`http://localhost:3000` in dev) |
+| `RESEND_API_KEY` | Resend → API Keys |
+| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack → Settings → API Keys |
+| `PAYSTACK_SECRET_KEY` | Paystack → Settings → API Keys (server-only) |
+| `PLATFORM_ADMIN_EMAILS` | Comma-separated admin emails for `/admin` |
 
 ---
 
 ## Step 3: Set up the database
 
-In your **Supabase Dashboard → SQL Editor**, run these files **in order**:
+In **Supabase Dashboard → SQL Editor**, run these migrations **in order**:
 
-1. Copy and paste `supabase/migrations/001_initial_schema.sql` → Run
-2. Copy and paste `supabase/migrations/002_rls_policies.sql` → Run
+| # | File | Purpose |
+|---|------|---------|
+| 1 | `001_initial_schema.sql` | Core tables |
+| 2 | `002_rls_policies.sql` | Row-level security |
+| 3 | `003_nullable_invite_email.sql` | Nullable invite emails |
+| 4 | `004_storage_logos.sql` | Logo storage bucket |
+| 5 | `005_invitations_email_nullable.sql` | (idempotent) nullable emails |
+| 6 | `006_add_department_id_to_invitations.sql` | Dept on invites |
+| 7 | `007_fix_invitations_role_check.sql` | Role constraint fix |
+| 8 | `008_member_login_system.sql` | Member ID login |
+| 9 | `011_fix_invitations_rls.sql` | Org read for invites |
+| 10 | `013_security_fixes.sql` | Security hardening, storage scoping |
+
+**Skip `012_invite_anon_access.sql`** — it is deprecated. Run `013` instead.
+
+**Never run** scripts in `supabase/dev-only/` against production — they delete data.
 
 ---
 
-## Step 4: Run the app
+## Step 4: Configure Supabase Auth
+
+In **Supabase → Authentication → Providers → Email**:
+
+- Disable "Confirm email" (accounts are created server-side with email pre-confirmed)
+- Disable built-in email templates for password reset (app uses Resend)
+
+---
+
+## Step 5: Run the app
 
 ```bash
 npm run dev
@@ -56,14 +80,12 @@ Open http://localhost:3000
 
 ---
 
-## Step 5: First-time setup flow
+## First-time setup flow
 
-1. Click **"Start free trial"** on the login page
-2. Create your admin account
-3. **Step 1**: Choose your industry (Restaurant / Healthcare / Retail)
-4. **Step 2**: Name your organization + review pre-filled departments
-5. **Step 3**: Invite team members (or skip)
-6. Land on the **Manager Dashboard**
+1. Click **"Start free trial"**
+2. Create your admin account (work email required)
+3. Choose industry → set up org → invite team
+4. Land on the **Manager Dashboard**
 
 ---
 
@@ -73,49 +95,28 @@ Open http://localhost:3000
 |-------|-------------|
 | `/login` | Sign in |
 | `/register` | Start free trial |
-| `/onboarding/industry` | Industry selection |
-| `/onboarding/setup` | Org + department setup |
-| `/onboarding/invite` | Invite team |
-| `/dashboard` | Manager dashboard + ROI analytics |
-| `/shifts` | Shifts management |
-| `/swaps` | Swap request approvals |
-| `/team` | Team members |
-| `/settings` | Org settings, departments, billing |
-| `/my-shifts` | Worker: view my shifts |
-| `/swap-requests` | Worker: offer to cover swaps |
-| `/invite?token=...` | Accept invitation link |
+| `/forgot-password` | Request password reset |
+| `/reset-password` | Set new password |
+| `/invite?token=...` | Accept invitation |
+| `/onboarding/*` | New org setup |
+| `/dashboard` | Manager dashboard |
+| `/shifts` | Shift management |
+| `/swaps` | Swap approvals |
+| `/team` | Team + invites |
+| `/settings` | Org settings, billing |
+| `/my-shifts` | Worker shifts |
+| `/swap-requests` | Worker swap offers |
+| `/admin` | Platform admin (env-configured emails) |
 
 ---
 
-## Industry department templates
+## Email flows (all via Resend)
 
-Automatically pre-populated on setup:
-
-| Industry | Departments |
-|----------|-------------|
-| 🍽️ Restaurant | Front of House, Back of House, Bar, Management |
-| 🏥 Healthcare | ICU, Emergency, Med/Surg, Pharmacy, Administration |
-| 🛍️ Retail | Sales Floor, Cashier/POS, Stock/Receiving, Management |
-
----
-
-## ROI metrics (dashboard)
-
-| Metric | Calculation |
-|--------|-------------|
-| Cost Savings | Swaps fulfilled × 8h × $15 overtime premium |
-| Manager Time Saved | Swaps fulfilled × 30 min avg coordination |
-| Fulfillment Rate | % of swaps approved / total requested |
-
----
-
-## Demo tips
-
-1. Register two accounts (manager + worker)
-2. As manager: create a few shifts, assign to worker
-3. As worker (incognito): log in, request a swap
-4. As manager: approve from dashboard or /swaps
-5. Watch KPI cards update on the dashboard
+| Flow | Sender |
+|------|--------|
+| Team invitations | `no-reply@swapboard.ca` |
+| Password reset | `no-reply@swapboard.ca` |
+| Welcome on signup | `no-reply@swapboard.ca` |
 
 ---
 
@@ -130,9 +131,8 @@ npm start
 
 ## Tech stack
 
-- **Next.js 14** — App Router, Server Components, Server Actions
-- **Supabase** — Auth, Postgres, RLS policies
-- **Tailwind CSS** — Utility-first styling
-- **shadcn/ui** — Component library
-- **Recharts** — Analytics charts
-- **date-fns** — Date formatting
+- **Next.js 16** — App Router, Server Actions, proxy auth
+- **Supabase** — Auth, Postgres, RLS, Storage
+- **Resend** — Transactional email
+- **Paystack** — Payments
+- **Tailwind CSS** + **shadcn/ui** + **Recharts**
