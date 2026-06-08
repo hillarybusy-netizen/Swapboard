@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Globe, Send, Sparkles, Check, Award } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Award } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
+import { LandingHeroPreview } from "@/components/landing/LandingHeroPreview";
+import { LandingCoverageVisual, LandingVerificationVisual, LandingAnalyticsVisual } from "@/components/landing/LandingShowcaseCards";
+import { FeatureCardVisual } from "@/components/landing/FeatureCardVisual";
 
 import { createClient } from "@/lib/supabase/server";
 import { LandingProfileDropdown } from "@/components/layout/LandingProfileDropdown";
@@ -73,55 +77,60 @@ export default async function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-44 pb-32 px-6 overflow-hidden bg-gradient-to-b from-[#14120d] via-[#090807] to-[#060606]">
-        {/* Glow effect */}
+      <section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden bg-gradient-to-b from-[#14120d] via-[#090807] to-[#060606]">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/5 blur-[120px] rounded-full -z-10" />
 
-        <div className="max-w-4xl mx-auto text-center relative">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1] text-center max-w-3xl mx-auto">
-            <span className="text-white">Create </span>
-            <span className="text-white/40 font-light">a system </span>
-            <span className="text-white">of stable </span>
-            <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-1 md:mx-2 align-middle">
-              <RefreshCw className="w-5 h-5 md:w-6 md:h-6 text-gold animate-spin-slow" />
-            </span>
-            <span className="text-white">coverage </span>
-            <span className="text-white/40 font-light">where staff </span>
-            <span className="text-white">trade shifts </span>
-            <span className="text-white">for </span>
-            <span className="text-gold-gradient block sm:inline">your business 24/7</span>
-          </h1>
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="text-center lg:text-left relative">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1] max-w-3xl mx-auto lg:mx-0">
+              <span className="text-white">Create </span>
+              <span className="text-white/40 font-light">a system </span>
+              <span className="text-white">of stable </span>
+              <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-1 md:mx-2 align-middle">
+                <RefreshCw className="w-5 h-5 md:w-6 md:h-6 text-gold animate-spin-slow" />
+              </span>
+              <span className="text-white">coverage </span>
+              <span className="text-white/40 font-light">where staff </span>
+              <span className="text-white">trade shifts </span>
+              <span className="text-white">for </span>
+              <span className="text-gold-gradient block sm:inline">your business 24/7</span>
+            </h1>
 
-          <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
-            Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
-          </p>
+            <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed font-medium">
+              Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
+            </p>
 
-          <div className="flex flex-col items-center justify-center gap-4">
-            {user ? (
-              <Link
-                href="/dashboard"
-                className="btn-gold flex items-center justify-center gap-2 px-12 py-4 rounded-full text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
-              >
-                Log back into {org?.name || "your"} dashboard
-              </Link>
-            ) : (
-              <>
+            <div className="flex flex-col items-center lg:items-start justify-center gap-4">
+              {user ? (
                 <Link
-                  href="/register"
+                  href="/dashboard"
                   className="btn-gold flex items-center justify-center gap-2 px-12 py-4 rounded-full text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
                 >
-                  Get started instantly
+                  Log back into {org?.name || "your"} dashboard
                 </Link>
-                
-                <Link
-                  href="/register"
-                  className="flex items-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
-                >
-                  <Gift className="w-4 h-4" />
-                  <span>Try for free — 14-day premium trial included</span>
-                </Link>
-              </>
-            )}
+              ) : (
+                <>
+                  <Link
+                    href="/register"
+                    className="btn-gold flex items-center justify-center gap-2 px-12 py-4 rounded-full text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
+                  >
+                    Get started instantly
+                  </Link>
+
+                  <Link
+                    href="/register"
+                    className="flex items-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
+                  >
+                    <Gift className="w-4 h-4" />
+                    <span>Try for free — 14-day premium trial included</span>
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="relative mt-4 lg:mt-0">
+            <LandingHeroPreview />
           </div>
         </div>
       </section>
@@ -147,6 +156,22 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* Industry strip */}
+      <section className="py-16 px-6 bg-[#080808] border-b border-white/5">
+        <div className="max-w-6xl mx-auto grid grid-cols-3 gap-3 md:gap-6">
+          {[
+            { src: "/landing/restaurant-team.jpg", alt: "Restaurant operations" },
+            { src: "/landing/healthcare-team.jpg", alt: "Healthcare staffing" },
+            { src: "/landing/retail-floor.jpg", alt: "Retail shift coordination" },
+          ].map((photo) => (
+            <div key={photo.src} className="relative h-28 md:h-40 rounded-2xl overflow-hidden border border-white/5 group">
+              <Image src={photo.src} alt={photo.alt} fill className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500" sizes="400px" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="py-32 px-6 bg-[#080808]">
         <div className="max-w-6xl mx-auto">
@@ -159,41 +184,48 @@ export default async function LandingPage() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {[
+            {([
               {
                 icon: RefreshCw,
+                iconKey: "RefreshCw",
                 title: "Instant swap requests",
                 desc: "Workers post swap requests in seconds. Eligible colleagues get notified immediately via push.",
               },
               {
                 icon: Clock,
+                iconKey: "Clock",
                 title: "One-tap approvals",
                 desc: "Managers approve or reject swaps from their lock screen. No back-and-forth calls needed.",
               },
               {
                 icon: BarChart3,
+                iconKey: "BarChart3",
                 title: "ROI analytics",
                 desc: "See exactly how much you've saved in overtime costs and manager time every single week.",
               },
               {
                 icon: Users,
+                iconKey: "Users",
                 title: "Multi-department",
                 desc: "Restaurant, healthcare, retail — set up departments and roles that match your exact structure.",
               },
               {
                 icon: Shield,
+                iconKey: "Shield",
                 title: "Compliance ready",
                 desc: "Full audit trail of every swap. Stay compliant with labour regulations effortlessly.",
               },
               {
                 icon: TrendingUp,
+                iconKey: "TrendingUp",
                 title: "Trial tracking",
                 desc: "14-day trial with built-in feedback collection so you can prove ROI to leadership fast.",
               },
-            ].map((f) => (
-              <div key={f.title} className="card-premium p-8 rounded-[2rem] flex flex-col group">
-                <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mb-6 group-hover:bg-gold/20 transition-colors">
-                  <f.icon className="w-6 h-6 text-gold" />
+            ] as const).map((f) => (
+              <div key={f.title} className="card-premium p-6 rounded-[2rem] flex flex-col group overflow-hidden">
+                <FeatureCardVisual iconName={f.iconKey} />
+                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors">
+                  <f.icon className="w-5 h-5 text-gold" />
                 </div>
                 <h3 className="font-bold text-xl mb-3">{f.title}</h3>
                 <p className="text-sm text-white/50 leading-relaxed font-medium">{f.desc}</p>
@@ -215,14 +247,24 @@ export default async function LandingPage() {
 
           {/* Quote Carousel-like Layout */}
           <div className="relative px-12 md:px-20">
-            {/* Navigation Arrows */}
             <button className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass border border-white/10 hover:border-gold/30 hover:bg-gold/5 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            
-            <blockquote className="text-xl md:text-3xl font-medium text-white/90 leading-relaxed tracking-tight max-w-2xl mx-auto font-serif italic">
-              "SwapBoard has completely solved our last-minute callout nightmare. Managers saved over 12 hours a week, and floor coverage reached a solid 100% within the first month."
-            </blockquote>
+
+            <div className="flex flex-col items-center gap-8">
+              <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-gold/30 shadow-xl shadow-gold/10">
+                <Image
+                  src="/landing/testimonial-portrait.jpg"
+                  alt="Operations manager"
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                />
+              </div>
+              <blockquote className="text-xl md:text-3xl font-medium text-white/90 leading-relaxed tracking-tight max-w-2xl mx-auto font-serif italic">
+                "SwapBoard has completely solved our last-minute callout nightmare. Managers saved over 12 hours a week, and floor coverage reached a solid 100% within the first month."
+              </blockquote>
+            </div>
 
             <button className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass border border-white/10 hover:border-gold/30 hover:bg-gold/5 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0">
               <ChevronRight className="w-5 h-5" />
@@ -269,24 +311,9 @@ export default async function LandingPage() {
 
           {/* Grid Layout (Liquid Glass Cards) */}
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Card 1: Abstract Global Coverage */}
             <div className="card-premium p-8 rounded-[2.5rem] flex flex-col h-[400px] justify-between relative overflow-hidden group">
               <div className="absolute -top-12 -right-12 w-64 h-64 bg-gold/5 rounded-full blur-[60px] group-hover:bg-gold/10 transition-all duration-700" />
-              
-              {/* Graphic container */}
-              <div className="h-44 w-full rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden flex items-center justify-center relative shadow-inner">
-                {/* Simulated Globe graphic */}
-                <div className="w-32 h-32 rounded-full border border-white/10 relative flex items-center justify-center bg-gradient-to-tr from-transparent via-white/5 to-transparent shadow-2xl animate-spin-slow">
-                  <div className="absolute inset-2 rounded-full border border-dashed border-white/20" />
-                  <div className="absolute inset-6 rounded-full border border-white/10" />
-                  <Globe className="w-10 h-10 text-gold opacity-50" />
-                </div>
-                <div className="absolute bottom-4 flex gap-1 bg-[#050505]/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
-                  <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">94% Active Swap Rates</span>
-                </div>
-              </div>
-
+              <LandingCoverageVisual />
               <div>
                 <h3 className="font-black text-xl text-white mb-2">Freedom to trade</h3>
                 <p className="text-xs text-white/40 leading-relaxed font-semibold">
@@ -295,40 +322,9 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            {/* Card 2: Interactive UI Controls */}
             <div className="card-premium p-8 rounded-[2.5rem] flex flex-col h-[400px] justify-between relative overflow-hidden group">
               <div className="absolute -top-12 -right-12 w-64 h-64 bg-gold/5 rounded-full blur-[60px] group-hover:bg-gold/10 transition-all duration-700" />
-
-              {/* Graphic container - Interactive buttons mock */}
-              <div className="h-44 w-full rounded-2xl bg-white/[0.02] border border-white/5 p-4 flex flex-col gap-2 justify-center shadow-inner relative">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
-                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
-                      <Send className="w-3 h-3 text-gold" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Send Request</span>
-                  </div>
-                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
-                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
-                      <RefreshCw className="w-3 h-3 text-gold" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Swap Shift</span>
-                  </div>
-                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
-                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
-                      <Check className="w-3 h-3 text-gold" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Verify Cert</span>
-                  </div>
-                  <div className="bg-[#050505]/30 backdrop-blur-sm border border-white/10 p-3 rounded-xl flex items-center gap-2 hover:border-gold/30 hover:bg-gold/5 transition-all">
-                    <div className="w-6 h-6 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-3 h-3 text-gold" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">AI Coverage</span>
-                  </div>
-                </div>
-              </div>
-
+              <LandingVerificationVisual />
               <div>
                 <h3 className="font-black text-xl text-white mb-2">Automated verification</h3>
                 <p className="text-xs text-white/40 leading-relaxed font-semibold">
@@ -337,25 +333,9 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            {/* Card 3: 3D-Like Glass Bar Chart */}
             <div className="card-premium p-8 rounded-[2.5rem] flex flex-col h-[400px] justify-between relative overflow-hidden group">
               <div className="absolute -top-12 -right-12 w-64 h-64 bg-gold/5 rounded-full blur-[60px] group-hover:bg-gold/10 transition-all duration-700" />
-
-              {/* Graphic container - 3D Glass bars */}
-              <div className="h-44 w-full rounded-2xl bg-white/[0.02] border border-white/5 p-6 flex items-end justify-center gap-4 shadow-inner relative overflow-hidden">
-                <div className="w-8 bg-gradient-to-t from-gold/5 to-gold/30 border border-gold/20 rounded-t-lg h-16 relative group-hover:h-24 transition-all duration-500 flex items-center justify-center">
-                  <span className="text-[9px] font-bold text-gold absolute -top-5">40%</span>
-                </div>
-                <div className="w-8 bg-gradient-to-t from-gold/10 to-gold/50 border border-gold/30 rounded-t-lg h-24 relative group-hover:h-32 transition-all duration-500 flex items-center justify-center">
-                  <span className="text-[9px] font-bold text-gold absolute -top-5">70%</span>
-                </div>
-                <div className="w-8 bg-gradient-to-t from-gold/20 to-gold/80 border border-gold/50 rounded-t-lg h-32 relative group-hover:h-40 transition-all duration-500 flex items-center justify-center">
-                  <span className="text-[9px] font-bold text-gold absolute -top-5">94%</span>
-                </div>
-                
-                <div className="absolute top-4 right-4 text-[9px] font-black uppercase tracking-widest text-white/30">Fulfillment Ascend</div>
-              </div>
-
+              <LandingAnalyticsVisual />
               <div>
                 <h3 className="font-black text-xl text-white mb-2">Unparalleled performance</h3>
                 <p className="text-xs text-white/40 leading-relaxed font-semibold">
@@ -379,16 +359,22 @@ export default async function LandingPage() {
             {/* Connection Line (Hidden on mobile) */}
             <div className="hidden md:block absolute top-[60px] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gold/20 to-transparent -z-10" />
 
-            {[
-              { step: "01", title: "Set up your org", desc: "Choose your industry, add departments, and invite your team in minutes." },
-              { step: "02", title: "Workers request swaps", desc: "Staff post swap requests from their phone. Qualified colleagues can accept instantly." },
-              { step: "03", title: "Managers approve", desc: "One tap to approve. The schedule updates automatically for everyone in real-time." },
-            ].map((s) => (
+            {([
+              { step: "01", title: "Set up your org", desc: "Choose your industry, add departments, and invite your team in minutes.", image: "/landing/office-planning.jpg" },
+              { step: "02", title: "Workers request swaps", desc: "Staff post swap requests from their phone. Qualified colleagues can accept instantly.", image: "/landing/mobile-shift.jpg" },
+              { step: "03", title: "Managers approve", desc: "One tap to approve. The schedule updates automatically for everyone in real-time.", image: "/landing/manager-team.jpg" },
+            ] as const).map((s) => (
               <div key={s.step} className="flex flex-col items-center">
-                <div className="w-16 h-16 rounded-full glass flex items-center justify-center text-xl font-black text-gold mb-8 shadow-xl shadow-gold/5">
-                  {s.step}
+                <div className="relative mb-8">
+                  <div className="relative w-48 h-32 md:w-56 md:h-36 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 mb-4">
+                    <Image src={s.image} alt="" fill className="object-cover" sizes="224px" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#070707]/80 via-transparent to-transparent" />
+                  </div>
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full glass flex items-center justify-center text-lg font-black text-gold shadow-xl shadow-gold/5 border border-gold/20">
+                    {s.step}
+                  </div>
                 </div>
-                <h3 className="font-bold text-2xl mb-4 tracking-tight">{s.title}</h3>
+                <h3 className="font-bold text-2xl mb-4 tracking-tight mt-2">{s.title}</h3>
                 <p className="text-base text-white/50 leading-relaxed font-medium">{s.desc}</p>
               </div>
             ))}
@@ -476,6 +462,9 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto rounded-[3rem] glass p-16 md:p-24 text-center relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] rounded-full group-hover:bg-gold/20 transition-all duration-700" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full" />
+          <div className="absolute inset-0 opacity-[0.07] overflow-hidden">
+            <Image src="/landing/restaurant-team.jpg" alt="" fill className="object-cover" sizes="800px" />
+          </div>
 
           <h2 className="text-4xl md:text-7xl font-black mb-8 tracking-tight relative z-10">
             Fix your <br /><span className="text-gold-gradient">shift chaos.</span>
