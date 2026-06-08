@@ -108,7 +108,7 @@ export function LandingHeroPreview() {
       </div>
 
       {/* Floating photo accent */}
-      <div className="absolute -bottom-6 -left-6 w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-2 border-white/10 shadow-2xl hidden sm:block">
+      <div className="absolute -bottom-6 -left-6 w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-2 border-white/10 shadow-2xl">
         <Image
           src="/landing/restaurant-team.jpg"
           alt="Restaurant team coordinating shifts"

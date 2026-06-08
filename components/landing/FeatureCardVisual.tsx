@@ -34,8 +34,8 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
   if (iconName === "RefreshCw") {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden relative mb-6 group-hover:border-white/10 transition-colors">
-        <Image src="/landing/mobile-shift.jpg" alt="" fill className="object-cover opacity-50 group-hover:opacity-60 transition-opacity" sizes="400px" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent" />
+        <Image src="/landing/mobile-shift.jpg" alt="Worker checking shift on phone" fill className="object-cover" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 via-[#0a0a0a]/30 to-transparent" />
         <div className="absolute bottom-3 left-3 right-3 space-y-1.5">
           {["Sarah requested Fri 6pm cover", "James accepted · pending approval"].map((msg) => (
             <div key={msg} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#050505]/80 backdrop-blur-md border border-white/10">
@@ -53,8 +53,8 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
   if (iconName === "Clock") {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden relative mb-6">
-        <Image src="/landing/office-planning.jpg" alt="" fill className="object-cover opacity-35" sizes="400px" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/90 to-transparent" />
+        <Image src="/landing/office-planning.jpg" alt="Manager reviewing schedule" fill className="object-cover" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/85 via-[#0a0a0a]/40 to-transparent" />
         <div className="absolute inset-0 p-4 flex flex-col justify-center gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gold/15 border border-gold/25 flex items-center justify-center">
@@ -81,11 +81,13 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
   if (iconName === "BarChart3") {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-3 mb-6 relative overflow-hidden">
-        <div className="flex items-center justify-between mb-1 px-1">
+        <Image src="/landing/manager-team.jpg" alt="Team reviewing savings" fill className="object-cover opacity-30" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/40" />
+        <div className="relative flex items-center justify-between mb-1 px-1">
           <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Weekly savings</p>
           <p className="text-sm font-black text-gold tabular-nums">$4,200</p>
         </div>
-        <div className="h-[88px] w-full">
+        <div className="relative h-[88px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={roiData} margin={{ top: 4, right: 0, left: -35, bottom: 0 }}>
               <defs>
@@ -110,8 +112,8 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
           { src: "/landing/healthcare-team.jpg", label: "Healthcare" },
           { src: "/landing/retail-floor.jpg", label: "Retail" },
         ].map((ind) => (
-          <div key={ind.label} className="relative rounded-xl overflow-hidden">
-            <Image src={ind.src} alt={ind.label} fill className="object-cover opacity-70" sizes="150px" />
+          <div key={ind.label} className="relative rounded-xl overflow-hidden h-full min-h-[8.5rem]">
+            <Image src={ind.src} alt={ind.label} fill className="object-cover" sizes="150px" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
             <p className="absolute bottom-2 left-2 text-[7px] font-black uppercase tracking-widest text-white/70">{ind.label}</p>
           </div>
@@ -123,8 +125,9 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
   if (iconName === "Shield") {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-4 mb-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-24 h-full opacity-20 overflow-hidden">
-          <Image src="/landing/healthcare-team.jpg" alt="" fill className="object-cover" sizes="96px" />
+        <div className="absolute top-0 right-0 w-28 h-full overflow-hidden">
+          <Image src="/landing/healthcare-team.jpg" alt="Healthcare compliance" fill className="object-cover opacity-50" sizes="112px" />
+          <div className="absolute inset-0 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
         </div>
         <div className="relative space-y-2">
           {[
@@ -147,12 +150,14 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
 
   if (iconName === "TrendingUp") {
     return (
-      <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-3 mb-6">
-        <div className="flex items-center justify-between mb-2 px-1">
+      <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-3 mb-6 relative overflow-hidden">
+        <Image src="/landing/retail-floor.jpg" alt="Retail team on the floor" fill className="object-cover opacity-30" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/75 to-[#0a0a0a]/40" />
+        <div className="relative flex items-center justify-between mb-2 px-1">
           <p className="text-[8px] font-black uppercase tracking-widest text-white/30">14-day trial progress</p>
           <p className="text-[10px] font-black text-emerald-400">92%</p>
         </div>
-        <div className="h-[72px] w-full">
+        <div className="relative h-[72px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={trialData} margin={{ top: 4, right: 0, left: -35, bottom: 0 }}>
               <Bar dataKey="pct" radius={[4, 4, 0, 0]} maxBarSize={28}>

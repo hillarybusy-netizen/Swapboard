@@ -5,7 +5,7 @@
 1. **Node.js** (LTS) — https://nodejs.org
 2. **Supabase project** — https://supabase.com/dashboard
 3. **Resend account** — https://resend.com (for emails)
-4. **Paystack account** — https://paystack.com (for billing, optional in dev)
+4. **Stripe account** — https://stripe.com (for billing, optional in dev)
 
 ---
 
@@ -32,8 +32,7 @@ Fill in `.env.local`:
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API (keep secret, server-only) |
 | `NEXT_PUBLIC_APP_URL` | Your app URL (`http://localhost:3000` in dev) |
 | `RESEND_API_KEY` | Resend → API Keys |
-| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack → Settings → API Keys |
-| `PAYSTACK_SECRET_KEY` | Paystack → Settings → API Keys (server-only) |
+| `STRIPE_SECRET_KEY` | Stripe → Developers → API keys (server-only) |
 | `PLATFORM_ADMIN_EMAILS` | Comma-separated admin emails for `/admin` |
 
 ---
@@ -134,5 +133,5 @@ npm start
 - **Next.js 16** — App Router, Server Actions, proxy auth
 - **Supabase** — Auth, Postgres, RLS, Storage
 - **Resend** — Transactional email
-- **Paystack** — Payments
+- **Stripe** — Payments
 - **Tailwind CSS** + **shadcn/ui** + **Recharts**

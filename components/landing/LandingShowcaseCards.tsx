@@ -25,10 +25,10 @@ export function LandingCoverageVisual() {
         src="/landing/manager-team.jpg"
         alt="Operations team"
         fill
-        className="object-cover opacity-40"
+        className="object-cover"
         sizes="400px"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/40 to-transparent" />
       <div className="absolute inset-0 p-3 flex flex-col justify-end gap-1.5">
         {coverageFeed.map((item) => (
           <div key={item.team} className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#050505]/70 backdrop-blur-md border border-white/10">
@@ -58,10 +58,10 @@ export function LandingVerificationVisual() {
 
   return (
     <div className="h-44 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden shadow-inner relative">
-      <div className="absolute top-0 right-0 w-32 h-32 opacity-30 overflow-hidden rounded-bl-3xl">
-        <Image src="/landing/mobile-shift.jpg" alt="Mobile shift management" fill className="object-cover" sizes="128px" />
+      <div className="absolute top-0 right-0 w-36 h-36 overflow-hidden rounded-bl-3xl">
+        <Image src="/landing/mobile-shift.jpg" alt="Mobile shift management" fill className="object-cover" sizes="144px" />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a]/90 via-[#0a0a0a]/70 to-transparent" />
       <div className="relative h-full p-4 flex flex-col justify-between">
         <div className="space-y-2">
           {requests.map(({ icon: Icon, label, active }) => (
@@ -108,7 +108,15 @@ export function LandingVerificationVisual() {
 export function LandingAnalyticsVisual() {
   return (
     <div className="h-44 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-4 shadow-inner relative overflow-hidden">
-      <div className="flex items-start justify-between mb-2">
+      <Image
+        src="/landing/office-planning.jpg"
+        alt="Team analytics review"
+        fill
+        className="object-cover opacity-25"
+        sizes="400px"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-[#0a0a0a]/50" />
+      <div className="relative flex items-start justify-between mb-2">
         <div>
           <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Fulfillment Ascend</p>
           <p className="text-lg font-black text-gold tabular-nums">+22%</p>
@@ -118,7 +126,7 @@ export function LandingAnalyticsVisual() {
           <p className="text-[10px] font-black text-emerald-400">↑ 94% peak</p>
         </div>
       </div>
-      <div className="h-[100px] w-full">
+      <div className="relative h-[100px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={fulfillmentData} margin={{ top: 8, right: 4, left: -30, bottom: 0 }}>
             <XAxis dataKey="month" tick={{ fontSize: 9, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />

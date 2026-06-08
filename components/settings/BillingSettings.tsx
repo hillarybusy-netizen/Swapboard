@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import Script from "next/script";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,7 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { PLAN_LIMITS, BILLABLE_PLANS, getMissingFeatures } from "@/lib/plans";
-import { updatePlan } from "@/app/actions";
+import { createCheckoutSession, completeCheckout, updatePlan } from "@/app/actions";
 import { toast } from "@/hooks/use-toast";
 
 const PLANS = BILLABLE_PLANS.map((id) => ({
@@ -32,7 +32,10 @@ const PLANS = BILLABLE_PLANS.map((id) => ({
   highlight: PLAN_LIMITS[id].highlight,
 }));
 
-export function BillingSettings({ org, userEmail }: { org: Organization | null; userEmail?: string }) {
+export function BillingSettings({ org }: { org: Organization | null }) {
+  const searchParams = useSearchParams();
+  const checkoutHandled = useRef(false);
+  const cancelHandled = useRef(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [confirmUpgrade, setConfirmUpgrade] = useState<typeof PLANS[0] | null>(null);
   const [confirmDowngrade, setConfirmDowngrade] = useState<typeof PLANS[0] | null>(null);
@@ -45,54 +48,37 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
     enterprise: 3,
   };
 
-  function payWithPaystack(plan: typeof PLANS[0], onCompleted: (reference: string) => void) {
-    // @ts-ignore
-    if (typeof window === "undefined" || !window.PaystackPop) {
-      toast({
-        title: "Paystack loading...",
-        description: "Please wait a moment for the payment window to load.",
-        variant: "destructive",
-      });
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    const checkout = searchParams.get("checkout");
+
+    if (checkout === "cancelled" && !cancelHandled.current) {
+      cancelHandled.current = true;
+      toast({ title: "Payment Cancelled", description: "You closed the payment screen." });
       return;
     }
 
-    const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-    if (!paystackKey) {
-      toast({
-        title: "Payment not configured",
-        description: "Paystack public key is missing. Contact support.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!sessionId || checkoutHandled.current) return;
+    checkoutHandled.current = true;
+
+    setLoading("checkout");
+    completeCheckout(sessionId).catch((err: Error) => {
+      setLoading(null);
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    });
+  }, [searchParams]);
+
+  async function payWithStripe(plan: typeof PLANS[0]) {
+    if (!org) return;
 
     setLoading(plan.id);
-
     try {
-      // @ts-ignore
-      const paystack = new window.PaystackPop();
-      paystack.newTransaction({
-        key: paystackKey,
-        email: userEmail || "customer@example.com",
-        amount: plan.priceNumeric * 100,
-        currency: "USD",
-        ref: "SB-" + Math.floor(Math.random() * 1000000000 + 1),
-        onSuccess: function(response: { reference: string }) {
-          toast({
-            title: "Payment Successful!",
-            description: `Reference: ${response.reference}. Updating your plan...`,
-            variant: "success",
-          });
-          onCompleted(response.reference);
-        },
-        onCancel: function() {
-          setLoading(null);
-          toast({ title: "Payment Cancelled", description: "You closed the payment screen." });
-        }
-      });
-    } catch (e: any) {
+      const { url } = await createCheckoutSession(org.id, plan.id);
+      window.location.href = url;
+    } catch (e: unknown) {
       setLoading(null);
-      toast({ title: "Paystack Error", description: e.message || "Failed to initialize payment.", variant: "destructive" });
+      const message = e instanceof Error ? e.message : "Failed to initialize payment.";
+      toast({ title: "Stripe Error", description: message, variant: "destructive" });
     }
   }
 
@@ -104,25 +90,23 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
     else if (targetLevel < currentLevel) setConfirmDowngrade(plan);
   }
 
-  async function executeUpgrade(planId: string, paymentReference: string) {
+  async function executeDowngrade(planId: string) {
     if (!org) return;
     setLoading(planId);
     try {
-      await updatePlan(org.id, planId, paymentReference);
+      await updatePlan(org.id, planId);
       toast({ title: "Plan updated!", variant: "success" });
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong.";
+      toast({ title: "Error", description: message, variant: "destructive" });
     } finally {
       setLoading(null);
-      setConfirmUpgrade(null);
       setConfirmDowngrade(null);
     }
   }
 
   return (
     <div className="space-y-6">
-      <Script src="https://js.paystack.co/v2/inline.js" strategy="afterInteractive" />
-
       {trial.isOnTrial && (
         <Card className="border-amber-500/20 bg-amber-500/5 shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-2xl -z-10" />
@@ -198,7 +182,7 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
                 You are upgrading to the <span className="font-bold text-gold">{confirmUpgrade?.name}</span> plan ({confirmUpgrade?.price}/mo).
               </p>
               <p className="text-white/60 text-sm leading-relaxed">
-                Proceeding will launch Paystack secure payment window. Once payment is confirmed, your new limits will take effect immediately.
+                Proceeding will redirect you to Stripe secure checkout. Once payment is confirmed, your new limits will take effect immediately.
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -209,7 +193,7 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
                 if (confirmUpgrade) {
                   const targetPlan = confirmUpgrade;
                   setConfirmUpgrade(null);
-                  payWithPaystack(targetPlan, (ref) => executeUpgrade(targetPlan.id, ref));
+                  payWithStripe(targetPlan);
                 }
               }}
               className="bg-gold hover:bg-gold/90 text-[#050505] font-black uppercase tracking-widest text-[10px] rounded-full px-6"
@@ -242,9 +226,7 @@ export function BillingSettings({ org, userEmail }: { org: Organization | null; 
             <AlertDialogAction
               onClick={() => {
                 if (confirmDowngrade) {
-                  const targetPlan = confirmDowngrade;
-                  setConfirmDowngrade(null);
-                  payWithPaystack(targetPlan, (ref) => executeUpgrade(targetPlan.id, ref));
+                  executeDowngrade(confirmDowngrade.id);
                 }
               }}
               className="bg-red-500 hover:bg-red-600 text-white rounded-full px-6 font-black uppercase tracking-widest text-[10px]"

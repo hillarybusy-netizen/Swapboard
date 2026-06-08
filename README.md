@@ -7,7 +7,7 @@ Shift management and swap coordination for restaurants, healthcare, and retail t
 ```bash
 npm install
 cp .env.local.example .env.local
-# Fill in Supabase, Resend, and Paystack keys — see SETUP.md
+# Fill in Supabase, Resend, and Stripe keys — see SETUP.md
 npm run dev
 ```
 
@@ -22,7 +22,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - **Next.js 16** — App Router, Server Actions
 - **Supabase** — Auth, Postgres, RLS, Storage
 - **Resend** — Transactional email (invites, password reset, welcome)
-- **Paystack** — Subscription billing
+- **Stripe** — Subscription billing
 - **Tailwind CSS** + **shadcn/ui**
 
 ## Key routes

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrgSettings } from "@/components/settings/OrgSettings";
 import { DepartmentEditor } from "@/components/settings/DepartmentEditor";
@@ -69,7 +69,11 @@ export function SettingsTabs({
         {activeTab === "team" && (
           <InviteTeam orgId={orgId} departments={departments} org={org} profileCount={profileCount} />
         )}
-        {activeTab === "billing" && <BillingSettings org={org} userEmail={userEmail} />}
+        {activeTab === "billing" && (
+          <Suspense fallback={null}>
+            <BillingSettings org={org} />
+          </Suspense>
+        )}
       </div>
     </Tabs>
   );

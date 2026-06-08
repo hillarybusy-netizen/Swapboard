@@ -86,6 +86,17 @@ export default async function LandingPage() {
 
       {/* Hero */}
       <section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden bg-gradient-to-b from-[#14120d] via-[#090807] to-[#060606]">
+        <div className="absolute inset-0 -z-20">
+          <Image
+            src="/landing/manager-team.jpg"
+            alt=""
+            fill
+            priority
+            className="object-cover opacity-25"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#14120d] via-[#090807]/92 to-[#060606]/75" />
+        </div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/5 blur-[120px] rounded-full -z-10" />
 
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -168,13 +179,14 @@ export default async function LandingPage() {
       <section className="py-16 px-6 bg-[#080808] border-b border-white/5">
         <div className="max-w-6xl mx-auto grid grid-cols-3 gap-3 md:gap-6">
           {[
-            { src: "/landing/restaurant-team.jpg", alt: "Restaurant operations" },
-            { src: "/landing/healthcare-team.jpg", alt: "Healthcare staffing" },
-            { src: "/landing/retail-floor.jpg", alt: "Retail shift coordination" },
+            { src: "/landing/restaurant-team.jpg", alt: "Restaurant operations", label: "Restaurants" },
+            { src: "/landing/healthcare-team.jpg", alt: "Healthcare staffing", label: "Healthcare" },
+            { src: "/landing/retail-floor.jpg", alt: "Retail shift coordination", label: "Retail" },
           ].map((photo) => (
-            <div key={photo.src} className="relative h-28 md:h-40 rounded-2xl overflow-hidden border border-white/5 group">
-              <Image src={photo.src} alt={photo.alt} fill className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500" sizes="400px" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
+            <div key={photo.src} className="relative h-36 md:h-52 rounded-2xl overflow-hidden border border-white/10 group">
+              <Image src={photo.src} alt={photo.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="400px" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <p className="absolute bottom-3 left-4 text-sm font-black uppercase tracking-widest text-white">{photo.label}</p>
             </div>
           ))}
         </div>
@@ -375,8 +387,8 @@ export default async function LandingPage() {
               <div key={s.step} className="flex flex-col items-center">
                 <div className="relative mb-8">
                   <div className="relative w-48 h-32 md:w-56 md:h-36 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 mb-4">
-                    <Image src={s.image} alt="" fill className="object-cover" sizes="224px" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#070707]/80 via-transparent to-transparent" />
+                    <Image src={s.image} alt={s.title} fill className="object-cover" sizes="224px" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#070707]/70 via-transparent to-transparent" />
                   </div>
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full glass flex items-center justify-center text-lg font-black text-gold shadow-xl shadow-gold/5 border border-gold/20">
                     {s.step}
@@ -472,8 +484,9 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto rounded-[3rem] glass p-16 md:p-24 text-center relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] rounded-full group-hover:bg-gold/20 transition-all duration-700" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full" />
-          <div className="absolute inset-0 opacity-[0.07] overflow-hidden">
-            <Image src="/landing/restaurant-team.jpg" alt="" fill className="object-cover" sizes="800px" />
+          <div className="absolute inset-0 overflow-hidden">
+            <Image src="/landing/restaurant-team.jpg" alt="" fill className="object-cover opacity-30" sizes="800px" />
+            <div className="absolute inset-0 bg-[#060606]/60" />
           </div>
 
           <h2 className="text-4xl md:text-7xl font-black mb-8 tracking-tight relative z-10">
