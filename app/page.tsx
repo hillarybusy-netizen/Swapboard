@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Globe, Send, Sparkles, Check, Award } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
+import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
 
 import { createClient } from "@/lib/supabase/server";
 import { LandingProfileDropdown } from "@/components/layout/LandingProfileDropdown";
@@ -39,6 +40,7 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-gold/30">
+      <LandingSmoothScroll />
       {/* Navbar */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 glass-nav rounded-full px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">

@@ -150,8 +150,8 @@ export default async function ShiftsPage(props: {
       ) : (
         <div className="grid gap-4 px-1 md:px-2">
           {(shifts as any[]).map((shift) => (
-            <Link key={shift.id} href={`/shifts/${shift.id}`} className={cn("group", shift.isEnded && "opacity-40 grayscale pointer-events-none")}>
-              <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 hover:border-gold/30 hover:bg-gold/[0.02] transition-all duration-300 relative overflow-hidden">
+            <Link key={shift.id} href={`/shifts/${shift.id}`} className={cn("group scroll-item", shift.isEnded && "opacity-40 grayscale pointer-events-none")}>
+              <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 hover:border-gold/30 hover:bg-gold/[0.02] glass-item-transition relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.01] blur-3xl group-hover:bg-gold/[0.03] -z-10 transition-colors" />
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

@@ -14,7 +14,7 @@ import {
   TrendingUp, DollarSign, Clock, RefreshCw, ArrowRight, CheckCircle2, XCircle, AlertTriangle, Calendar,
 } from "lucide-react";
 import { ApproveSwapButton } from "@/components/dashboard/ApproveSwapButton";
-import { SwapChart } from "@/components/dashboard/SwapChart";
+import { SwapChartLazy } from "@/components/dashboard/SwapChartLazy";
 import { Lock } from "lucide-react";
 import { ExportReportButton } from "@/components/dashboard/ExportReportButton";
 import { PostShiftDialog } from "@/components/dashboard/PostShiftDialog";
@@ -226,7 +226,7 @@ export default async function DashboardPage() {
               </div>
             </div>
             <div className="h-[250px] md:h-[300px] w-full">
-              <SwapChart data={weeklyData} />
+              <SwapChartLazy data={weeklyData} />
             </div>
           </div>
 
@@ -246,7 +246,7 @@ export default async function DashboardPage() {
               </div>
               <div className="space-y-3">
                 {(atRiskShifts as any[]).map((shift) => (
-                  <div key={shift.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors group">
+                  <div key={shift.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors group scroll-item">
                     <div className="flex flex-col">
                       <p className="text-sm font-bold text-white mb-1">{shift.title}</p>
                       <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-white/40 font-medium">
@@ -301,8 +301,8 @@ export default async function DashboardPage() {
               ) : (
                 <div className="space-y-4 md:space-y-6">
                   {(pendingSwaps as any[]).map((swap) => (
-                    <div key={swap.id} className="group relative">
-                      <div className="flex flex-col gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 hover:border-gold/20 transition-all">
+                    <div key={swap.id} className="group relative scroll-item">
+                      <div className="flex flex-col gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 hover:border-gold/20 transition-[border-color,background-color,box-shadow]">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 md:gap-3 min-w-0">
                             <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-[9px] md:text-[10px] font-black border border-gold/10">

@@ -47,7 +47,7 @@ export default async function MyShiftsPage() {
     
     return (
       <div className={cn(
-        "glass rounded-[2rem] p-6 border-white/5 transition-all duration-300 relative overflow-hidden group mb-4",
+        "glass rounded-[2rem] p-6 border-white/5 glass-item-transition relative overflow-hidden group mb-4 scroll-item",
         statusColor,
         isPast && "opacity-40 scale-[0.98]"
       )}>

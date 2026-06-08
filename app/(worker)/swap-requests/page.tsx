@@ -59,7 +59,7 @@ export default async function SwapRequestsPage() {
         ) : (
           <div className="space-y-4">
             {availableSwaps.map((swap) => (
-              <div key={swap.id} className="glass rounded-[2.5rem] p-6 border-gold/20 bg-gold/5 relative overflow-hidden group shadow-xl shadow-gold/5">
+              <div key={swap.id} className="glass rounded-[2.5rem] p-6 border-gold/20 bg-gold/5 relative overflow-hidden group shadow-xl shadow-gold/5 scroll-item">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gold/10 blur-3xl -z-10 group-hover:bg-gold/20 transition-colors duration-500" />
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -109,7 +109,7 @@ export default async function SwapRequestsPage() {
         ) : (
           <div className="space-y-4">
             {myRequests.map((swap) => (
-              <div key={swap.id} className="glass rounded-[2rem] p-6 border-white/5 transition-all duration-300">
+              <div key={swap.id} className="glass rounded-[2rem] p-6 border-white/5 glass-item-transition scroll-item">
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-white truncate">{swap.shift?.title ?? "Shift"}</p>

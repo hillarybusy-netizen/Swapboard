@@ -10,7 +10,7 @@ export default async function WorkerLayout({ children }: { children: React.React
   if (!user) redirect("/login");
 
   return (
-    <div className="min-h-screen bg-[#050505] relative overflow-hidden">
+    <div className="min-h-screen bg-[#050505] relative">
       {/* Mesh background */}
       <div className="absolute inset-0 bg-mesh opacity-20 -z-10" />
 

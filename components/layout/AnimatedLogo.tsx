@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface AnimatedLogoProps {
@@ -16,10 +17,49 @@ const sizeMap = {
 
 export function AnimatedLogo({ size = "md", showText = true, className = "" }: AnimatedLogoProps) {
   const s = sizeMap[size];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const video = videoRef.current;
+    if (!container || !video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(container);
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        video.pause();
+      } else if (container.getBoundingClientRect().height > 0) {
+        const rect = container.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inView) video.play().catch(() => {});
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, []);
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <div
+        ref={containerRef}
         className={cn(
           s.video,
           "overflow-hidden shrink-0 transition-transform group-hover:scale-110 duration-500",
@@ -28,6 +68,7 @@ export function AnimatedLogo({ size = "md", showText = true, className = "" }: A
         style={{ background: "#050505" }}
       >
         <video
+          ref={videoRef}
           src="/logo.mp4"
           autoPlay
           loop

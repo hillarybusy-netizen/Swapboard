@@ -87,7 +87,7 @@ export default async function TeamPage() {
         ) : (
           <div className="grid gap-4">
             {(members as any[]).map((member) => (
-              <div key={member.id} className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 hover:border-white/10 transition-all duration-300 relative overflow-hidden group">
+              <div key={member.id} className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 hover:border-white/10 glass-item-transition relative overflow-hidden group scroll-item">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.01] blur-3xl -z-10" />
                 <div className="flex items-center gap-4 md:gap-6">
                   <Avatar className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-white/5 ring-4 ring-white/[0.02] shrink-0">
