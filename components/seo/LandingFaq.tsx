@@ -4,7 +4,7 @@ export function LandingFaq() {
   return (
     <section
       id="faq"
-      className="py-32 px-6 bg-[#070707] border-t border-white/5"
+      className="py-32 px-6 bg-[#050505] border-t border-white/5"
       aria-labelledby="faq-heading"
     >
       <div className="max-w-3xl mx-auto">

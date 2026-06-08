@@ -155,8 +155,9 @@ export default async function LandingPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-24 px-6 relative border-y border-gold/10 bg-gradient-to-r from-[#16130d] via-[#0c0b08] to-[#16130d] bg-mesh">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+      <section className="py-24 px-6 relative border-y border-gold/10 bg-gradient-to-r from-[#1c1810] via-[#12100c] to-[#1c1810]">
+        <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center relative">
           {[
             { value: "94%", label: "Swap fulfillment rate" },
             { value: "2 min", label: "Avg. swap resolution" },
@@ -176,7 +177,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Industry strip */}
-      <section className="py-16 px-6 bg-[#080808] border-b border-white/5">
+      <section className="py-16 px-6 bg-[#0a0a0e] border-b border-white/5">
         <div className="max-w-6xl mx-auto grid grid-cols-3 gap-3 md:gap-6">
           {[
             { src: "/landing/restaurant-team.jpg", alt: "Restaurant operations", label: "Restaurants" },
@@ -256,7 +257,8 @@ export default async function LandingPage() {
       </section>
 
       {/* Modern Testimonial Section */}
-      <section className="py-24 px-6 relative overflow-hidden bg-gradient-to-b from-[#15120a] to-[#0c0b08] border-y border-gold/15 bg-mesh">
+      <section className="py-24 px-6 relative overflow-hidden bg-gradient-to-b from-[#1a1610] to-[#100e0a] border-y border-gold/15">
+        <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Star Rating */}
           <div className="flex items-center justify-center gap-1.5 mb-8">
@@ -312,7 +314,7 @@ export default async function LandingPage() {
       </section>
 
       {/* The New Standard Grid Section */}
-      <section className="py-32 px-6 bg-[#0b0a08] relative overflow-hidden">
+      <section className="py-32 px-6 bg-[#080808] relative overflow-hidden">
         <div className="max-w-6xl mx-auto">
           {/* Header Row */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20">
@@ -368,8 +370,8 @@ export default async function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-32 px-6 relative overflow-hidden bg-[#070707]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-gold/[0.02] blur-[150px] -z-10" />
+      <section id="how-it-works" className="py-32 px-6 relative overflow-hidden bg-[#06080c]">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-gold/[0.04] blur-[150px] -z-10" />
 
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-black mb-24 tracking-tight">
@@ -403,8 +405,9 @@ export default async function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-32 px-6 bg-gradient-to-b from-[#13110d] to-[#060606] border-t border-white/5 bg-mesh">
-        <div className="max-w-6xl mx-auto">
+      <section id="pricing" className="py-32 px-6 relative bg-gradient-to-b from-[#18140e] to-[#080808] border-t border-white/5">
+        <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
+        <div className="max-w-6xl mx-auto relative">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">Simple, honest pricing</h2>
             <p className="text-white/50 text-lg">Start free. Scale as you grow. No hidden fees.</p>
@@ -480,7 +483,7 @@ export default async function LandingPage() {
       <LandingFaq />
 
       {/* CTA */}
-      <section className="py-32 px-6 bg-gradient-to-b from-[#060606] to-[#110e0a]">
+      <section className="py-32 px-6 bg-gradient-to-b from-[#080808] to-[#141008]">
         <div className="max-w-4xl mx-auto rounded-[3rem] glass p-16 md:p-24 text-center relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] rounded-full group-hover:bg-gold/20 transition-all duration-700" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full" />
