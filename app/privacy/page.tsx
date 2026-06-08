@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { createMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createMetadata({
+  title: "Privacy Policy",
+  description:
+    "SwapBoard privacy policy. How we collect, store, and protect your shift scheduling data at swapboard.ca.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

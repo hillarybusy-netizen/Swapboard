@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { createMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createMetadata({
+  title: "Terms of Service",
+  description:
+    "SwapBoard terms of service for shift swapping platform subscriptions and usage at swapboard.ca.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

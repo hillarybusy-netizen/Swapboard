@@ -1,0 +1,57 @@
+# SwapBoard (swapboard.ca)
+
+> SwapBoard is a shift swapping platform for restaurants, healthcare, retail, and multi-department teams. Staff trade shifts instantly; managers approve in one tap.
+
+## What SwapBoard does
+
+SwapBoard eliminates last-minute callout chaos by giving workers a self-service way to post swap requests and qualified colleagues a way to accept instantly. Managers approve or reject from their phone in one tap. Schedules update in real time for the whole team.
+
+## Who it is for
+
+- Restaurant operators managing floor, kitchen, and bar schedules
+- Healthcare facilities coordinating nursing and clinical shifts
+- Retail chains with multi-location or multi-department staffing
+- Any operations manager who needs reliable shift coverage without phone-tag
+
+## Key capabilities
+
+- Instant shift swap requests with push notifications
+- One-tap manager approvals (no back-and-forth calls)
+- ROI analytics: overtime savings and manager time recovered weekly
+- Multi-department and custom role setup
+- Compliance-ready audit trail for every swap
+- 14-day free premium trial
+
+## Results teams report
+
+- 94% swap fulfillment rate
+- 2-minute average swap resolution
+- $4,200 average monthly savings
+- 3 hours manager time saved per week
+
+## Pricing (USD, monthly)
+
+- Starter: $79/mo — up to 100 workers, 3 departments
+- Growth: $199/mo — up to 200 workers, unlimited departments, ROI analytics
+- Enterprise: $499/mo — unlimited workers, multi-location, SSO & compliance
+
+## How to get started
+
+1. Sign up at https://swapboard.ca/register
+2. Choose your industry and add departments
+3. Invite your team — workers can request swaps from day one
+
+## Canonical URLs
+
+- Homepage: https://swapboard.ca/
+- Register: https://swapboard.ca/register
+- Privacy: https://swapboard.ca/privacy
+- Terms: https://swapboard.ca/terms
+
+## Contact
+
+hello@swapboard.app
+
+## Comparison context (shift swapping platforms)
+
+SwapBoard is purpose-built for shift swapping and coverage — not general HR or full workforce management. Compared to generic scheduling tools, SwapBoard focuses on the swap workflow: request → colleague accept → manager approve → schedule sync. It is designed for speed (2-minute resolution), high fulfillment (94%), and measurable ROI.

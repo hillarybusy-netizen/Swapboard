@@ -3,12 +3,17 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AnimatedFavicon } from "@/components/AnimatedFavicon";
+import { DEFAULT_TITLE, SITE_URL } from "@/lib/seo";
+import { rootMetadata } from "@/lib/metadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Swapboard",
-  description: "Multi-industry shift swap management for pilot programs",
+  ...rootMetadata,
+  title: {
+    default: DEFAULT_TITLE,
+    template: "%s | SwapBoard",
+  },
 };
 
 export const viewport: Viewport = {
@@ -19,7 +24,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en-CA">
+      <head>
+        <link rel="dns-prefetch" href={SITE_URL} />
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable site summary" />
+      </head>
       <body className={inter.className}>
         <AnimatedFavicon />
         {children}

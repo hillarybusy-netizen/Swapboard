@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { landingMetadata } from "@/lib/metadata";
+import { LandingStructuredData } from "@/components/seo/StructuredData";
+import { LandingFaq } from "@/components/seo/LandingFaq";
+
+export const metadata: Metadata = landingMetadata;
 import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Award } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
@@ -44,6 +50,7 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-gold/30">
+      <LandingStructuredData />
       <LandingSmoothScroll />
       {/* Navbar */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 glass-nav rounded-full px-6 h-14 flex items-center justify-between">
@@ -54,6 +61,7 @@ export default async function LandingPage() {
           <a href="#features" className="hover:text-gold transition-colors">Features</a>
           <a href="#how-it-works" className="hover:text-gold transition-colors">How it works</a>
           <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
+          <a href="#faq" className="hover:text-gold transition-colors">FAQ</a>
         </div>
         <div className="flex items-center gap-4">
           {user ? (
@@ -457,6 +465,8 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      <LandingFaq />
+
       {/* CTA */}
       <section className="py-32 px-6 bg-gradient-to-b from-[#060606] to-[#110e0a]">
         <div className="max-w-4xl mx-auto rounded-[3rem] glass p-16 md:p-24 text-center relative overflow-hidden group">
@@ -500,6 +510,7 @@ export default async function LandingPage() {
                 <a href="#features" className="text-white/40 text-sm hover:text-gold transition-colors">Features</a>
                 <a href="#how-it-works" className="text-white/40 text-sm hover:text-gold transition-colors">How it works</a>
                 <a href="#pricing" className="text-white/40 text-sm hover:text-gold transition-colors">Pricing</a>
+                <a href="#faq" className="text-white/40 text-sm hover:text-gold transition-colors">FAQ</a>
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="text-white font-bold text-sm tracking-wider uppercase">Company</h4>
