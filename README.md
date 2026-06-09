@@ -35,3 +35,4 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/dashboard` | Manager dashboard |
 | `/my-shifts` | Worker shift view |
 | `/settings` | Org settings and billing |
+j
