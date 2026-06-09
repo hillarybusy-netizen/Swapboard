@@ -99,6 +99,7 @@ export async function sendPasswordResetEmail(email: string) {
       to: normalizedEmail,
       subject: "Reset your SwapBoard password",
       html: swapboardEmailHtml({
+        title: "Reset your SwapBoard password",
         body: "You requested a password reset for your SwapBoard account.",
         buttonText: "Reset My Password",
         buttonUrl: resetLink,
