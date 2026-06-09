@@ -87,7 +87,7 @@ export default async function SwapRequestsPage() {
                   )}
 
                   <div className="pt-2">
-                    <WorkerSwapActions swapId={swap.id} userId={user.id} mode="offer" />
+                    <WorkerSwapActions swapId={swap.id} mode="offer" />
                   </div>
                 </div>
               </div>
