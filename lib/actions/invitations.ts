@@ -188,6 +188,7 @@ export async function sendInvitation(inv: {
       to: inv.email,
       subject: `Join ${inv.organization_name} on SwapBoard`,
       html: swapboardEmailHtml({
+        title: `Join ${inv.organization_name} on SwapBoard`,
         body: `You've been invited to join <strong>${inv.organization_name}</strong> on SwapBoard as a <strong>${inv.role}</strong>.`,
         buttonText: "Accept Invitation",
         buttonUrl: inviteLink,
