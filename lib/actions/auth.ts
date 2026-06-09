@@ -53,6 +53,7 @@ export async function registerUser({
         to: normalizedEmail,
         subject: "Welcome to SwapBoard",
         html: swapboardEmailHtml({
+          title: "Welcome to SwapBoard",
           body: `Hi ${fullName.trim()},<br/><br/>Your SwapBoard account has been created. Sign in to start your free 14-day trial and set up your workspace.`,
           buttonText: "Sign In to SwapBoard",
           buttonUrl: loginUrl,
