@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Nevera';
+  src: url('/fonts/Nevera-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer utilities {
+  .font-nevera {
+    font-family: 'Nevera', sans-serif;
+  }
+}
+
 @layer base {
   :root {
     /* Gold & Black Matte — SwapBoard Premium Design System */

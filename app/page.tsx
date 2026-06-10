@@ -6,7 +6,7 @@ import { LandingStructuredData } from "@/components/seo/StructuredData";
 import { LandingFaq } from "@/components/seo/LandingFaq";
 
 export const metadata: Metadata = landingMetadata;
-import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Award } from "lucide-react";
+import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, CheckCircle, Gift, Star, ChevronLeft, ChevronRight, Award, Infinity } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
 import { LandingHeroPreview } from "@/components/landing/LandingHeroPreview";
@@ -103,17 +103,22 @@ export default async function LandingPage() {
         <div className="relative z-[3] max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 pt-10">
           {/* Left: text + CTA */}
           <div className="flex-1 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight mb-8 leading-[1.1]">
-              <span className="text-white">Shift swapping, </span>
-              <span className="text-white/40 font-light">finally </span>
-              <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-1 align-middle">
-                <RefreshCw className="w-5 h-5 md:w-6 md:h-6 text-gold animate-spin-slow" />
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-nevera font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1]">
+              <span className="text-white">Create </span>
+              <span className="text-white/40 font-light">a system </span>
+              <span className="text-white">of stable </span>
+              <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-1 md:mx-2 align-middle">
+                <Infinity className="w-5 h-5 md:w-6 md:h-6 text-gold" />
               </span>
-              <span className="text-gold-gradient block">under control.</span>
+              <span className="text-white">coverage </span>
+              <span className="text-white/40 font-light">where staff </span>
+              <span className="text-white">trade shifts </span>
+              <span className="text-white">for </span>
+              <span className="text-gold-gradient block sm:inline">your business 24/7</span>
             </h1>
 
-            <p className="text-sm md:text-base text-white/50 max-w-md mx-auto lg:mx-0 mb-10 leading-relaxed font-medium">
-              No more last-minute callouts. Your team trades shifts instantly — managers just approve.
+            <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed font-nevera font-medium">
+              Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">

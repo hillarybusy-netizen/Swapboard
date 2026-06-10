@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Unbounded } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AnimatedFavicon } from "@/components/AnimatedFavicon";
 import { DEFAULT_TITLE, SITE_URL } from "@/lib/seo";
 import { rootMetadata } from "@/lib/metadata";
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const unbounded = Unbounded({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   ...rootMetadata,
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href={SITE_URL} />
         <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable site summary" />
       </head>
-      <body className={jakarta.className}>
+      <body className={unbounded.className}>
         <AnimatedFavicon />
         {children}
         <Toaster />
