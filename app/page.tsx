@@ -92,11 +92,11 @@ export default async function LandingPage() {
             alt="Workers together"
             fill
             priority
-            className="object-cover opacity-40 blur-md scale-110"
+            className="object-cover opacity-70 scale-105"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-[#050505]/50" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/80" />
+          <div className="absolute inset-0 bg-[#050505]/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/60" />
         </div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/10 blur-[120px] rounded-full -z-10" />
 
@@ -151,7 +151,7 @@ export default async function LandingPage() {
           </div>
 
           {/* Right: app preview */}
-          <div className="flex-1 w-full lg:max-w-[600px] hidden md:block">
+          <div className="flex-1 w-full lg:max-w-[600px]">
             <LandingHeroPreview />
           </div>
         </div>
