@@ -53,17 +53,17 @@ export default async function LandingPage() {
       <LandingStructuredData />
       <LandingSmoothScroll />
       {/* Navbar */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 glass-nav rounded-full px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <nav className="fixed top-6 inset-x-0 mx-auto w-[90%] max-w-5xl z-50 glass-nav rounded-full px-6 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-2 z-10">
           <AnimatedLogo size="sm" showText={true} />
         </div>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/50">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center gap-8 text-sm font-medium text-white/50 w-max">
           <a href="#features" className="hover:text-gold transition-colors">Features</a>
           <a href="#how-it-works" className="hover:text-gold transition-colors">How it works</a>
           <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
           <a href="#faq" className="hover:text-gold transition-colors">FAQ</a>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 z-10">
           {user ? (
             <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
               <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
@@ -86,22 +86,23 @@ export default async function LandingPage() {
 
       {/* Hero */}
       <section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden bg-gradient-to-b from-[#14120d] via-[#090807] to-[#060606]">
-        <div className="absolute inset-0 -z-20">
+        <div className="absolute inset-0 -z-20 overflow-hidden">
           <Image
-            src="/landing/manager-team.jpg"
-            alt=""
+            src="/landing/workers_together.png"
+            alt="Workers together"
             fill
             priority
-            className="object-cover opacity-25"
+            className="object-cover opacity-40 blur-md scale-110"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#14120d] via-[#090807]/92 to-[#060606]/75" />
+          <div className="absolute inset-0 bg-[#050505]/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/80" />
         </div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/5 blur-[120px] rounded-full -z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/10 blur-[120px] rounded-full -z-10" />
 
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="text-center lg:text-left relative">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1] max-w-3xl mx-auto lg:mx-0">
+        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center pt-10">
+          <div className="text-center relative">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1] max-w-4xl mx-auto">
               <span className="text-white">Create </span>
               <span className="text-white/40 font-light">a system </span>
               <span className="text-white">of stable </span>
@@ -119,7 +120,7 @@ export default async function LandingPage() {
               Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
             </p>
 
-            <div className="flex flex-col items-center lg:items-start justify-center gap-4">
+            <div className="flex flex-col items-center justify-center gap-4">
               {user ? (
                 <Link
                   href="/dashboard"
@@ -138,7 +139,7 @@ export default async function LandingPage() {
 
                   <Link
                     href="/register"
-                    className="flex items-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
+                    className="flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
                   >
                     <Gift className="w-4 h-4" />
                     <span>Try for free — 14-day premium trial included</span>
@@ -146,10 +147,6 @@ export default async function LandingPage() {
                 </>
               )}
             </div>
-          </div>
-
-          <div className="relative mt-4 lg:mt-0">
-            <LandingHeroPreview />
           </div>
         </div>
       </section>

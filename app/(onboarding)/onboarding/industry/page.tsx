@@ -74,11 +74,14 @@ export default function IndustryPage() {
           ))}
       </div>
 
-      <div className="flex justify-end mt-16 pt-12 border-t border-white/5">
+      <div className="flex flex-col-reverse md:flex-row md:items-center justify-between mt-16 pt-12 border-t border-white/5 gap-6">
+        <p className="text-xs font-medium text-white/30 italic">
+          * Support for other industries will be added later.
+        </p>
         <Button 
           onClick={handleNext} 
           disabled={!selected} 
-          className="h-14 px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20 translate-y-0 active:scale-95 transition-all"
+          className="h-14 w-full md:w-auto px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20 translate-y-0 active:scale-95 transition-all"
         >
           Continue Build <ChevronRight className="w-4 h-4" />
         </Button>

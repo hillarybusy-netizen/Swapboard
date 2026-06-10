@@ -139,15 +139,15 @@ export default async function TeamPage() {
           <div className="grid gap-4">
             {(pendingInvites as any[]).map((inv) => (
               <div key={inv.id} className="glass rounded-[1.5rem] p-5 border-white/5 border-dashed opacity-60">
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 text-xs font-black">?</div>
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-white/80">{inv.email ?? "Manual Link Invite"}</p>
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 text-xs font-black shrink-0">?</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-white/80 truncate">{inv.email ?? "Manual Link Invite"}</p>
                       <p className="text-[9px] font-black uppercase tracking-widest text-white/20">Awaiting Acceptance</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto mt-2 md:mt-0">
                     <Badge className="bg-white/5 text-white/40 rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest border-none shrink-0">
                       {inv.user_role}
                     </Badge>

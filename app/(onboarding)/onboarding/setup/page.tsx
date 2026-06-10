@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { INDUSTRY_TEMPLATES, type DepartmentTemplate } from "@/lib/industry-templates";
+import { setupWorkspace } from "@/lib/actions/setup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,36 +50,7 @@ export default function SetupPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Create org
-      const trialEnd = new Date();
-      trialEnd.setDate(trialEnd.getDate() + 14);
-      const { data: org, error: orgErr } = await supabase
-        .from("organizations")
-        .insert({ name: orgName.trim(), industry: industry!, plan: "trial", trial_started_at: new Date().toISOString(), trial_ends_at: trialEnd.toISOString() })
-        .select().single();
-      if (orgErr) throw orgErr;
-
-      // Create departments + roles
-      for (let i = 0; i < departments.length; i++) {
-        const dept = departments[i];
-        if (!dept.name.trim()) continue;
-        const { data: dbDept, error: deptErr } = await supabase
-          .from("departments")
-          .insert({ organization_id: org.id, name: dept.name, color: dept.color, requires_certification: dept.requiresCertification ?? false, sort_order: i })
-          .select().single();
-        if (deptErr) throw deptErr;
-        if (dept.roles.length > 0) {
-          await supabase.from("roles").insert(
-            dept.roles.map((r) => ({ organization_id: org.id, department_id: dbDept.id, name: r.name, min_hours_notice: r.minHoursNotice }))
-          );
-        }
-      }
-
-      // Update profile
-      const { error: profileErr } = await supabase.from("profiles")
-        .update({ organization_id: org.id, user_role: "admin", onboarding_complete: false })
-        .eq("id", user.id);
-      if (profileErr) throw profileErr;
+      await setupWorkspace(user.id, orgName.trim(), industry!, departments);
 
       sessionStorage.removeItem("onboarding_industry");
       router.push("/onboarding/invite");
