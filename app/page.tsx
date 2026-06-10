@@ -85,40 +85,35 @@ export default async function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden bg-gradient-to-b from-[#14120d] via-[#090807] to-[#060606]">
-        <div className="absolute inset-0 -z-20 overflow-hidden">
-          <Image
-            src="/landing/workers_together.png"
-            alt="Workers together"
-            fill
-            priority
-            className="object-cover opacity-70 scale-105"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-[#050505]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/60" />
-        </div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/10 blur-[120px] rounded-full -z-10" />
+      <section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden">
+        {/* Background image */}
+        <Image
+          src="/landing/workers_together.png"
+          alt="Workers together"
+          fill
+          priority
+          className="object-cover opacity-75 scale-105 z-0"
+          sizes="100vw"
+        />
+        {/* Dark overlays for readability */}
+        <div className="absolute inset-0 bg-[#050505]/50 z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/30 to-[#050505]/60 z-[1]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/10 blur-[120px] rounded-full z-[2]" />
 
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 pt-10">
+        <div className="relative z-[3] max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 pt-10">
           {/* Left: text + CTA */}
           <div className="flex-1 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1]">
-              <span className="text-white">Create </span>
-              <span className="text-white/40 font-light">a system </span>
-              <span className="text-white">of stable </span>
-              <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-1 md:mx-2 align-middle">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight mb-8 leading-[1.1]">
+              <span className="text-white">Shift swapping, </span>
+              <span className="text-white/40 font-light">finally </span>
+              <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-1 align-middle">
                 <RefreshCw className="w-5 h-5 md:w-6 md:h-6 text-gold animate-spin-slow" />
               </span>
-              <span className="text-white">coverage </span>
-              <span className="text-white/40 font-light">where staff </span>
-              <span className="text-white">trade shifts </span>
-              <span className="text-white">for </span>
-              <span className="text-gold-gradient block sm:inline">your business 24/7</span>
+              <span className="text-gold-gradient block">under control.</span>
             </h1>
 
-            <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed font-medium">
-              Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
+            <p className="text-sm md:text-base text-white/50 max-w-md mx-auto lg:mx-0 mb-10 leading-relaxed font-medium">
+              No more last-minute callouts. Your team trades shifts instantly — managers just approve.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
