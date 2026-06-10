@@ -53,11 +53,11 @@ export default function SetupPage() {
       await setupWorkspace(user.id, orgName.trim(), industry!, departments);
 
       sessionStorage.removeItem("onboarding_industry");
-      router.push("/onboarding/invite");
-      router.refresh();
+      // Hard redirect so the new org is picked up by middleware + server components
+      window.location.href = "/onboarding/invite";
     } catch (err: any) {
+      console.error("[setupWorkspace] error:", err);
       toast({ title: "Setup failed", description: err.message, variant: "destructive" });
-    } finally {
       setLoading(false);
     }
   }
