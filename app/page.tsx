@@ -100,9 +100,10 @@ export default async function LandingPage() {
         </div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/10 blur-[120px] rounded-full -z-10" />
 
-        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center pt-10">
-          <div className="text-center relative">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1] max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 pt-10">
+          {/* Left: text + CTA */}
+          <div className="flex-1 text-center lg:text-left">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1]">
               <span className="text-white">Create </span>
               <span className="text-white/40 font-light">a system </span>
               <span className="text-white">of stable </span>
@@ -120,7 +121,7 @@ export default async function LandingPage() {
               Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
             </p>
 
-            <div className="flex flex-col items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
               {user ? (
                 <Link
                   href="/dashboard"
@@ -139,7 +140,7 @@ export default async function LandingPage() {
 
                   <Link
                     href="/register"
-                    className="flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors mt-2"
+                    className="flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors"
                   >
                     <Gift className="w-4 h-4" />
                     <span>Try for free — 14-day premium trial included</span>
@@ -147,6 +148,11 @@ export default async function LandingPage() {
                 </>
               )}
             </div>
+          </div>
+
+          {/* Right: app preview */}
+          <div className="flex-1 w-full lg:max-w-[600px] hidden md:block">
+            <LandingHeroPreview />
           </div>
         </div>
       </section>
