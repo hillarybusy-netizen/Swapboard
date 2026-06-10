@@ -4,50 +4,54 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { setupWorkspace } from "@/lib/actions/setup";
 import { sendInvitation } from "@/lib/actions/invitations";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, X, CheckCircle2, Loader2, ChevronRight, AlertCircle } from "lucide-react";
+import { Plus, X, CheckCircle2, Loader2, ChevronRight, AlertCircle, ChevronLeft } from "lucide-react";
 
 interface Invite { email: string; role: "manager" | "worker"; department_id: string }
-interface Department { id: string; name: string; color: string }
+
+// Departments from DB (after workspace is created)
+interface DBDepartment { id: string; name: string; color: string }
+// Departments from sessionStorage (before creation)
+interface PendingDepartment { name: string; color: string }
 
 export default function InvitePage() {
   const router = useRouter();
   const [invites, setInvites] = useState<Invite[]>([{ email: "", role: "worker", department_id: "" }]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [orgId, setOrgId] = useState("");
-  const [orgName, setOrgName] = useState("Your Organization");
+
+  // Pending data from sessionStorage (not yet in DB)
+  const [pendingOrgName, setPendingOrgName] = useState("");
+  const [pendingDepartments, setPendingDepartments] = useState<PendingDepartment[]>([]);
+  const [pendingIndustry, setPendingIndustry] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [done, setDone] = useState(false);
   const [showLogoDialog, setShowLogoDialog] = useState(false);
 
-  // Load org + departments on mount
   useEffect(() => {
-    (async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .eq("id", user.id)
-        .single();
-      if (!profile?.organization_id) return;
-      setOrgId(profile.organization_id);
+    const industry = sessionStorage.getItem("onboarding_industry");
+    const setupRaw = sessionStorage.getItem("onboarding_setup");
 
-      const [{ data: org }, { data: depts }] = await Promise.all([
-        supabase.from("organizations").select("name").eq("id", profile.organization_id).single(),
-        supabase.from("departments").select("*").eq("organization_id", profile.organization_id).order("name"),
-      ]);
-      if (org?.name) setOrgName(org.name);
-      setDepartments((depts as Department[]) ?? []);
-    })();
-  }, []);
+    if (!industry || !setupRaw) {
+      // Missing data — go back to start
+      router.push("/onboarding/industry");
+      return;
+    }
+
+    try {
+      const setup = JSON.parse(setupRaw);
+      setPendingOrgName(setup.orgName ?? "");
+      setPendingDepartments(setup.departments ?? []);
+      setPendingIndustry(industry);
+    } catch {
+      router.push("/onboarding/industry");
+    }
+  }, [router]);
 
   function addRow() { setInvites((v) => [...v, { email: "", role: "worker", department_id: "" }]); }
   function removeRow(i: number) { setInvites((v) => v.filter((_, idx) => idx !== i)); }
@@ -55,48 +59,73 @@ export default function InvitePage() {
   function updateRole(i: number, role: "manager" | "worker") {
     setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, role, department_id: role === "manager" ? "" : inv.department_id } : inv));
   }
-  function updateDept(i: number, department_id: string) { setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, department_id } : inv)); }
+  // For pending departments we match by name since we don't have IDs yet
+  function updateDept(i: number, department_name: string) {
+    setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, department_id: department_name } : inv));
+  }
 
-  const workersMissingDept = invites.some((inv) => inv.role === "worker" && !inv.department_id);
+  const workersMissingDept = invites.some((inv) => inv.email.trim() && inv.role === "worker" && !inv.department_id);
 
-  async function handleSendInvites() {
-    setSubmitted(true);
-    const valid = invites.filter((i) => i.email.trim());
-    if (valid.length === 0) { goToDashboard(); return; }
-
-    // Validate workers have a department
-    const workerNoDept = valid.find((inv) => inv.role === "worker" && !inv.department_id);
-    if (workerNoDept) {
-      toast({ title: "Department required", description: "Please select a department for every worker invite.", variant: "destructive" });
-      return;
+  async function finalize(skipInvites: boolean) {
+    if (!skipInvites) {
+      setSubmitted(true);
+      const valid = invites.filter((i) => i.email.trim());
+      if (valid.length > 0) {
+        const workerNoDept = valid.find((inv) => inv.role === "worker" && !inv.department_id);
+        if (workerNoDept) {
+          toast({ title: "Department required", description: "Please select a department for every worker invite.", variant: "destructive" });
+          return;
+        }
+      }
     }
 
     setLoading(true);
     try {
-      for (const inv of valid) {
-        const res = await sendInvitation({
-          email: inv.email.trim(),
-          role: inv.role,
-          department_id: inv.role === "manager" ? "" : inv.department_id,
-          organization_id: orgId,
-          organization_name: orgName,
-        });
-        if (!res.success) throw new Error(res.error || "Failed to send invitation");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // ── Step 1: Save everything to the DB now ──
+      const { orgId, departmentMap } = await setupWorkspace(
+        user.id,
+        pendingOrgName,
+        pendingIndustry,
+        pendingDepartments,
+      );
+
+      // ── Step 2: Send invitations (if any and not skipping) ──
+      if (!skipInvites) {
+        const valid = invites.filter((i) => i.email.trim());
+        for (const inv of valid) {
+          // Resolve department name → real DB id using the map returned from setup
+          const resolvedDeptId = inv.role === "manager" ? "" : (departmentMap[inv.department_id] ?? "");
+          await sendInvitation({
+            email: inv.email.trim(),
+            role: inv.role,
+            department_id: resolvedDeptId,
+            organization_id: orgId,
+            organization_name: pendingOrgName,
+          });
+        }
       }
-      setDone(true);
+
+      // ── Step 3: Mark onboarding complete ──
+      await supabase.from("profiles").update({ onboarding_complete: true }).eq("id", user.id);
+
+      // Clean up sessionStorage
+      sessionStorage.removeItem("onboarding_industry");
+      sessionStorage.removeItem("onboarding_setup");
+
+      if (skipInvites) {
+        window.location.href = "/dashboard";
+      } else {
+        setDone(true);
+      }
     } catch (err: any) {
-      toast({ title: "Failed to send invites", description: err.message, variant: "destructive" });
-    } finally {
+      console.error("[finalize] error:", err);
+      toast({ title: "Setup failed", description: err.message, variant: "destructive" });
       setLoading(false);
     }
-  }
-
-  async function goToDashboard() {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    await supabase.from("profiles").update({ onboarding_complete: true }).eq("id", user!.id);
-    router.push("/dashboard");
-    router.refresh();
   }
 
   if (done) {
@@ -106,7 +135,7 @@ export default function InvitePage() {
           <CheckCircle2 className="w-12 h-12 text-gold animate-in zoom-in slide-in-from-top-1 duration-1000 delay-300" />
         </div>
         <h1 className="text-4xl font-black text-white mb-4 tracking-tighter">Transmission Successful</h1>
-        <p className="text-white/40 text-sm font-medium mb-12 max-w-sm mx-auto">Your team invitations have been dispatched. They can join the workspace immediately.</p>
+        <p className="text-white/40 text-sm font-medium mb-12 max-w-sm mx-auto">Your workspace is live and team invitations have been dispatched.</p>
         <Button className="h-14 px-12 btn-gold rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-gold/20" onClick={() => setShowLogoDialog(true)}>
           Enter Workspace <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
@@ -121,18 +150,12 @@ export default function InvitePage() {
             </DialogHeader>
             <div className="flex flex-col gap-3 mt-6">
               <Button
-                onClick={async () => {
-                  const supabase = createClient();
-                  const { data: { user } } = await supabase.auth.getUser();
-                  await supabase.from("profiles").update({ onboarding_complete: true }).eq("id", user!.id);
-                  router.push("/settings");
-                  router.refresh();
-                }}
+                onClick={() => { window.location.href = "/settings"; }}
                 className="btn-gold w-full"
               >
                 Go to Settings
               </Button>
-              <Button variant="ghost" onClick={goToDashboard} className="w-full text-white/40 hover:text-white">
+              <Button variant="ghost" onClick={() => { window.location.href = "/dashboard"; }} className="w-full text-white/40 hover:text-white">
                 Not Now
               </Button>
             </div>
@@ -145,6 +168,10 @@ export default function InvitePage() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex items-center gap-3 mb-12 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+        <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-1.5">
+          <ChevronLeft className="w-3 h-3" /> Back
+        </button>
+        <span className="opacity-50">/</span>
         <span className="text-gold">Step 03</span>
         <span className="opacity-50">/</span>
         <span>Personnel Enrollment</span>
@@ -158,6 +185,11 @@ export default function InvitePage() {
         <p className="text-white/40 text-sm font-medium max-w-lg">
           Onboard your initial staff to begin coordinating shifts. You can always manage invitations later in the Command Center.
         </p>
+        {pendingOrgName && (
+          <p className="mt-3 text-[10px] font-black uppercase tracking-widest text-gold/60">
+            Setting up: {pendingOrgName}
+          </p>
+        )}
       </div>
 
       <div className="glass rounded-[2rem] border-white/5 p-8 space-y-6">
@@ -172,7 +204,7 @@ export default function InvitePage() {
         <div className="space-y-3">
           {invites.map((inv, i) => {
             const isWorker = inv.role === "worker";
-            const missingDept = submitted && isWorker && !inv.department_id;
+            const missingDept = submitted && isWorker && inv.email.trim() && !inv.department_id;
             return (
               <div key={i} className="grid grid-cols-1 md:grid-cols-[1fr_140px_160px_48px] gap-4 items-center">
                 <Input
@@ -192,18 +224,18 @@ export default function InvitePage() {
                   </SelectContent>
                 </Select>
 
-                {/* Department */}
+                {/* Department — uses pending (pre-DB) department names */}
                 {isWorker ? (
                   <Select value={inv.department_id} onValueChange={(v) => updateDept(i, v)}>
                     <SelectTrigger className={`h-14 rounded-2xl font-bold transition-colors ${missingDept ? "bg-red-500/10 border-red-500/40 text-red-400" : "bg-white/5 border-white/10 text-white"}`}>
                       <SelectValue placeholder={missingDept ? "Required ↑" : "Department"} />
                     </SelectTrigger>
                     <SelectContent className="glass border-white/10 text-white">
-                      {departments.length === 0 ? (
+                      {pendingDepartments.length === 0 ? (
                         <div className="px-3 py-2 text-xs text-white/30">No departments set up yet</div>
                       ) : (
-                        departments.map((d) => (
-                          <SelectItem key={d.id} value={d.id} className="focus:bg-gold focus:text-[#050505] font-bold">
+                        pendingDepartments.map((d) => (
+                          <SelectItem key={d.name} value={d.name} className="focus:bg-gold focus:text-[#050505] font-bold">
                             {d.name}
                           </SelectItem>
                         ))
@@ -242,10 +274,15 @@ export default function InvitePage() {
       </div>
 
       <div className="flex justify-between items-center mt-16 pt-12 border-t border-white/5">
-        <Button variant="ghost" onClick={goToDashboard} className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest">
+        <Button variant="ghost" onClick={() => finalize(true)} disabled={loading} className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest">
+          {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
           Provision Later
         </Button>
-        <Button className="h-14 px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20" onClick={handleSendInvites} disabled={loading}>
+        <Button
+          className="h-14 px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20"
+          onClick={() => finalize(false)}
+          disabled={loading}
+        >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           Finalize &amp; Deploy <ChevronRight className="w-4 h-4" />
         </Button>

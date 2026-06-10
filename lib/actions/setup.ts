@@ -1,14 +1,20 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { DepartmentTemplate } from "@/lib/industry-templates";
+
+interface PendingDepartment {
+  name: string;
+  color: string;
+  roles: { name: string; minHoursNotice: number }[];
+  requiresCertification?: boolean;
+}
 
 export async function setupWorkspace(
   userId: string,
   orgName: string,
   industry: string,
-  departments: DepartmentTemplate[]
-) {
+  departments: PendingDepartment[]
+): Promise<{ orgId: string; departmentMap: Record<string, string> }> {
   const supabase = createAdminClient();
 
   const trialEnd = new Date();
@@ -29,7 +35,9 @@ export async function setupWorkspace(
 
   if (orgErr) throw new Error("Failed to create organization: " + orgErr.message);
 
-  // 2. Create Departments & Roles
+  // 2. Create Departments & Roles — build a name→id map for invite resolution
+  const departmentMap: Record<string, string> = {};
+
   for (let i = 0; i < departments.length; i++) {
     const dept = departments[i];
     if (!dept.name.trim()) continue;
@@ -48,7 +56,10 @@ export async function setupWorkspace(
 
     if (deptErr) throw new Error("Failed to create department: " + deptErr.message);
 
-    if (dept.roles.length > 0) {
+    // Map department name → real DB id
+    departmentMap[dept.name] = dbDept.id;
+
+    if (dept.roles && dept.roles.length > 0) {
       const { error: rolesErr } = await supabase.from("roles").insert(
         dept.roles.map((r) => ({
           organization_id: org.id,
@@ -73,5 +84,5 @@ export async function setupWorkspace(
 
   if (profileErr) throw new Error("Failed to update profile: " + profileErr.message);
 
-  return { success: true };
+  return { orgId: org.id, departmentMap };
 }

@@ -3,25 +3,34 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { INDUSTRY_TEMPLATES, type DepartmentTemplate } from "@/lib/industry-templates";
-import { setupWorkspace } from "@/lib/actions/setup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ChevronRight, ChevronLeft, Plus, X, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, Plus, X } from "lucide-react";
 
 export default function SetupPage() {
   const router = useRouter();
   const [orgName, setOrgName] = useState("");
   const [industry, setIndustry] = useState<string | null>(null);
   const [departments, setDepartments] = useState<DepartmentTemplate[]>([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("onboarding_industry");
     if (!stored) { router.push("/onboarding/industry"); return; }
     setIndustry(stored);
+
+    // Restore previously entered org name / departments if user went back
+    const savedSetup = sessionStorage.getItem("onboarding_setup");
+    if (savedSetup) {
+      try {
+        const parsed = JSON.parse(savedSetup);
+        if (parsed.orgName) setOrgName(parsed.orgName);
+        if (parsed.departments) setDepartments(parsed.departments);
+        return;
+      } catch { /* ignore */ }
+    }
+
     setDepartments(INDUSTRY_TEMPLATES[stored]?.departments ?? []);
   }, [router]);
 
@@ -37,29 +46,21 @@ export default function SetupPage() {
     setDepartments((d) => d.map((dept, idx) => idx === i ? { ...dept, name } : dept));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleNext(e: React.FormEvent) {
     e.preventDefault();
     if (!orgName.trim()) return;
     if (departments.filter((d) => d.name.trim()).length === 0) {
       toast({ title: "Add at least one department", variant: "destructive" });
       return;
     }
-    setLoading(true);
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
 
-      await setupWorkspace(user.id, orgName.trim(), industry!, departments);
+    // Save to sessionStorage only — nothing written to DB yet
+    sessionStorage.setItem("onboarding_setup", JSON.stringify({
+      orgName: orgName.trim(),
+      departments: departments.filter((d) => d.name.trim()),
+    }));
 
-      sessionStorage.removeItem("onboarding_industry");
-      // Hard redirect so the new org is picked up by middleware + server components
-      window.location.href = "/onboarding/invite";
-    } catch (err: any) {
-      console.error("[setupWorkspace] error:", err);
-      toast({ title: "Setup failed", description: err.message, variant: "destructive" });
-      setLoading(false);
-    }
+    router.push("/onboarding/invite");
   }
 
   if (!industry) return null;
@@ -86,7 +87,7 @@ export default function SetupPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleNext} className="space-y-8">
         {/* Org name */}
         <div className="glass rounded-[1.5rem] md:rounded-[2rem] border-white/5 p-6 md:p-8 space-y-4 md:space-y-6">
           <div className="flex items-center gap-3 mb-2">
@@ -97,7 +98,7 @@ export default function SetupPage() {
             <Label htmlFor="orgName" className="text-[11px] md:text-xs font-bold text-white/50 ml-1">Organization / business name</Label>
             <Input
               id="orgName" placeholder="e.g. Downtown Bistro..."
-              value={orgName} onChange={(e) => setOrgName(e.target.value)} required 
+              value={orgName} onChange={(e) => setOrgName(e.target.value)} required
               className="h-12 md:h-14 bg-white/5 border-white/10 rounded-xl md:rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-base px-4"
             />
           </div>
@@ -114,7 +115,7 @@ export default function SetupPage() {
               <Plus className="w-3 h-3 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Add Department</span><span className="sm:hidden">Add</span>
             </Button>
           </div>
-          
+
           <div className="grid gap-3">
             {departments.map((dept, i) => (
               <div key={i} className="flex items-center gap-4 bg-white/[0.02] border border-white/5 p-4 rounded-2xl group transition-all hover:bg-white/[0.04]">
@@ -147,9 +148,8 @@ export default function SetupPage() {
           <Button type="button" variant="ghost" onClick={() => router.back()} className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest">
              Previous Step
           </Button>
-          <Button type="submit" className="h-14 px-10 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20" disabled={loading}>
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Initialize Org <ChevronRight className="w-4 h-4" />
+          <Button type="submit" className="h-14 px-10 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20">
+            Continue <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
       </form>
