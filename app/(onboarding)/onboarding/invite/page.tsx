@@ -17,7 +17,12 @@ interface Invite { email: string; role: "manager" | "worker"; department_id: str
 // Departments from DB (after workspace is created)
 interface DBDepartment { id: string; name: string; color: string }
 // Departments from sessionStorage (before creation)
-interface PendingDepartment { name: string; color: string }
+interface PendingDepartment {
+  name: string;
+  color: string;
+  roles: { name: string; minHoursNotice: number }[];
+  requiresCertification?: boolean;
+}
 
 export default function InvitePage() {
   const router = useRouter();
