@@ -1,12 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Unbounded } from "next/font/google";
+import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AnimatedFavicon } from "@/components/AnimatedFavicon";
 import { DEFAULT_TITLE, SITE_URL } from "@/lib/seo";
 import { rootMetadata } from "@/lib/metadata";
 
-const unbounded = Unbounded({ subsets: ["latin"] });
+// Plus Jakarta Sans — clean, precise fintech grotesque (Duitech substitute)
+// Used as the default body font across the entire site
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+// Space Grotesk — geometric, sharp display font (Gegola substitute)
+// Used exclusively in the hero section headings
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   ...rootMetadata,
@@ -29,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href={SITE_URL} />
         <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable site summary" />
       </head>
-      <body className={unbounded.className}>
+      <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${plusJakartaSans.className}`}>
         <AnimatedFavicon />
         {children}
         <Toaster />

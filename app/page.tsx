@@ -12,9 +12,10 @@ import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
 import { LandingHeroPreview } from "@/components/landing/LandingHeroPreview";
 import { LandingCoverageVisual, LandingVerificationVisual, LandingAnalyticsVisual } from "@/components/landing/LandingShowcaseCards";
 import { FeatureCardVisual } from "@/components/landing/FeatureCardVisual";
+import { ScrollReveal } from "@/components/animations/ScrollReveal";
 
 import { createClient } from "@/lib/supabase/server";
-import { LandingProfileDropdown } from "@/components/layout/LandingProfileDropdown";
+import { LandingNavbar } from "@/components/layout/LandingNavbar";
 import { cookies } from "next/headers";
 
 export default async function LandingPage() {
@@ -53,39 +54,10 @@ export default async function LandingPage() {
       <LandingStructuredData />
       <LandingSmoothScroll />
       {/* Navbar */}
-      <nav className="fixed top-6 inset-x-0 mx-auto w-[90%] max-w-5xl z-50 glass-nav rounded-full px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-2 z-10">
-          <AnimatedLogo size="sm" showText={true} />
-        </div>
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center gap-8 text-sm font-medium text-white/50 w-max">
-          <a href="#features" className="hover:text-gold transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-gold transition-colors">How it works</a>
-          <a href="#pricing" className="hover:text-gold transition-colors">Pricing</a>
-          <a href="#faq" className="hover:text-gold transition-colors">FAQ</a>
-        </div>
-        <div className="flex items-center gap-4 z-10">
-          {user ? (
-            <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
-              <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
-            </div>
-          ) : (
-            <>
-              <Link href="/login" className="text-sm font-medium text-white/50 hover:text-white transition-colors">
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="btn-gold px-5 py-2 rounded-full text-sm font-bold"
-              >
-                Try free
-              </Link>
-            </>
-          )}
-        </div>
-      </nav>
+      <LandingNavbar user={user} logoUrl={logoUrl} initials={initials} />
 
       {/* Hero */}
-      <section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden">
+      <section data-hero-section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden">
         {/* Background image */}
         <Image
           src="/landing/workers_together.png"
@@ -102,8 +74,8 @@ export default async function LandingPage() {
 
         <div className="relative z-[3] max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 pt-10">
           {/* Left: text + CTA */}
-          <div className="flex-1 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-nevera font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.1]">
+          <div className="flex-1 text-center lg:text-left lg:pl-12 xl:pl-16">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-8 leading-[1.1] md:leading-[1.05]">
               <span className="text-white">Create </span>
               <span className="text-white/40 font-light">a system </span>
               <span className="text-white">of stable </span>
@@ -117,7 +89,7 @@ export default async function LandingPage() {
               <span className="text-gold-gradient block sm:inline">your business 24/7</span>
             </h1>
 
-            <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed font-nevera font-medium">
+            <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed font-body font-medium">
               Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
             </p>
 
@@ -160,7 +132,7 @@ export default async function LandingPage() {
       {/* Stats */}
       <section className="py-24 px-6 relative border-y border-gold/10 bg-gradient-to-r from-[#1c1810] via-[#12100c] to-[#1c1810]">
         <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center relative">
+        <ScrollReveal className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center relative">
           {[
             { value: "94%", label: "Swap fulfillment rate" },
             { value: "2 min", label: "Avg. swap resolution" },
@@ -176,12 +148,12 @@ export default async function LandingPage() {
               </div>
             </div>
           ))}
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Industry strip */}
       <section className="py-16 px-6 bg-[#0a0a0e] border-b border-white/5">
-        <div className="max-w-6xl mx-auto grid grid-cols-3 gap-3 md:gap-6">
+        <ScrollReveal className="max-w-6xl mx-auto grid grid-cols-3 gap-3 md:gap-6">
           {[
             { src: "/landing/restaurant-team.jpg", alt: "Restaurant operations", label: "Restaurants" },
             { src: "/landing/healthcare-team.jpg", alt: "Healthcare staffing", label: "Healthcare" },
@@ -193,12 +165,12 @@ export default async function LandingPage() {
               <p className="absolute bottom-3 left-4 text-sm font-black uppercase tracking-widest text-white">{photo.label}</p>
             </div>
           ))}
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Features */}
       <section id="features" className="py-32 px-6 bg-[#080808]">
-        <div className="max-w-6xl mx-auto">
+        <ScrollReveal className="max-w-6xl mx-auto">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
               Built for <span className="text-gold-gradient">real operations</span>
@@ -256,13 +228,13 @@ export default async function LandingPage() {
               </div>
             ))}
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Modern Testimonial Section */}
       <section className="py-24 px-6 relative overflow-hidden bg-gradient-to-b from-[#1a1610] to-[#100e0a] border-y border-gold/15">
         <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+        <ScrollReveal className="max-w-4xl mx-auto text-center relative z-10">
           {/* Star Rating */}
           <div className="flex items-center justify-center gap-1.5 mb-8">
             {[...Array(5)].map((_, i) => (
@@ -313,12 +285,12 @@ export default async function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* The New Standard Grid Section */}
       <section className="py-32 px-6 bg-[#080808] relative overflow-hidden">
-        <div className="max-w-6xl mx-auto">
+        <ScrollReveal className="max-w-6xl mx-auto">
           {/* Header Row */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20">
             <div className="max-w-2xl">
@@ -369,14 +341,14 @@ export default async function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* How it works */}
       <section id="how-it-works" className="py-32 px-6 relative overflow-hidden bg-[#06080c]">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-gold/[0.04] blur-[150px] -z-10" />
 
-        <div className="max-w-5xl mx-auto text-center">
+        <ScrollReveal className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-black mb-24 tracking-tight">
             Up and running in <br /><span className="text-gold-gradient">3 simple steps</span>
           </h2>
@@ -404,13 +376,13 @@ export default async function LandingPage() {
               </div>
             ))}
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Pricing */}
       <section id="pricing" className="py-32 px-6 relative bg-gradient-to-b from-[#18140e] to-[#080808] border-t border-white/5">
         <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
-        <div className="max-w-6xl mx-auto relative">
+        <ScrollReveal className="max-w-6xl mx-auto relative">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">Simple, honest pricing</h2>
             <p className="text-white/50 text-lg">Start free. Scale as you grow. No hidden fees.</p>

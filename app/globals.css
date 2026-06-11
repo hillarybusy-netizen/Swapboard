@@ -11,8 +11,20 @@
 }
 
 @layer utilities {
+  /* Nevera — kept for backward compat with any existing uses */
   .font-nevera {
     font-family: 'Nevera', sans-serif;
+  }
+
+  /* Space Grotesk — geometric display font, Gegola substitute, used in hero */
+  .font-display {
+    font-family: var(--font-display), 'Space Grotesk', sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Plus Jakarta Sans — clean fintech body font, Duitech substitute */
+  .font-body {
+    font-family: var(--font-body), 'Plus Jakarta Sans', sans-serif;
   }
 }
 
@@ -97,6 +109,32 @@
   transform: translateZ(0);
   backface-visibility: hidden;
 }
+
+/* Morphing nav link hover */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #d4af37;
+  transition: width 0.25s ease;
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 
 /* Gold gradient text utility */
 .text-gold-gradient {
