@@ -452,7 +452,7 @@ export default async function LandingPage() {
               </div>
             ))}
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       <LandingFaq />
