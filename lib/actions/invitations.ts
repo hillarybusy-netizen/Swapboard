@@ -35,7 +35,10 @@ export async function sendInvitation(inv: {
     return { success: false, error: `Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Grow to add more.` };
   }
 
-  // Create invitation in database
+  // Create invitation in database with 7-day expiry
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
   const { data: invitation, error: dbError } = await supabase
     .from("invitations")
     .insert({
@@ -44,6 +47,7 @@ export async function sendInvitation(inv: {
       user_role: inv.role,
       department_id: inv.department_id || null,
       invited_by: user.id,
+      expires_at: expiresAt.toISOString(),
     })
     .select()
     .single();
@@ -118,9 +122,9 @@ export async function createManualInvitation(inv: {
     return { success: false, error: `Limit reached: Your ${org?.plan ?? 'current'} plan is limited to ${planLimit} workers. Upgrade to Grow to add more.` };
   }
 
-  // Create invitation in database with 30 minute expiry
+  // Create invitation in database with 7-day expiry
   const expiresAt = new Date();
-  expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+  expiresAt.setDate(expiresAt.getDate() + 7);
 
   const { data: invitation, error: dbError } = await supabase
     .from("invitations")

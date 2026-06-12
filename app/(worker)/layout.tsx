@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { RefreshCw } from "lucide-react";
+import { WorkerLogoutButton } from "@/components/layout/WorkerLogoutButton";
 
 export default async function WorkerLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -15,16 +16,14 @@ export default async function WorkerLayout({ children }: { children: React.React
 
       {/* Header */}
       <header className="fixed top-0 inset-x-0 z-40 px-4 pt-4">
-        <div className="glass max-w-lg mx-auto rounded-full border-white/5 py-4 px-6 flex items-center justify-between shadow-xl">
+        <div className="glass max-w-lg mx-auto rounded-full border-white/5 py-3 px-6 flex items-center justify-between shadow-xl">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/10">
               <RefreshCw className="w-4 h-4 text-gold" />
             </div>
             <span className="text-lg font-black tracking-tighter text-white">Swap<span className="text-gold">Board</span></span>
           </div>
-          <Link href="/dashboard" className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-gold transition-colors">
-            Manager View
-          </Link>
+          <WorkerLogoutButton />
         </div>
       </header>
 

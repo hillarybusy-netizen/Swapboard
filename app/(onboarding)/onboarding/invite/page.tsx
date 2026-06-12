@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -10,45 +10,78 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { sendInvitation } from "@/lib/actions/invitations";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, X, CheckCircle2, Loader2, ChevronRight } from "lucide-react";
+import { Plus, X, CheckCircle2, Loader2, ChevronRight, AlertCircle } from "lucide-react";
 
-interface Invite { email: string; role: "manager" | "worker" }
+interface Invite { email: string; role: "manager" | "worker"; department_id: string }
+interface Department { id: string; name: string; color: string }
 
 export default function InvitePage() {
   const router = useRouter();
-  const [invites, setInvites] = useState<Invite[]>([{ email: "", role: "worker" }]);
+  const [invites, setInvites] = useState<Invite[]>([{ email: "", role: "worker", department_id: "" }]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [orgId, setOrgId] = useState("");
+  const [orgName, setOrgName] = useState("Your Organization");
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [done, setDone] = useState(false);
+  const [showLogoDialog, setShowLogoDialog] = useState(false);
 
-  function addRow() { setInvites((i) => [...i, { email: "", role: "worker" }]) }
-  function removeRow(i: number) { setInvites((v) => v.filter((_, idx) => idx !== i)) }
-  function updateEmail(i: number, email: string) { setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, email } : inv)) }
-  function updateRole(i: number, role: "manager" | "worker") { setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, role } : inv)) }
-
-  async function handleSendInvites() {
-    const valid = invites.filter((i) => i.email.trim());
-    if (valid.length === 0) { goToDashboard(); return; }
-    setLoading(true);
-    try {
+  // Load org + departments on mount
+  useEffect(() => {
+    (async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      const { data: profile } = await supabase.from("profiles").select("organization_id").eq("id", user!.id).single();
-      if (!profile?.organization_id) throw new Error("No organization found");
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("organization_id")
+        .eq("id", user.id)
+        .single();
+      if (!profile?.organization_id) return;
+      setOrgId(profile.organization_id);
 
-      const { data: org } = await supabase.from("organizations").select("name").eq("id", profile.organization_id).single();
-      const orgName = org?.name || "Your Organization";
+      const [{ data: org }, { data: depts }] = await Promise.all([
+        supabase.from("organizations").select("name").eq("id", profile.organization_id).single(),
+        supabase.from("departments").select("*").eq("organization_id", profile.organization_id).order("name"),
+      ]);
+      if (org?.name) setOrgName(org.name);
+      setDepartments((depts as Department[]) ?? []);
+    })();
+  }, []);
 
+  function addRow() { setInvites((v) => [...v, { email: "", role: "worker", department_id: "" }]); }
+  function removeRow(i: number) { setInvites((v) => v.filter((_, idx) => idx !== i)); }
+  function updateEmail(i: number, email: string) { setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, email } : inv)); }
+  function updateRole(i: number, role: "manager" | "worker") {
+    setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, role, department_id: role === "manager" ? "" : inv.department_id } : inv));
+  }
+  function updateDept(i: number, department_id: string) { setInvites((v) => v.map((inv, idx) => idx === i ? { ...inv, department_id } : inv)); }
+
+  const workersMissingDept = invites.some((inv) => inv.role === "worker" && !inv.department_id);
+
+  async function handleSendInvites() {
+    setSubmitted(true);
+    const valid = invites.filter((i) => i.email.trim());
+    if (valid.length === 0) { goToDashboard(); return; }
+
+    // Validate workers have a department
+    const workerNoDept = valid.find((inv) => inv.role === "worker" && !inv.department_id);
+    if (workerNoDept) {
+      toast({ title: "Department required", description: "Please select a department for every worker invite.", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    try {
       for (const inv of valid) {
         const res = await sendInvitation({
           email: inv.email.trim(),
           role: inv.role,
-          department_id: "",
-          organization_id: profile.organization_id,
+          department_id: inv.role === "manager" ? "" : inv.department_id,
+          organization_id: orgId,
           organization_name: orgName,
         });
-        if (!res.success) {
-          throw new Error(res.error || "Failed to send invitation");
-        }
+        if (!res.success) throw new Error(res.error || "Failed to send invitation");
       }
       setDone(true);
     } catch (err: any) {
@@ -65,8 +98,6 @@ export default function InvitePage() {
     router.push("/dashboard");
     router.refresh();
   }
-
-  const [showLogoDialog, setShowLogoDialog] = useState(false);
 
   if (done) {
     return (
@@ -89,14 +120,14 @@ export default function InvitePage() {
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-3 mt-6">
-              <Button 
+              <Button
                 onClick={async () => {
                   const supabase = createClient();
                   const { data: { user } } = await supabase.auth.getUser();
                   await supabase.from("profiles").update({ onboarding_complete: true }).eq("id", user!.id);
                   router.push("/settings");
                   router.refresh();
-                }} 
+                }}
                 className="btn-gold w-full"
               >
                 Go to Settings
@@ -130,37 +161,80 @@ export default function InvitePage() {
       </div>
 
       <div className="glass rounded-[2rem] border-white/5 p-8 space-y-6">
-        <div className="grid grid-cols-[1fr_160px_48px] gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-white/20 px-4">
+        {/* Column headers */}
+        <div className="hidden md:grid grid-cols-[1fr_140px_160px_48px] gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-white/20 px-1">
           <span>Email address</span>
           <span>Access Level</span>
+          <span>Department <span className="text-red-400">*</span></span>
           <span />
         </div>
-        
+
         <div className="space-y-3">
-          {invites.map((inv, i) => (
-            <div key={i} className="grid grid-cols-[1fr_160px_48px] gap-4 items-center">
-              <Input 
-                type="email" 
-                placeholder="colleague@company.com" 
-                value={inv.email} 
-                onChange={(e) => updateEmail(i, e.target.value)} 
-                className="h-14 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-white placeholder:text-white/10"
-              />
-              <Select value={inv.role} onValueChange={(v) => updateRole(i, v as any)}>
-                <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl text-white font-bold focus:ring-gold/50">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="glass border-white/10 text-white">
-                  <SelectItem value="worker" className="focus:bg-gold focus:text-[#050505] font-bold">Worker Access</SelectItem>
-                  <SelectItem value="manager" className="focus:bg-gold focus:text-[#050505] font-bold">Manager Access</SelectItem>
-                </SelectContent>
-              </Select>
-              <button onClick={() => removeRow(i)} disabled={invites.length === 1} className="w-12 h-12 flex items-center justify-center text-white/20 hover:text-red-500 disabled:opacity-30 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          ))}
+          {invites.map((inv, i) => {
+            const isWorker = inv.role === "worker";
+            const missingDept = submitted && isWorker && !inv.department_id;
+            return (
+              <div key={i} className="grid grid-cols-1 md:grid-cols-[1fr_140px_160px_48px] gap-4 items-center">
+                <Input
+                  type="email"
+                  placeholder="colleague@company.com"
+                  value={inv.email}
+                  onChange={(e) => updateEmail(i, e.target.value)}
+                  className="h-14 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-white placeholder:text-white/10"
+                />
+                <Select value={inv.role} onValueChange={(v) => updateRole(i, v as any)}>
+                  <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl text-white font-bold focus:ring-gold/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="glass border-white/10 text-white">
+                    <SelectItem value="worker" className="focus:bg-gold focus:text-[#050505] font-bold">Worker Access</SelectItem>
+                    <SelectItem value="manager" className="focus:bg-gold focus:text-[#050505] font-bold">Manager Access</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Department */}
+                {isWorker ? (
+                  <Select value={inv.department_id} onValueChange={(v) => updateDept(i, v)}>
+                    <SelectTrigger className={`h-14 rounded-2xl font-bold transition-colors ${missingDept ? "bg-red-500/10 border-red-500/40 text-red-400" : "bg-white/5 border-white/10 text-white"}`}>
+                      <SelectValue placeholder={missingDept ? "Required ↑" : "Department"} />
+                    </SelectTrigger>
+                    <SelectContent className="glass border-white/10 text-white">
+                      {departments.length === 0 ? (
+                        <div className="px-3 py-2 text-xs text-white/30">No departments set up yet</div>
+                      ) : (
+                        departments.map((d) => (
+                          <SelectItem key={d.id} value={d.id} className="focus:bg-gold focus:text-[#050505] font-bold">
+                            {d.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="h-14 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center px-4 text-[10px] font-bold text-white/30 uppercase tracking-wider select-none cursor-not-allowed">
+                    All Access
+                  </div>
+                )}
+
+                <button
+                  onClick={() => removeRow(i)}
+                  disabled={invites.length === 1}
+                  className="w-12 h-12 flex items-center justify-center text-white/20 hover:text-red-500 disabled:opacity-30 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            );
+          })}
         </div>
+
+        {/* Validation banner */}
+        {submitted && workersMissingDept && (
+          <div className="flex items-center gap-2 text-[11px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            Worker invites require a department. Please select one for each worker.
+          </div>
+        )}
 
         <Button type="button" variant="ghost" size="sm" onClick={addRow} className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[10px] uppercase tracking-widest mt-4">
           <Plus className="w-3 h-3 mr-2" /> Add Personnel
@@ -173,7 +247,7 @@ export default function InvitePage() {
         </Button>
         <Button className="h-14 px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20" onClick={handleSendInvites} disabled={loading}>
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-          Finalize & Deploy <ChevronRight className="w-4 h-4" />
+          Finalize &amp; Deploy <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
       <Link href="/dashboard" prefetch className="hidden" aria-hidden tabIndex={-1} />
