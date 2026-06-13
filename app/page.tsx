@@ -57,7 +57,7 @@ export default async function LandingPage() {
       <LandingNavbar user={user} logoUrl={logoUrl} initials={initials} />
 
       {/* Hero */}
-      <section data-hero-section className="relative pt-44 pb-20 md:pb-32 px-6 overflow-hidden">
+      <section data-hero-section className="relative pt-44 pb-20 md:pb-32 lg:min-h-screen lg:flex lg:items-center px-6 overflow-hidden">
         {/* Background image */}
         <Image
           src="/landing/workers_together.png"
@@ -72,7 +72,7 @@ export default async function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/30 to-[#050505]/60 z-[1]" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gold/10 blur-[120px] rounded-full z-[2]" />
 
-        <div className="relative z-[3] max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 pt-10">
+        <div className="relative z-[3] w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 pt-10">
           {/* Left: text + CTA */}
           <div className="flex-1 text-center lg:text-left lg:pl-12 xl:pl-16">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-8 leading-[1.1] md:leading-[1.05]">
