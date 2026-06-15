@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { RefreshCw, Home, CalendarDays, Users, User, Bell } from "lucide-react";
-import { WorkerLogoutButton } from "@/components/layout/WorkerLogoutButton";
+import { RefreshCw, Bell } from "lucide-react";
+import { WorkerBottomNav } from "@/components/layout/WorkerBottomNav";
 
 export default async function WorkerLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -48,38 +47,7 @@ export default async function WorkerLayout({ children }: { children: React.React
         {children}
       </main>
 
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#050505]/90 backdrop-blur-xl border-t border-white/5 pb-safe">
-        <div className="max-w-lg mx-auto px-6 h-20 flex items-center justify-between relative">
-          <Link href="/my-shifts" className="flex flex-col items-center gap-1.5 text-gold">
-            <Home className="w-6 h-6" />
-            <span className="text-[10px] font-bold">Home</span>
-          </Link>
-          
-          <Link href="/my-shifts" className="flex flex-col items-center gap-1.5 text-white/40">
-            <CalendarDays className="w-6 h-6" />
-            <span className="text-[10px] font-bold">Shifts</span>
-          </Link>
-
-          {/* Center Swap Button */}
-          <div className="relative -top-6 flex flex-col items-center">
-            <Link href="/swap-requests" className="w-16 h-16 rounded-full bg-gold flex items-center justify-center shadow-lg shadow-gold/20 hover:scale-105 active:scale-95 transition-transform">
-              <RefreshCw className="w-8 h-8 text-[#050505]" />
-            </Link>
-            <span className="text-[10px] font-bold text-white/40 mt-1">Swap</span>
-          </div>
-
-          <Link href="/team" className="flex flex-col items-center gap-1.5 text-white/40">
-            <Users className="w-6 h-6" />
-            <span className="text-[10px] font-bold">Team</span>
-          </Link>
-
-          <Link href="/profile" className="flex flex-col items-center gap-1.5 text-white/40">
-            <User className="w-6 h-6" />
-            <span className="text-[10px] font-bold">Profile</span>
-          </Link>
-        </div>
-      </nav>
+      <WorkerBottomNav />
     </div>
   );
 }
