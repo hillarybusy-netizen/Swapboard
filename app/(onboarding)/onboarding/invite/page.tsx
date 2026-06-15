@@ -146,7 +146,7 @@ export default function InvitePage() {
         </Button>
 
         <Dialog open={showLogoDialog} onOpenChange={setShowLogoDialog}>
-          <DialogContent className="glass border-white/5 text-white sm:max-w-[425px]">
+          <DialogContent className="bg-[#0a0a0a]/95 backdrop-blur-2xl border-white/10 shadow-2xl text-white sm:max-w-[425px] rounded-2xl">
             <DialogHeader>
               <DialogTitle>Complete Your Branding</DialogTitle>
               <DialogDescription className="text-white/60">

@@ -18,6 +18,7 @@ import { SwapChartLazy } from "@/components/dashboard/SwapChartLazy";
 import { Lock } from "lucide-react";
 import { ExportReportButton } from "@/components/dashboard/ExportReportButton";
 import { PostShiftDialog } from "@/components/dashboard/PostShiftDialog";
+import { ConfirmCompletionButton } from "@/components/shifts/ConfirmCompletionButton";
 import { checkPlanLimit } from "@/lib/plans";
 
 
@@ -47,7 +48,8 @@ export default async function DashboardPage() {
     { data: pendingSwapsData }, 
     { data: atRiskShiftsData },
     { data: departmentsData },
-    { data: profilesData }
+    { data: profilesData },
+    { data: pendingCompletionsData },
   ] = await Promise.all([
     // Swap data (last 30 days)
     supabase
@@ -87,6 +89,14 @@ export default async function DashboardPage() {
       .eq("organization_id", orgId)
       .eq("is_active", true)
       .order("full_name"),
+    // Shifts awaiting completion confirmation
+    supabase
+      .from("shifts")
+      .select("*, department:departments(*), profile:profiles!shifts_assigned_to_fkey(full_name)")
+      .eq("organization_id", orgId)
+      .eq("status", "pending_completion")
+      .order("end_time", { ascending: false })
+      .limit(5),
   ]);
 
   const swaps = (swapsData ?? []) as any[];
@@ -94,6 +104,7 @@ export default async function DashboardPage() {
   const atRiskShifts = (atRiskShiftsData ?? []) as any[];
   const departments = (departmentsData ?? []) as any[];
   const profiles = (profilesData ?? []) as any[];
+  const pendingCompletions = (pendingCompletionsData ?? []) as any[];
 
   const metrics = calculateROI(swaps as any);
   const weeklyData = groupSwapsByWeek(swaps as any);
@@ -274,9 +285,48 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Sidebar Column: Pending Approvals */}
-        <div className="lg:col-span-1">
-          <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] h-full flex flex-col">
+        {/* Sidebar Column: Pending Approvals + Completions */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Pending Completions */}
+          {pendingCompletions.length > 0 && (
+            <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black tracking-tight text-white">Completions</h2>
+                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Awaiting Your Confirmation</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {pendingCompletions.map((shift: any) => (
+                  <div key={shift.id} className="flex flex-col gap-3 p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                    <div>
+                      <p className="text-sm font-bold text-white truncate">{shift.title}</p>
+                      <div className="flex items-center gap-2 mt-1 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                        {shift.profile?.full_name && <span>{shift.profile.full_name}</span>}
+                        {shift.department && (
+                          <>
+                            <span>·</span>
+                            <span className="text-gold/60">{shift.department.name}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <ConfirmCompletionButton
+                      shiftId={shift.id}
+                      shiftTitle={shift.title}
+                      workerName={shift.profile?.full_name}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pending Swap Approvals */}
+          <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex flex-col">
             <div className="flex items-center justify-between mb-8 md:mb-10">
               <div>
                 <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-1">Queue</h2>

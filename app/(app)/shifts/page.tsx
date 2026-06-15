@@ -47,7 +47,7 @@ export default async function ShiftsPage(props: {
 
   const [departmentsRes, profilesRes, shiftsRes] = await Promise.all([
     supabase.from("departments").select("*").eq("organization_id", orgId).order("sort_order"),
-    supabase.from("profiles").select("id, full_name").eq("organization_id", orgId).eq("is_active", true),
+    supabase.from("profiles").select("id, full_name").eq("organization_id", orgId).eq("is_active", true).eq("user_role", "worker"),
     query
   ]);
 

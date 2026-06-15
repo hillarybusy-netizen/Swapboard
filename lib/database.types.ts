@@ -3,7 +3,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Industry = "restaurant" | "healthcare" | "retail" | "hospitality";
 export type Plan = "trial" | "starter" | "pro" | "enterprise";
 export type UserRole = "worker" | "manager" | "admin";
-export type ShiftStatus = "scheduled" | "open" | "swap_pending" | "swapped" | "cancelled";
+export type ShiftStatus = "scheduled" | "open" | "swap_pending" | "swapped" | "cancelled" | "pending_completion" | "completed";
 export type SwapStatus = "pending" | "worker_accepted" | "manager_approved" | "rejected" | "cancelled";
 export type FeedbackType = "swap" | "nps" | "general";
 

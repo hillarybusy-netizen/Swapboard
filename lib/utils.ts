@@ -81,4 +81,6 @@ export const SHIFT_STATUS_LABELS: Record<string, string> = {
   swap_pending: "Swap Pending",
   swapped: "Swapped",
   cancelled: "Cancelled",
+  pending_completion: "Pending Confirmation",
+  completed: "Done",
 };
