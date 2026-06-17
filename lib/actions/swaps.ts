@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireUser, requireManager } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
+import { logAudit } from "./audit";
+import { sendSwapApprovedEmail, sendSwapRejectedEmail } from "@/lib/email";
 
 async function checkCertification(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -35,7 +37,9 @@ export async function requestSwap(shiftId: string, reason: string) {
 
   if (shiftError || !shift) throw new Error("Shift not found");
   if (shift.assigned_to !== user.id) throw new Error("You can only request swaps for your own shifts");
-  if (shift.status !== "scheduled") throw new Error("This shift is not available for swap");
+  if (shift.status !== "not_started" && shift.status !== "started") {
+    throw new Error("This shift is not available for swap");
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -62,10 +66,12 @@ export async function requestSwap(shiftId: string, reason: string) {
   const admin = createAdminClient();
   const { error: updateError } = await admin
     .from("shifts")
-    .update({ status: "swap_pending" })
+    .update({ status: "up_for_swap" })
     .eq("id", shiftId);
 
   if (updateError) throw new Error(updateError.message);
+
+  await logAudit(shift.organization_id, "shift", shiftId, "posted_for_swap", user.id, { reason });
 
   revalidatePath("/my-shifts");
   revalidatePath("/swap-requests");
@@ -99,7 +105,7 @@ export async function offerToCoverSwap(swapId: string) {
       .from("shifts")
       .select("id")
       .eq("assigned_to", user.id)
-      .neq("status", "cancelled")
+      .is("deleted_at", null)
       .lt("start_time", shift.end_time)
       .gt("end_time", shift.start_time);
 
@@ -108,6 +114,7 @@ export async function offerToCoverSwap(swapId: string) {
     }
   }
 
+  // Lock the swap (first come first serve)
   const { error: updateError } = await supabase
     .from("swap_requests")
     .update({
@@ -115,9 +122,16 @@ export async function offerToCoverSwap(swapId: string) {
       status: "worker_accepted",
       worker_responded_at: new Date().toISOString(),
     })
-    .eq("id", swapId);
+    .eq("id", swapId)
+    .eq("status", "pending"); // ensure it's still pending
 
   if (updateError) throw new Error(updateError.message);
+
+  // Update shift status
+  const admin = createAdminClient();
+  await admin.from("shifts").update({ status: "pending_approval_swap" }).eq("id", swap.shift_id);
+
+  await logAudit(swap.organization_id, "swap", swapId, "swap_claimed", user.id, { shift_id: swap.shift_id });
 
   revalidatePath("/swaps");
   revalidatePath("/swap-requests");
@@ -127,18 +141,25 @@ export async function offerToCoverSwap(swapId: string) {
 export async function managerSwapAction(
   swapId: string,
   action: "approve" | "reject",
-  managerNotes?: string
+  managerNotes?: string,
+  blockReswap: boolean = false
 ) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user, profile } = await requireUser();
 
   const { data: swap, error } = await supabase
     .from("swap_requests")
-    .select("*")
+    .select("*, shift:shifts(id, title, department_id), requester:profiles!swap_requests_requester_id_fkey(full_name, email)")
     .eq("id", swapId)
     .single();
 
   if (error || !swap) throw new Error("Swap request not found");
-  await requireManager(swap.organization_id);
+
+  if (profile.user_role === "manager" && !profile.department_ids?.includes(swap.shift?.department_id)) {
+    throw new Error("Unauthorized to manage swaps in this department");
+  }
+
+  const requester = swap.requester as any;
+  const shiftTitle = (swap.shift as any)?.title ?? "Shift";
 
   const admin = createAdminClient();
 
@@ -162,7 +183,13 @@ export async function managerSwapAction(
         .eq("id", swap.shift_id);
       if (shiftError) throw new Error(shiftError.message);
     }
+    await logAudit(swap.organization_id, "swap", swapId, "swap_approved", user.id, { shift_id: swap.shift_id });
+    // Notify requester by email
+    if (requester?.email) {
+      await sendSwapApprovedEmail(requester.email, requester.full_name, shiftTitle);
+    }
   } else {
+    // Reject
     const { error: swapError } = await supabase
       .from("swap_requests")
       .update({
@@ -175,11 +202,20 @@ export async function managerSwapAction(
 
     if (swapError) throw new Error(swapError.message);
 
+    const nextStatus = blockReswap ? "not_started" : "up_for_swap";
+
     const { error: shiftError } = await admin
       .from("shifts")
-      .update({ status: "scheduled" })
+      .update({ status: nextStatus })
       .eq("id", swap.shift_id);
+
     if (shiftError) throw new Error(shiftError.message);
+    
+    await logAudit(swap.organization_id, "swap", swapId, "swap_rejected", user.id, { shift_id: swap.shift_id, block_reswap: blockReswap });
+    // Notify requester by email
+    if (requester?.email) {
+      await sendSwapRejectedEmail(requester.email, requester.full_name, shiftTitle);
+    }
   }
 
   revalidatePath("/swaps");
@@ -192,13 +228,13 @@ export async function cancelSwapRequest(swapId: string) {
 
   const { data: swap, error } = await supabase
     .from("swap_requests")
-    .select("id, requester_id, shift_id, status")
+    .select("id, requester_id, shift_id, status, organization_id")
     .eq("id", swapId)
     .single();
 
   if (error || !swap) throw new Error("Swap request not found");
   if (swap.requester_id !== user.id) throw new Error("Unauthorized");
-  if (swap.status !== "pending") throw new Error("This swap can no longer be cancelled");
+  if (swap.status !== "pending") throw new Error("This swap can no longer be cancelled. Someone has already claimed it.");
 
   const { error: swapError } = await supabase
     .from("swap_requests")
@@ -210,10 +246,12 @@ export async function cancelSwapRequest(swapId: string) {
   const admin = createAdminClient();
   const { error: shiftError } = await admin
     .from("shifts")
-    .update({ status: "scheduled" })
+    .update({ status: "not_started" })
     .eq("id", swap.shift_id);
 
   if (shiftError) throw new Error(shiftError.message);
+
+  await logAudit(swap.organization_id, "swap", swapId, "swap_cancelled_by_worker", user.id, { shift_id: swap.shift_id });
 
   revalidatePath("/my-shifts");
   revalidatePath("/swaps");

@@ -1,282 +1,256 @@
-import { createClient } from "@/lib/supabase/server";
 import { getCachedSession } from "@/lib/supabase/cached";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { formatShiftDate, formatShiftTime } from "@/lib/utils";
-import { Calendar, Clock, PlusCircle, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
+import { formatShiftDate, formatShiftTime, formatShiftDuration } from "@/lib/utils";
+import { Calendar, Clock, Timer, ArrowLeftRight, CheckCircle2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
-import { RequestSwapButton } from "@/components/shifts/RequestSwapButton";
-import { WorkerSwapActions } from "@/components/swaps/WorkerSwapActions";
+import { cn } from "@/lib/utils";
+import { MarkDoneButton } from "@/components/shifts/MarkDoneButton";
 
 export const dynamic = "force-dynamic";
 
-export default async function MyShiftsPage({ searchParams }: { searchParams: { tab?: string } }) {
+type TabKey = "all" | "upcoming" | "completed" | "swapped";
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "upcoming", label: "Upcoming" },
+  { key: "completed", label: "Completed" },
+  { key: "swapped", label: "Swapped" },
+];
+
+function statusBadge(status: string) {
+  const map: Record<string, { label: string; color: string }> = {
+    not_started: { label: "Upcoming", color: "text-white/50 bg-white/10" },
+    started: {
+      label: "In Progress",
+      color: "text-blue-400 bg-blue-500/15 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)]",
+    },
+    up_for_swap: { label: "Up for Swap", color: "text-purple-400 bg-purple-500/15 border border-purple-500/20" },
+    pending_approval_claim: { label: "Claim Pending", color: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20" },
+    pending_approval_swap: { label: "Swap Pending", color: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20" },
+    swapped: { label: "Swapped", color: "text-white/30 bg-white/5 border border-white/10" },
+    overdue_not_done: { label: "Overdue !", color: "text-orange-400 bg-orange-500/15 border border-orange-500/20" },
+    done_pending_approval: { label: "Awaiting Approval", color: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20" },
+    done_manager_approved: { label: "Completed ✓", color: "text-emerald-400 bg-emerald-500/15 border border-emerald-500/20" },
+    done_rejected: { label: "Rejected — check notes", color: "text-red-400 bg-red-500/15 border border-red-500/20" },
+    no_show: { label: "No-Show", color: "text-red-400 bg-red-500/15 border border-red-500/20" },
+    cancelled: { label: "Cancelled", color: "text-white/20 bg-white/5" },
+  };
+  return map[status] ?? { label: status, color: "text-white/40 bg-white/5" };
+}
+
+function filterShifts(shifts: any[], tab: TabKey) {
+  if (tab === "all") return shifts;
+  if (tab === "upcoming")
+    return shifts.filter((s) =>
+      ["not_started", "started", "up_for_swap", "pending_approval_claim", "pending_approval_swap", "overdue_not_done"].includes(s.status)
+    );
+  if (tab === "completed")
+    return shifts.filter((s) =>
+      ["done_pending_approval", "done_manager_approved", "done_rejected"].includes(s.status)
+    );
+  if (tab === "swapped") return shifts.filter((s) => s.status === "swapped" || s.status === "no_show");
+  return shifts;
+}
+
+export default async function MyShiftsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
 
+  const params = await searchParams;
+  const currentTab = (params.tab as TabKey) || "all";
+
   const supabase = await createClient();
-  const orgId = profile?.organization_id;
-  const deptId = profile?.department_id;
 
-  const currentTab = searchParams.tab || "my-shifts";
+  const { data: allShiftsData } = await supabase
+    .from("shifts")
+    .select("*, department:departments(*)")
+    .eq("assigned_to", user.id)
+    .is("deleted_at", null)
+    .order("start_time", { ascending: false });
 
-  // For the greeting
-  const firstName = profile?.full_name?.split(" ")[0] || "User";
-  const orgName = (profile as any)?.organization?.name || "the team";
+  const allShifts = (allShiftsData ?? []) as any[];
+  const displayShifts = filterShifts(allShifts, currentTab);
 
-  // Calculate Profile Completion
-  let completedFields = 0;
-  const totalFields = 4;
-  if (profile?.full_name) completedFields++;
-  if (profile?.phone) completedFields++;
-  if (profile?.department_id) completedFields++;
-  if (profile?.organization_id) completedFields++;
-  const profileCompletion = Math.round((completedFields / totalFields) * 100);
-
-  const now = new Date().toISOString();
-
-  // Queries
-  const [upcomingRes, pastRes, availableRes, mySwapsRes] = await Promise.all([
-    supabase
-      .from("shifts")
-      .select("*, department:departments(*)")
-      .eq("assigned_to", user.id)
-      .gte("start_time", now)
-      .order("start_time", { ascending: true }),
-    supabase
-      .from("shifts")
-      .select("*, department:departments(*)")
-      .eq("assigned_to", user.id)
-      .lt("start_time", now)
-      .order("start_time", { ascending: false })
-      .limit(20),
-    supabase
-      .from("swap_requests")
-      .select("*, shift:shifts(*, department:departments(*)), requester:profiles!swap_requests_requester_id_fkey(*)")
-      .eq("organization_id", orgId ?? "")
-      .eq("status", "pending")
-      .neq("requester_id", user.id)
-      .is("covering_worker_id", null)
-      .order("requested_at", { ascending: false }),
-    supabase
-      .from("swap_requests")
-      .select("id, status")
-      .eq("requester_id", user.id)
-  ]);
-
-  const upcomingShifts = (upcomingRes.data ?? []) as any[];
-  const pastShifts = (pastRes.data ?? []) as any[];
-  const availableSwaps = (availableRes.data ?? []) as any[];
-  const mySwaps = (mySwapsRes.data ?? []) as any[];
-
-  // Stats logic
-  const availableCount = availableSwaps.length;
-  const mySwapsCount = mySwaps.length;
-  const pendingCount = mySwaps.filter(s => s.status === "pending" || s.status === "worker_accepted").length;
-
-  let displayList: any[] = [];
-  if (currentTab === "my-shifts") displayList = upcomingShifts;
-  else if (currentTab === "history") displayList = pastShifts;
-  else if (currentTab === "available") displayList = availableSwaps;
-
-  function ShiftCard({ shift }: { shift: any }) {
-    const isAssignedToMe = shift.assigned_to === user!.id;
-    const canSwap = isAssignedToMe && shift.status === "scheduled";
-    
-    let statusText = "Confirmed";
-    let statusColor = "text-emerald-500 bg-emerald-500/10";
-    
-    if (shift.status === "swap_pending") {
-      statusText = "Swap Pending";
-      statusColor = "text-orange-500 bg-orange-500/10";
-    } else if (shift.status === "open") {
-      statusText = "Open";
-      statusColor = "text-red-500 bg-red-500/10";
-    } else if (shift.status === "pending_completion") {
-      statusText = "Awaiting Confirmation";
-      statusColor = "text-blue-500 bg-blue-500/10";
-    } else if (shift.status === "completed") {
-      statusText = "Completed";
-      statusColor = "text-emerald-500 bg-emerald-500/10";
-    }
-
-    return (
-      <div className="glass rounded-[1.5rem] p-5 border border-white/5 relative overflow-hidden mb-4 shadow-xl">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-lg font-bold text-white tracking-tight">{formatShiftDate(shift.start_time)}</h3>
-            <div className="flex items-center text-xs text-white/50 mt-1 font-medium">
-              <span>{formatShiftTime(shift.start_time, shift.end_time)}</span>
-              {shift.department && (
-                <>
-                  <span className="mx-2">•</span>
-                  <span>{shift.department.name}</span>
-                </>
-              )}
-            </div>
-          </div>
-          <div className={cn("px-3 py-1.5 rounded-lg text-xs font-bold", statusColor)}>
-            {statusText}
-          </div>
-        </div>
-
-        {canSwap && (
-          <div className="mt-2" id={`shift-${shift.id}`}>
-            <RequestSwapButton shiftId={shift.id} shiftTitle={shift.title} />
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  function SwapCard({ swap }: { swap: any }) {
-    return (
-      <div className="glass rounded-[1.5rem] p-5 border-gold/20 bg-gold/5 relative overflow-hidden mb-4 shadow-xl shadow-gold/5">
-        <div className="absolute top-0 right-0 w-24 h-24 bg-gold/10 blur-3xl -z-10 transition-colors duration-500" />
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-black border border-gold/20">
-              {swap.requester?.full_name?.charAt(0)}
-            </div>
-            <div>
-              <p className="text-sm font-bold text-white leading-tight">{swap.requester?.full_name} <span className="text-white/40 font-medium">needs cover</span></p>
-              {swap.reason && <p className="text-[11px] text-gold/60 font-medium italic mt-0.5">&ldquo;{swap.reason}&rdquo;</p>}
-            </div>
-          </div>
-
-          {swap.shift && (
-            <div className="p-4 rounded-2xl bg-[#050505]/40 border border-white/5 space-y-3">
-              <p className="text-sm font-bold text-white">{swap.shift.title}</p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
-                  <Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time)}
-                </div>
-                <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
-                  <Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="pt-2">
-            <WorkerSwapActions swapId={swap.id} mode="offer" />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const upcomingCount = filterShifts(allShifts, "upcoming").length;
+  const completedCount = filterShifts(allShifts, "completed").length;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
-      
-      {/* Greeting */}
-      <div className="space-y-1.5">
-        <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-2">
-          Hey {firstName} <span className="text-2xl">👋</span>
-        </h1>
-        <p className="text-sm text-white/50 font-medium leading-relaxed">
-          Welcome to {orgName}! Post your shift when you need time off — someone's always got your back.
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-black tracking-tight text-white mb-1">My Shifts</h1>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+          {allShifts.length} Total ·{" "}
+          <span className="text-gold/50">{upcomingCount} Upcoming</span>
         </p>
-      </div>
-
-      {/* Profile Completion */}
-      <div className="glass rounded-2xl p-5 border border-gold/20 relative overflow-hidden group shadow-lg">
-        <div className="absolute right-0 top-0 w-32 h-32 bg-gold/5 blur-2xl group-hover:bg-gold/10 transition-all" />
-        <div className="flex justify-between items-end mb-3 relative z-10">
-          <span className="text-sm font-bold text-gold">Complete your profile</span>
-          <span className="text-xs font-bold text-white/50">{profileCompletion}%</span>
-        </div>
-        <Progress value={profileCompletion} className="h-1.5 bg-white/10 [&>div]:bg-gold mb-3 relative z-10" />
-        <p className="text-xs text-white/50 font-medium relative z-10">
-          Set your availability so we can match you with shifts
-        </p>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="grid grid-cols-2 gap-4">
-        <Link href="#shift-list" className="rounded-2xl bg-gold p-6 flex flex-col items-center justify-center gap-3 shadow-lg shadow-gold/10 hover:scale-105 transition-transform text-center">
-          <PlusCircle className="w-8 h-8 text-[#050505]" strokeWidth={1.5} />
-          <span className="text-xs font-bold text-[#050505]">Post a Shift for Swap</span>
-        </Link>
-        
-        <Link href="/swap-requests" className="glass rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border border-white/10 hover:bg-white/5 hover:scale-105 transition-all shadow-lg text-center">
-          <Search className="w-8 h-8 text-gold" strokeWidth={1.5} />
-          <span className="text-xs font-bold text-gold">Check Available Shifts</span>
-        </Link>
       </div>
 
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="glass rounded-2xl p-4 flex flex-col items-center justify-center border border-white/5 shadow-lg">
-          <span className="text-2xl font-black text-emerald-500 mb-1">{availableCount}</span>
-          <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider">Available</span>
+        <div className="glass rounded-2xl p-4 text-center border border-white/5">
+          <span className="text-2xl font-black text-gold block">{upcomingCount}</span>
+          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Upcoming</span>
         </div>
-        <div className="glass rounded-2xl p-4 flex flex-col items-center justify-center border border-white/5 shadow-lg">
-          <span className="text-2xl font-black text-gold mb-1">{mySwapsCount}</span>
-          <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider">My Swaps</span>
+        <div className="glass rounded-2xl p-4 text-center border border-white/5">
+          <span className="text-2xl font-black text-emerald-400 block">{completedCount}</span>
+          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Completed</span>
         </div>
-        <div className="glass rounded-2xl p-4 flex flex-col items-center justify-center border border-white/5 shadow-lg">
-          <span className="text-2xl font-black text-orange-500 mb-1">{pendingCount}</span>
-          <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider">Pending</span>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="glass rounded-full p-1.5 flex items-center justify-between border border-white/5 shadow-lg">
-        <Link 
-          href="?tab=available" 
-          className={cn(
-            "flex-1 py-3 rounded-full text-[10px] font-bold flex items-center justify-center gap-2 transition-all",
-            currentTab === "available" ? "bg-gold text-[#050505] shadow-md" : "text-white/50 hover:text-white"
-          )}
-        >
-          Available Shifts
-          <span className={cn(
-            "w-4 h-4 rounded-full flex items-center justify-center text-[9px]",
-            currentTab === "available" ? "bg-[#050505]/20 text-[#050505]" : "bg-gold/20 text-gold"
-          )}>
-            {availableCount}
+        <div className="glass rounded-2xl p-4 text-center border border-white/5">
+          <span className="text-2xl font-black text-purple-400 block">
+            {allShifts.filter((s) => s.status === "swapped").length}
           </span>
-        </Link>
-        <Link 
-          href="?tab=my-shifts" 
-          className={cn(
-            "flex-1 py-3 rounded-full text-[10px] font-bold transition-all text-center",
-            currentTab === "my-shifts" ? "bg-gold text-[#050505] shadow-md" : "text-white/50 hover:text-white"
-          )}
-        >
-          My Shifts
-        </Link>
-        <Link 
-          href="?tab=history" 
-          className={cn(
-            "flex-1 py-3 rounded-full text-[10px] font-bold transition-all text-center",
-            currentTab === "history" ? "bg-gold text-[#050505] shadow-md" : "text-white/50 hover:text-white"
-          )}
-        >
-          History
-        </Link>
+          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Swapped</span>
+        </div>
       </div>
 
-      {/* List */}
-      <div className="pt-2" id="shift-list">
-        {currentTab === "my-shifts" || currentTab === "history" ? (
-          displayList.map((s) => <ShiftCard key={s.id} shift={s} />)
-        ) : (
-          displayList.map((s) => <SwapCard key={s.id} swap={s} />)
-        )}
-        
-        {/* Empty States */}
-        {displayList.length === 0 && (
-          <div className="glass rounded-[1.5rem] p-10 text-center border-white/5 shadow-lg">
-             <Calendar className="w-8 h-8 text-white/20 mx-auto mb-4" />
-             <h3 className="text-sm font-bold text-white mb-1">Nothing to show</h3>
-             <p className="text-xs text-white/40">You're all caught up for now.</p>
+      {/* Filter Tabs */}
+      <div className="glass rounded-full p-1.5 flex gap-1 border border-white/5">
+        {TABS.map((tab) => (
+          <Link
+            key={tab.key}
+            href={`?tab=${tab.key}`}
+            className={cn(
+              "flex-1 py-2.5 rounded-full text-[10px] font-black text-center transition-all duration-200",
+              currentTab === tab.key
+                ? "bg-gold text-[#050505] shadow-md"
+                : "text-white/40 hover:text-white"
+            )}
+          >
+            {tab.label}
+          </Link>
+        ))}
+      </div>
+
+      {/* Shift List */}
+      <div className="space-y-3">
+        {displayShifts.length === 0 ? (
+          <div className="glass rounded-2xl p-10 text-center border border-white/5">
+            <Calendar className="w-8 h-8 text-white/15 mx-auto mb-3" />
+            <p className="text-sm font-bold text-white/30">No shifts here</p>
+            <p className="text-[11px] text-white/20 mt-1">
+              {currentTab === "upcoming" ? "No upcoming shifts assigned to you." : "Nothing to show in this category."}
+            </p>
           </div>
+        ) : (
+          displayShifts.map((shift) => {
+            const badge = statusBadge(shift.status);
+            const canMarkDone = shift.status === "started" || shift.status === "overdue_not_done";
+            const canPostSwap = shift.status === "not_started" || shift.status === "started";
+            const isOverdue = shift.status === "overdue_not_done";
+
+            return (
+              <div
+                key={shift.id}
+                className={cn(
+                  "glass rounded-2xl p-5 border relative overflow-hidden scroll-item glass-item-transition",
+                  isOverdue
+                    ? "border-orange-500/20 bg-orange-500/3"
+                    : shift.status === "done_manager_approved"
+                    ? "border-emerald-500/15"
+                    : "border-white/5"
+                )}
+              >
+                {/* Overdue pulse */}
+                {isOverdue && (
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/10 blur-2xl rounded-full" />
+                )}
+
+                {/* Header row */}
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base font-bold text-white truncate">{shift.title}</h3>
+                    {shift.department && (
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <div
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{ backgroundColor: shift.department.color || "#d4af37" }}
+                        />
+                        <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                          {shift.department.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <span
+                    className={cn(
+                      "shrink-0 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
+                      badge.color
+                    )}
+                  >
+                    {badge.label}
+                  </span>
+                </div>
+
+                {/* Date / Time / Duration row */}
+                <div className="flex flex-wrap gap-3 mb-4">
+                  <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {formatShiftDate(shift.start_time)}
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
+                    <Clock className="w-3.5 h-3.5" />
+                    {formatShiftTime(shift.start_time, shift.end_time)}
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/30">
+                    <Timer className="w-3.5 h-3.5" />
+                    {formatShiftDuration(shift.start_time, shift.end_time)}
+                  </span>
+                </div>
+
+                {/* Notes / rejection notes */}
+                {shift.status === "done_rejected" && shift.notes && (
+                  <div className="mb-3 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/15 flex items-start gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-red-300/80 font-medium">{shift.notes}</p>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                {(canMarkDone || canPostSwap) && (
+                  <div className="flex gap-2 mt-1">
+                    {canMarkDone && (
+                      <div className="flex-1">
+                        <MarkDoneButton shiftId={shift.id} shiftTitle={shift.title} />
+                      </div>
+                    )}
+                    {canPostSwap && (
+                      <Link
+                        href={`/swap?post=${shift.id}`}
+                        className="
+                          flex items-center justify-center gap-2
+                          h-11 px-4 rounded-2xl flex-1
+                          bg-purple-500/10 border border-purple-500/20
+                          text-purple-300 text-[10px] font-black uppercase tracking-widest
+                          hover:bg-purple-500/20 hover:border-purple-500/40
+                          transition-all duration-200
+                        "
+                      >
+                        <ArrowLeftRight className="w-3.5 h-3.5" />
+                        Post for Swap
+                      </Link>
+                    )}
+                  </div>
+                )}
+
+                {/* Swapped indicator */}
+                {shift.status === "swapped" && (
+                  <div className="flex items-center gap-2 mt-1 px-3 py-2 rounded-xl bg-white/5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white/20" />
+                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">
+                      Shift successfully swapped
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
-
     </div>
   );
 }

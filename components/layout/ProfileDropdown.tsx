@@ -1,0 +1,67 @@
+"use client";
+
+import { LogOut, Settings, User } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { signOut } from "@/app/actions";
+import Link from "next/link";
+import { ReactNode } from "react";
+
+interface Props {
+  profile: any;
+  children?: ReactNode;
+  align?: "center" | "end" | "start";
+}
+
+export function ProfileDropdown({ profile, children, align = "end" }: Props) {
+  const isWorker = profile?.user_role === "worker";
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        {children ? children : (
+          <button className="flex items-center gap-2 hover:opacity-80 transition-opacity outline-none">
+            <Avatar className="w-8 h-8 md:w-9 md:h-9 border-2 border-white/10 ring-2 ring-gold/10">
+              <AvatarFallback className="bg-gold/10 text-gold text-xs font-black italic">
+                {profile?.full_name?.charAt(0) ?? "?"}
+              </AvatarFallback>
+            </Avatar>
+          </button>
+        )}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        align={align} 
+        className="w-56 glass card-premium border-white/10 bg-[#0a0a0a]/95 backdrop-blur-xl rounded-2xl"
+      >
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-black text-white">{profile?.full_name}</p>
+            <p className="text-xs font-medium text-white/40 uppercase tracking-widest">{profile?.user_role}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-white/5" />
+        <DropdownMenuItem asChild className="focus:bg-white/5 focus:text-white cursor-pointer rounded-xl">
+          <Link href={isWorker ? "/my-profile" : "/dashboard"}>
+            <Settings className="mr-2 h-4 w-4 text-white/50" />
+            <span>Profile Settings</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-white/5" />
+        <DropdownMenuItem 
+          onClick={() => signOut()}
+          className="focus:bg-red-500/10 focus:text-red-400 text-red-500/80 cursor-pointer rounded-xl"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

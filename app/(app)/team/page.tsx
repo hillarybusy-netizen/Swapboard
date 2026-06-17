@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { InviteTeam } from "@/components/settings/InviteTeam";
 import { RevokeInviteButton } from "@/components/team/RevokeInviteButton";
+import { EditMemberDialog } from "@/components/team/EditMemberDialog";
 
 export const dynamic = "force-dynamic";
 
@@ -126,6 +127,17 @@ export default async function TeamPage() {
                   )}>
                     {member.user_role}
                   </Badge>
+
+                  {profile?.user_role === "admin" && member.user_role !== "admin" && (
+                    <EditMemberDialog 
+                      memberId={member.id}
+                      memberName={member.full_name ?? "Unknown"}
+                      memberRole={member.user_role as "worker" | "manager"}
+                      currentDeptId={member.department_id}
+                      currentDeptIds={member.department_ids}
+                      departments={departments}
+                    />
+                  )}
                 </div>
               </div>
             ))}

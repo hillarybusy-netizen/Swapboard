@@ -13,18 +13,35 @@ export default async function SwapsPage() {
   if (!orgId) redirect("/onboarding/industry");
 
   const supabase = await createClient();
-  const { data: allSwapsData } = await supabase
+
+  // Scope queries for Manager
+  const isManager = profile?.user_role === "manager";
+  const managerDeptIds = profile?.department_ids || [];
+
+  let query = supabase
     .from("swap_requests")
     .select(`
       *,
-      shift:shifts(*, department:departments(*)),
+      shift:shifts!inner(*, department:departments(*)),
       requester:profiles!swap_requests_requester_id_fkey(*),
       covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)
     `)
     .eq("organization_id", orgId)
     .order("requested_at", { ascending: false });
 
-  const allSwaps = (allSwapsData ?? []) as any[];
+  // Use the JS fallback for filtering if inner join filter fails, wait, actually we can just use .in('shift.department_id', managerDeptIds)
+  // Let's query and filter in JS if needed, but Supabase can handle .in on joined tables sometimes. Let's do it in JS to be safe.
+  const { data: allSwapsData } = await query;
+  
+  let allSwaps = (allSwapsData ?? []) as any[];
+
+  if (isManager) {
+    if (managerDeptIds.length > 0) {
+      allSwaps = allSwaps.filter(s => managerDeptIds.includes(s.shift?.department_id));
+    } else {
+      allSwaps = []; // No departments assigned, see nothing
+    }
+  }
   const pending = allSwaps.filter((s) => s.status === "pending" || s.status === "worker_accepted");
   const history = allSwaps.filter((s) => ["manager_approved", "rejected", "cancelled"].includes(s.status));
 

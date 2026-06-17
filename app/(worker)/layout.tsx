@@ -1,7 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { RefreshCw, Bell } from "lucide-react";
 import { WorkerBottomNav } from "@/components/layout/WorkerBottomNav";
+import { WorkerSidebar } from "@/components/layout/WorkerSidebar";
+import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications";
+import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
+import { ProfileDropdown } from "@/components/layout/ProfileDropdown";
 
 export default async function WorkerLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -10,44 +13,36 @@ export default async function WorkerLayout({ children }: { children: React.React
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("*")
     .eq("id", user.id)
     .single();
 
-  const initial = profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : "U";
-
   return (
-    <div className="min-h-screen bg-[#050505] relative pb-24">
-      {/* Mesh background */}
-      <div className="absolute inset-0 bg-mesh opacity-20 -z-10" />
+    <div className="flex min-h-screen bg-[#050505]">
+      <RealtimeNotifications userId={user.id} departmentId={profile?.department_id} />
+      {/* Desktop Sidebar */}
+      <WorkerSidebar profile={profile} />
 
-      {/* Header */}
-      <header className="fixed top-0 inset-x-0 z-40 px-6 pt-6">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gold flex items-center justify-center shadow-lg shadow-gold/20">
-              <RefreshCw className="w-5 h-5 text-[#050505] -scale-x-100" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">Swap<span className="text-gold">Board</span></span>
-          </div>
-          
-          <div className="flex items-center gap-5">
-            <div className="relative">
-              <Bell className="w-6 h-6 text-white/70" />
-              <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#050505]" />
-            </div>
-            <div className="w-10 h-10 rounded-full border border-gold text-gold flex items-center justify-center font-bold text-lg">
-              {initial}
-            </div>
-          </div>
+      {/* Main Content Area */}
+      <div className="flex-1 relative flex flex-col max-w-full overflow-hidden">
+        {/* Mesh background for the main area */}
+        <div className="absolute inset-0 bg-mesh opacity-20 -z-10 pointer-events-none" />
+
+        {/* Mobile Top Header */}
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md sticky top-0 z-40">
+          <AnimatedLogo size="sm" showText={false} />
+          <ProfileDropdown profile={profile} />
         </div>
-      </header>
 
-      <main className="max-w-lg mx-auto px-6 pt-28 pb-10">
-        {children}
-      </main>
+        <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 py-8 md:py-12 pb-24 md:pb-12 overflow-y-auto">
+          {children}
+        </main>
 
-      <WorkerBottomNav />
+        {/* Mobile Bottom Navigation */}
+        <div className="md:hidden">
+          <WorkerBottomNav />
+        </div>
+      </div>
     </div>
   );
 }

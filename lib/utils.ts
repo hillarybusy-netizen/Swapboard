@@ -76,11 +76,16 @@ export const SWAP_STATUS_LABELS: Record<string, string> = {
 };
 
 export const SHIFT_STATUS_LABELS: Record<string, string> = {
-  scheduled: "Scheduled",
-  open: "Open",
-  swap_pending: "Swap Pending",
+  not_started: "Not Started",
+  started: "In Progress",
+  up_for_swap: "Up for Swap",
+  pending_approval_claim: "Claim Pending",
+  pending_approval_swap: "Swap Pending",
   swapped: "Swapped",
+  overdue_not_done: "Overdue",
+  done_pending_approval: "Pending Confirmation",
+  done_manager_approved: "Done",
+  done_rejected: "Rejected",
+  no_show: "No Show",
   cancelled: "Cancelled",
-  pending_completion: "Pending Confirmation",
-  completed: "Done",
 };

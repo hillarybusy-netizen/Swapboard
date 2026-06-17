@@ -11,9 +11,10 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import {
-  TrendingUp, DollarSign, Clock, RefreshCw, ArrowRight, CheckCircle2, XCircle, AlertTriangle, Calendar,
+  TrendingUp, DollarSign, Clock, RefreshCw, ArrowRight, CheckCircle2, XCircle, AlertTriangle, Calendar, UserPlus,
 } from "lucide-react";
 import { ApproveSwapButton } from "@/components/dashboard/ApproveSwapButton";
+import { ApproveClaimButton } from "@/components/shifts/ApproveClaimButton";
 import { SwapChartLazy } from "@/components/dashboard/SwapChartLazy";
 import { Lock } from "lucide-react";
 import { ExportReportButton } from "@/components/dashboard/ExportReportButton";
@@ -37,11 +38,30 @@ export default async function DashboardPage() {
   const org = (profile as any)?.organization;
   const orgId = profile?.organization_id ?? "";
 
-  // Fetch all dashboard data in parallel
-  const since = new Date();
-  since.setDate(since.getDate() - 30);
-  const in48h = new Date();
-  in48h.setHours(in48h.getHours() + 48);
+  // Scope queries for Manager
+  const isManager = profile?.user_role === "manager";
+  const managerDeptIds = profile?.department_ids || [];
+
+  const addDeptScope = (q: any, col = "department_id") => {
+    if (isManager && managerDeptIds.length > 0) {
+      return q.in(col, managerDeptIds);
+    } else if (isManager) {
+      return q.eq(col, "00000000-0000-0000-0000-000000000000"); // Return empty
+    }
+    return q;
+  };
+
+  const addShiftDeptScope = (q: any) => {
+    if (isManager && managerDeptIds.length > 0) {
+      return q.in("department_id", managerDeptIds);
+    } else if (isManager) {
+      return q.eq("department_id", "00000000-0000-0000-0000-000000000000");
+    }
+    return q;
+  };
+
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const in48h = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
   const [
     { data: swapsData }, 
@@ -50,53 +70,77 @@ export default async function DashboardPage() {
     { data: departmentsData },
     { data: profilesData },
     { data: pendingCompletionsData },
+    { data: pendingClaimsData },
   ] = await Promise.all([
     // Swap data (last 30 days)
     supabase
       .from("swap_requests")
-      .select("*")
+      .select("*, shift:shifts!inner(department_id)")
       .eq("organization_id", orgId)
       .gte("created_at", since.toISOString())
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .then(res => {
+        // Need to filter in JS since we can't easily filter by joined table in the root array using Supabase filter simply without !inner, wait !inner is used. Let's adjust query
+        let q = supabase.from("swap_requests").select("*, shift:shifts!inner(department_id)").eq("organization_id", orgId).gte("created_at", since.toISOString()).order("created_at", { ascending: false });
+        if (isManager && managerDeptIds.length > 0) q = q.in("shift.department_id", managerDeptIds) as any;
+        else if (isManager) q = q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
+        return q;
+      }),
     // Pending swaps (need manager approval)
-    supabase
-      .from("swap_requests")
-      .select("*, shift:shifts(*, department:departments(*)), requester:profiles!swap_requests_requester_id_fkey(*), covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)")
-      .eq("organization_id", orgId)
-      .eq("status", "worker_accepted")
-      .order("requested_at", { ascending: false })
-      .limit(5),
-    // At-risk shifts (open or swap_pending within 48h)
-    supabase
+    (async () => {
+      let q = supabase
+        .from("swap_requests")
+        .select("*, shift:shifts!inner(*, department:departments(*)), requester:profiles!swap_requests_requester_id_fkey(*), covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)")
+        .eq("organization_id", orgId)
+        .eq("status", "worker_accepted")
+        .order("requested_at", { ascending: false })
+        .limit(5);
+      if (isManager && managerDeptIds.length > 0) q = q.in("shift.department_id", managerDeptIds) as any;
+      else if (isManager) q = q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
+      return q;
+    })(),
+    // At-risk shifts (unassigned or swap_pending within 48h)
+    addShiftDeptScope(supabase
       .from("shifts")
       .select("*, department:departments(*), profile:profiles!shifts_assigned_to_fkey(*)")
       .eq("organization_id", orgId)
-      .in("status", ["open", "swap_pending"])
+      .is("deleted_at", null)
+      .in("status", ["not_started", "up_for_swap", "pending_approval_swap"])
       .lte("start_time", in48h.toISOString())
       .gte("start_time", new Date().toISOString())
       .order("start_time", { ascending: true })
-      .limit(5),
+      .limit(5)),
     // Departments for PostShiftDialog
-    supabase
+    addDeptScope(supabase
       .from("departments")
       .select("*")
       .eq("organization_id", orgId)
-      .order("name"),
+      .order("name"), "id"),
     // Profiles for PostShiftDialog
-    supabase
+    addDeptScope(supabase
       .from("profiles")
-      .select("id, full_name")
+      .select("id, full_name, department_id")
       .eq("organization_id", orgId)
       .eq("is_active", true)
-      .order("full_name"),
+      .order("full_name"), "department_id"),
     // Shifts awaiting completion confirmation
-    supabase
+    addShiftDeptScope(supabase
       .from("shifts")
       .select("*, department:departments(*), profile:profiles!shifts_assigned_to_fkey(full_name)")
       .eq("organization_id", orgId)
-      .eq("status", "pending_completion")
+      .eq("status", "done_pending_approval")
+      .is("deleted_at", null)
       .order("end_time", { ascending: false })
-      .limit(5),
+      .limit(5)),
+    // Shifts awaiting claim approval
+    addShiftDeptScope(supabase
+      .from("shifts")
+      .select("*, department:departments(*), profile:profiles!shifts_assigned_to_fkey(full_name)")
+      .eq("organization_id", orgId)
+      .eq("status", "pending_approval_claim")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(5)),
   ]);
 
   const swaps = (swapsData ?? []) as any[];
@@ -105,6 +149,7 @@ export default async function DashboardPage() {
   const departments = (departmentsData ?? []) as any[];
   const profiles = (profilesData ?? []) as any[];
   const pendingCompletions = (pendingCompletionsData ?? []) as any[];
+  const pendingClaims = (pendingClaimsData ?? []) as any[];
 
   const metrics = calculateROI(swaps as any);
   const weeklyData = groupSwapsByWeek(swaps as any);
@@ -274,9 +319,9 @@ export default async function DashboardPage() {
                     </div>
                     <Badge className={cn(
                       "rounded-full px-4 py-1 text-[9px] md:text-[10px] font-black uppercase tracking-widest border-none w-fit",
-                      shift.status === "open" ? "bg-red-500/20 text-red-400" : "bg-gold/20 text-gold"
+                      shift.status === "not_started" ? "bg-red-500/20 text-red-400" : "bg-gold/20 text-gold"
                     )}>
-                      {shift.status === "open" ? "Open" : "Swap Pending"}
+                      {shift.status === "not_started" ? "Unassigned" : "Swap Pending"}
                     </Badge>
                   </div>
                 ))}
@@ -325,11 +370,52 @@ export default async function DashboardPage() {
             </div>
           )}
 
+          {/* Pending Shift Claims */}
+          {pendingClaims.length > 0 && (
+            <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                  <UserPlus className="w-4 h-4 text-blue-400" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black tracking-tight text-white">Shift Claims</h2>
+                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Workers Picked Up Shifts</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {pendingClaims.map((shift: any) => (
+                  <div key={shift.id} className="flex flex-col gap-3 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10">
+                    <div>
+                      <p className="text-sm font-bold text-white truncate">{shift.title}</p>
+                      <div className="flex items-center gap-2 mt-1 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                        {shift.profile?.full_name && <span>{shift.profile.full_name}</span>}
+                        {shift.department && (
+                          <>
+                            <span>·</span>
+                            <span className="text-gold/60">{shift.department.name}</span>
+                          </>
+                        )}
+                      </div>
+                      <p className="text-[10px] font-bold text-white/30 uppercase mt-1">
+                        {formatShiftDate(shift.start_time)}
+                      </p>
+                    </div>
+                    <ApproveClaimButton
+                      shiftId={shift.id}
+                      shiftTitle={shift.title}
+                      workerName={shift.profile?.full_name}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Pending Swap Approvals */}
           <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex flex-col">
             <div className="flex items-center justify-between mb-8 md:mb-10">
               <div>
-                <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-1">Queue</h2>
+                <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-1">Swap Approvals</h2>
                 <p className="text-[10px] md:text-[11px] text-white/30 font-bold uppercase tracking-widest">Pending Approvals</p>
               </div>
               {pendingSwaps.length > 0 && (
