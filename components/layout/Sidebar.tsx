@@ -40,7 +40,7 @@ export function Sidebar({ org, profile }: SidebarProps) {
 
       {/* Brand Logo - No Padding */}
       <div className="mb-6">
-        <AnimatedLogo size="xl" showText={false} className="border-b border-white/5" />
+        <AnimatedLogo size="lg" showText={false} className="border-b border-white/5" />
       </div>
 
       {org && (

@@ -68,7 +68,7 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
       >
         <div className="flex items-center w-full justify-between">
           <div className="flex justify-start z-10 shrink-0">
-            <AnimatedLogo size="sm" showText={true} />
+            <AnimatedLogo size="md" showText={true} />
           </div>
           <div className="hidden md:flex items-center z-10 gap-10">
             <a href="#features" className="nav-link text-sm font-medium text-white/50 hover:text-gold transition-colors">Features</a>
@@ -114,7 +114,7 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
       >
         {/* Left: Logo */}
         <div className="flex justify-start items-center z-10 shrink-0">
-          <AnimatedLogo size="sm" showText={false} />
+          <AnimatedLogo size="md" showText={false} />
           <motion.div
             className="hidden sm:block overflow-hidden whitespace-nowrap ml-3"
             style={{

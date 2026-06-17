@@ -3,7 +3,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Industry = "restaurant" | "healthcare" | "retail" | "hospitality";
 export type Plan = "trial" | "starter" | "pro" | "enterprise";
 export type UserRole = "worker" | "manager" | "admin";
-export type ShiftStatus = "scheduled" | "open" | "swap_pending" | "swapped" | "cancelled" | "pending_completion" | "completed";
+export type ShiftStatus = "not_started" | "started" | "up_for_swap" | "pending_approval_claim" | "pending_approval_swap" | "swapped" | "overdue_not_done" | "done_pending_approval" | "done_manager_approved" | "done_rejected" | "no_show" | "cancelled";
 export type SwapStatus = "pending" | "worker_accepted" | "manager_approved" | "rejected" | "cancelled";
 export type FeedbackType = "swap" | "nps" | "general";
 
@@ -53,6 +53,11 @@ export interface Profile {
   avatar_url: string | null;
   invite_token: string | null;
   onboarding_complete: boolean;
+  personal_email: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  notification_preferences: Json;
+  department_ids: string[];
   created_at: string;
   updated_at: string;
 }
@@ -69,6 +74,7 @@ export interface Shift {
   status: ShiftStatus;
   notes: string | null;
   created_by: string | null;
+  deleted_at: string | null;
   created_at: string;
   updated_at: string;
   // Joined
@@ -132,6 +138,17 @@ export interface Invitation {
   created_at: string;
 }
 
+export interface AuditLog {
+  id: string;
+  organization_id: string;
+  entity_type: string;
+  entity_id: string;
+  action: string;
+  actor_id: string | null;
+  metadata: Json;
+  created_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -142,6 +159,7 @@ export interface Database {
       shifts: { Row: Shift; Insert: Partial<Shift>; Update: Partial<Shift> };
       swap_requests: { Row: SwapRequest; Insert: Partial<SwapRequest>; Update: Partial<SwapRequest> };
       analytics_events: { Row: AnalyticsEvent; Insert: Partial<AnalyticsEvent>; Update: Partial<AnalyticsEvent> };
+      audit_logs: { Row: AuditLog; Insert: Partial<AuditLog>; Update: Partial<AuditLog> };
       feedback: { Row: Feedback; Insert: Partial<Feedback>; Update: Partial<Feedback> };
       invitations: { Row: Invitation; Insert: Partial<Invitation>; Update: Partial<Invitation> };
     };

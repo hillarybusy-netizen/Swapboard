@@ -87,6 +87,18 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-4 pt-2">
+          <div className="flex items-start space-x-3 bg-white/5 p-3 rounded-xl border border-white/5">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              required
+              className="mt-0.5 w-4 h-4 rounded border-white/20 bg-black/20 text-gold focus:ring-gold/50 focus:ring-offset-0 cursor-pointer accent-gold"
+            />
+            <Label htmlFor="terms" className="text-xs text-white/70 leading-relaxed font-medium cursor-pointer flex-1">
+              I agree to the <Link href="/terms" className="text-gold hover:underline" target="_blank">Terms of Service</Link> and <Link href="/privacy" className="text-gold hover:underline" target="_blank">Privacy Policy</Link>.
+            </Label>
+          </div>
+
           <Button
             type="submit"
             className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20"
@@ -99,11 +111,6 @@ export default function RegisterPage() {
           <p className="text-xs text-white/40 text-center font-medium">
             Already have an account?{" "}
             <Link href="/login" className="text-gold hover:text-gold-light transition-colors font-bold">Sign in</Link>
-          </p>
-
-          <p className="text-[9px] text-white/20 text-center leading-relaxed">
-            By creating an account you agree to our <br/>
-            <Link href="/terms" className="underline hover:text-white/40">Terms of Service</Link> and <Link href="/privacy" className="underline hover:text-white/40">Privacy Policy</Link>.
           </p>
         </div>
       </form>

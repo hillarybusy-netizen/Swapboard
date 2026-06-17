@@ -88,11 +88,25 @@ export async function offerToCoverSwap(swapId: string) {
 
   const { data: shift } = await supabase
     .from("shifts")
-    .select("department_id")
+    .select("department_id, start_time, end_time")
     .eq("id", swap.shift_id)
     .single();
 
   await checkCertification(supabase, user.id, shift?.department_id ?? null);
+
+  if (shift && shift.start_time && shift.end_time) {
+    const { data: overlappingShifts } = await supabase
+      .from("shifts")
+      .select("id")
+      .eq("assigned_to", user.id)
+      .neq("status", "cancelled")
+      .lt("start_time", shift.end_time)
+      .gt("end_time", shift.start_time);
+
+    if (overlappingShifts && overlappingShifts.length > 0) {
+      throw new Error("You are already scheduled for a shift that overlaps with this time.");
+    }
+  }
 
   const { error: updateError } = await supabase
     .from("swap_requests")

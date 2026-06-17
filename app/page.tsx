@@ -392,6 +392,7 @@ export default async function LandingPage() {
               {
                 name: "Starter",
                 price: "$79",
+                annualPrice: "$59",
                 desc: "Perfect for single-location businesses",
                 features: ["Up to 100 workers", "3 departments", "Basic analytics", "Email support"],
                 highlighted: false,
@@ -399,6 +400,7 @@ export default async function LandingPage() {
               {
                 name: "Growth",
                 price: "$199",
+                annualPrice: "$149",
                 desc: "For growing multi-department teams",
                 features: ["Up to 200 workers", "Unlimited departments", "ROI analytics", "Priority support", "Custom roles"],
                 highlighted: true,
@@ -406,6 +408,7 @@ export default async function LandingPage() {
               {
                 name: "Enterprise",
                 price: "$499",
+                annualPrice: "$374",
                 desc: "For large organisations",
                 features: ["Unlimited workers", "Multi-location", "Advanced analytics", "Dedicated support", "SSO & compliance"],
                 highlighted: false,
@@ -423,10 +426,21 @@ export default async function LandingPage() {
                     Most popular
                   </div>
                 )}
-                <h3 className="font-bold text-2xl mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-5xl font-black text-gold">{plan.price}</span>
-                  <span className="text-white/30 font-medium">/mo</span>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-2xl">{plan.name}</h3>
+                  <div className="bg-gold/10 text-gold text-xs font-bold px-2 py-1 rounded-md border border-gold/20">
+                    Save 25%
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1 mb-6">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold text-white/30 line-through decoration-white/30">{plan.price}</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-5xl font-black text-gold">{plan.annualPrice}</span>
+                      <span className="text-white/30 font-medium">/mo</span>
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-white/40 font-medium tracking-wide">Billed annually</span>
                 </div>
                 <p className="text-sm text-white/50 mb-10 font-medium min-h-[40px]">{plan.desc}</p>
                 <div className="h-[2px] w-full bg-white/5 mb-10" />
