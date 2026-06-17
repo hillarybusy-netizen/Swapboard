@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, ChevronDown, ChevronRight, Loader2, Lock } from "lucide-react";
 import { Organization } from "@/lib/database.types";
 import { checkPlanLimit } from "@/lib/plans";
+import { addDepartment as addDepartmentAction } from "@/lib/actions/departments";
 
 interface Role { id: string; name: string; min_hours_notice: number }
 interface Dept { id: string; name: string; color: string; roles: Role[] }
@@ -31,11 +32,12 @@ export function DepartmentEditor({ departments, orgId, org }: { departments: Dep
     }
     setLoading("new-dept");
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("departments").insert({ organization_id: orgId, name: newDeptName.trim(), color: "#6366f1", sort_order: departments.length });
-      if (error) throw error;
+      const res = await addDepartmentAction(orgId, newDeptName.trim(), departments.length);
+      if (!res.success) throw new Error(res.error);
+      
       setNewDeptName("");
       toast({ title: "Department added", variant: "success" });
+      // Router refresh is handled inside the server action, but we'll do it here just in case for client state
       router.refresh();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
