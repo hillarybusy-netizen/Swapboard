@@ -8,6 +8,8 @@ import { PLAN_LIMITS } from "@/lib/plans";
 import { Plan } from "@/lib/database.types";
 import { requireManager } from "@/lib/auth-helpers";
 import { swapboardEmailHtml, isResendConfigured } from "@/lib/email-template";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 
 export async function getInvitationByToken(token: string) {
   const normalizedToken = token?.trim();
@@ -152,6 +154,13 @@ export async function sendInvitation(inv: {
   organization_id: string;
   organization_name: string;
 }) {
+  // Rate limit: max 20 invites per minute per org
+  const ip = (await headers()).get("x-forwarded-for") || "unknown";
+  const rl = checkRateLimit(`invite_${inv.organization_id}_${ip}`, 20, 60000);
+  if (!rl.success) {
+    return { success: false, error: rl.error };
+  }
+
   const { supabase, user } = await requireManager(inv.organization_id);
 
   const limits = await checkInviteLimits(supabase, inv.organization_id);
@@ -211,6 +220,13 @@ export async function createManualInvitation(inv: {
   department_id: string;
   organization_id: string;
 }) {
+  // Rate limit: max 10 link generations per minute per org
+  const ip = (await headers()).get("x-forwarded-for") || "unknown";
+  const rl = checkRateLimit(`invite_link_${inv.organization_id}_${ip}`, 10, 60000);
+  if (!rl.success) {
+    return { success: false, error: rl.error };
+  }
+
   const { supabase, user } = await requireManager(inv.organization_id);
 
   const limits = await checkInviteLimits(supabase, inv.organization_id);

@@ -1,8 +1,11 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { resend } from "@/lib/resend";
 import { swapboardEmailHtml, isResendConfigured } from "@/lib/email-template";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 
 const DISALLOWED_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com"];
 
@@ -15,11 +18,30 @@ export async function registerUser({
   email,
   password,
   fullName,
+  honeypot,
 }: {
   email: string;
   password: string;
   fullName: string;
+  honeypot?: string;
 }) {
+  // 1. Honeypot check (invisible bot trap)
+  if (honeypot) {
+    // Silently return success to fool the bot
+    return { success: true, userId: "bot-trap" };
+  }
+
+  // 2. IP Rate Limiting (5 requests per minute)
+  const ip = (await headers()).get("x-forwarded-for") || "unknown";
+  const rl = checkRateLimit(`register_${ip}`, 5, 60000);
+  if (!rl.success) {
+    return { success: false, error: rl.error };
+  }
+
+  // 3. Payload Hardening
+  if (password.length > 72) {
+    return { success: false, error: "Password is too long." };
+  }
   const normalizedEmail = email.trim().toLowerCase();
   const emailDomain = normalizedEmail.split("@")[1];
   const isDisallowedDomain = DISALLOWED_DOMAINS.includes(emailDomain);
@@ -73,6 +95,14 @@ export async function sendPasswordResetEmail(email: string) {
     return { success: false, error: "Email is required" };
   }
 
+  // Rate limit: max 3 reset emails per minute per IP (prevents email flooding)
+  const ip = (await headers()).get("x-forwarded-for") || "unknown";
+  const rl = checkRateLimit(`pw_reset_${ip}`, 3, 60000);
+  if (!rl.success) {
+    // Return generic success to not leak whether email exists
+    return { success: true };
+  }
+
   const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`;
   const supabase = createAdminClient();
 
@@ -109,6 +139,46 @@ export async function sendPasswordResetEmail(email: string) {
   } catch (emailError) {
     console.error("Failed to send password reset email:", emailError);
     return { success: false, error: "Failed to send reset email. Please try again." };
+  }
+
+  return { success: true };
+}
+
+export async function signInUser({
+  email,
+  password,
+  honeypot,
+}: {
+  email: string;
+  password: string;
+  honeypot?: string;
+}) {
+  // 1. Honeypot check
+  if (honeypot) {
+    // Silently drop bot
+    return { success: false, error: "Invalid credentials" };
+  }
+
+  // 2. IP Rate Limiting (10 requests per minute)
+  const ip = (await headers()).get("x-forwarded-for") || "unknown";
+  const rl = checkRateLimit(`login_${ip}`, 10, 60000);
+  if (!rl.success) {
+    return { success: false, error: rl.error };
+  }
+
+  // 3. Length checks
+  if (password.length > 72) {
+    return { success: false, error: "Invalid credentials." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
   }
 
   return { success: true };

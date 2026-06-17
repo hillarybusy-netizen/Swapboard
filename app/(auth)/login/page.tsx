@@ -3,10 +3,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { signInUser } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loginMode, setLoginMode] = useState<"email" | "member">("email");
   const [showPassword, setShowPassword] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -37,8 +38,8 @@ export default function LoginPage() {
         targetEmail = lookedUpEmail;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({ email: targetEmail, password });
-      if (error) throw error;
+      const res = await signInUser({ email: targetEmail, password, honeypot });
+      if (!res.success) throw new Error(res.error);
 
       // Get profile role to redirect to relevant dashboard
       const { data: profile } = await supabase
@@ -121,7 +122,7 @@ export default function LoginPage() {
               <Input
                 id="password" type={showPassword ? "text" : "password"} placeholder="••••••••"
                 className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 pr-12"
-                value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
+                value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" maxLength={72}
               />
               <button
                 type="button"
@@ -133,6 +134,20 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Honeypot Field — invisible to humans, automated bots fill it */}
+        <div aria-hidden="true" style={{ opacity: 0, position: 'absolute', top: 0, left: 0, height: 0, width: 0, zIndex: -1, overflow: 'hidden' }}>
+          <label htmlFor="website">Website</label>
+          <input
+            type="text"
+            id="website"
+            name="website"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+          />
         </div>
 
         <div className="space-y-4 pt-2">

@@ -2,8 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { registerUser } from "@/lib/actions/auth";
+import { registerUser, signInUser } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,21 +15,18 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await registerUser({ email, password, fullName });
+      const result = await registerUser({ email, password, fullName, honeypot });
       if (!result.success) throw new Error(result.error);
 
-      const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
-        password,
-      });
-      if (signInError) throw new Error("Account created but sign-in failed. Please log in manually.");
+      const signInResult = await signInUser({ email: email.trim().toLowerCase(), password, honeypot });
+      if (!signInResult.success) throw new Error("Account created but sign-in failed. Please log in manually.");
 
       router.push("/onboarding/industry");
       router.refresh();
@@ -49,6 +45,20 @@ export default function RegisterPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Honeypot field — invisible to real users, bots fill it in */}
+        <div aria-hidden="true" style={{ opacity: 0, position: 'absolute', top: 0, left: 0, height: 0, width: 0, zIndex: -1, overflow: 'hidden' }}>
+          <label htmlFor="reg_website">Website</label>
+          <input
+            type="text"
+            id="reg_website"
+            name="reg_website"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
+
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-[11px] font-semibold text-white/70 ml-1">Full name</Label>
@@ -72,7 +82,7 @@ export default function RegisterPage() {
               <Input
                 id="password" type={showPassword ? "text" : "password"} placeholder="Min. 8 characters"
                 className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 pr-12"
-                value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
+                value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} maxLength={72}
               />
               <button
                 type="button"
