@@ -1,6 +1,15 @@
 -- 015_full_spec_updates.sql
--- Drop and replace check constraint on shifts table for the new status list
+-- Drop constraint first
 ALTER TABLE shifts DROP CONSTRAINT IF EXISTS shifts_status_check;
+
+-- Update existing shifts to use the new statuses mapping so the new constraint doesn't fail
+UPDATE shifts SET status = 'not_started' WHERE status = 'scheduled';
+UPDATE shifts SET status = 'up_for_swap' WHERE status = 'open';
+UPDATE shifts SET status = 'pending_approval_swap' WHERE status = 'swap_pending';
+UPDATE shifts SET status = 'done_pending_approval' WHERE status = 'pending_completion';
+UPDATE shifts SET status = 'done_manager_approved' WHERE status = 'completed';
+
+-- Now safely add the check constraint for the new status list
 ALTER TABLE shifts ADD CONSTRAINT shifts_status_check 
   CHECK (status IN (
     'not_started',
@@ -16,13 +25,6 @@ ALTER TABLE shifts ADD CONSTRAINT shifts_status_check
     'no_show',
     'cancelled'
   ));
-
--- Update existing shifts to use the new statuses mapping
-UPDATE shifts SET status = 'not_started' WHERE status = 'scheduled';
-UPDATE shifts SET status = 'up_for_swap' WHERE status = 'open';
-UPDATE shifts SET status = 'pending_approval_swap' WHERE status = 'swap_pending';
-UPDATE shifts SET status = 'done_pending_approval' WHERE status = 'pending_completion';
-UPDATE shifts SET status = 'done_manager_approved' WHERE status = 'completed';
 
 -- Alter shift default
 ALTER TABLE shifts ALTER COLUMN status SET DEFAULT 'not_started';
