@@ -1,4 +1,4 @@
-# SwapBoard
+# SwapBoard 1
 
 Shift management and swap coordination for restaurants, healthcare, and retail teams.
 
