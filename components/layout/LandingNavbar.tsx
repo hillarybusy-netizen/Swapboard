@@ -77,8 +77,16 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
             <a href="#faq" className="nav-link text-sm font-medium text-white/50 hover:text-gold transition-colors">FAQ</a>
           </div>
           <div className="flex justify-end items-center gap-4 z-10 shrink-0">
-            <Link href="/login" className="text-sm font-medium text-white/50 hover:text-white transition-colors">Sign in</Link>
-            <Link href="/register" className="btn-gold px-5 py-2 rounded-full text-sm font-bold">Try free</Link>
+            {user && initials ? (
+              <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
+                <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
+              </div>
+            ) : (
+              <>
+                <Link href="/login" className="text-sm font-medium text-white/50 hover:text-white transition-colors">Sign in</Link>
+                <Link href="/register" className="btn-gold px-5 py-2 rounded-full text-sm font-bold">Try free</Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -141,7 +149,7 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
 
         {/* Right: Actions */}
         <div className="flex justify-end items-center gap-4 z-10 shrink-0">
-          {user ? (
+          {user && initials ? (
             <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
               <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
             </div>
