@@ -10,15 +10,13 @@ interface ScrollAnimProps {
   variant?: "fade-up" | "fade-in" | "scale" | "slide-left" | "slide-right";
 }
 
-const easeOut = [0.21, 0.47, 0.32, 0.98];
-
 export function FadeUpOnScroll({ children, delay = 0, className = "", variant = "fade-up" }: ScrollAnimProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: easeOut }}
+      transition={{ duration: 0.7, delay, ease: "easeOut" }}
       className={className}
     >
       {children}
@@ -32,7 +30,7 @@ export function ScaleOnScroll({ children, delay = 0, className = "" }: ScrollAni
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: easeOut }}
+      transition={{ duration: 0.7, delay, ease: "easeOut" }}
       className={className}
     >
       {children}
@@ -47,7 +45,7 @@ export function SlideInOnScroll({ children, delay = 0, className = "", direction
       initial={initial}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: easeOut }}
+      transition={{ duration: 0.7, delay, ease: "easeOut" }}
       className={className}
     >
       {children}
@@ -86,7 +84,7 @@ export function StaggerItem({ children, className = "" }: { children: ReactNode;
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.6, ease: easeOut },
+          transition: { duration: 0.6, ease: "easeOut" },
         },
       }}
       className={className}
