@@ -5,7 +5,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireUser, requireManager } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "./audit";
-import { sendSwapApprovedEmail, sendSwapRejectedEmail } from "@/lib/email";
 import {
   triggerSwapPosted,
   triggerCoverOffered,
@@ -239,10 +238,7 @@ export async function managerSwapAction(
       swap.organization_id,
       managerNotes,
     );
-    // Notify requester by email
-    if (requester?.email) {
-      await sendSwapApprovedEmail(requester.email, requester.full_name, shiftTitle);
-    }
+    // Notifications and emails handled by triggerSwapApproved
   } else {
     // Reject
     const { error: swapError } = await admin
@@ -276,10 +272,7 @@ export async function managerSwapAction(
       blockReswap,
       managerNotes,
     );
-    // Notify requester by email
-    if (requester?.email) {
-      await sendSwapRejectedEmail(requester.email, requester.full_name, shiftTitle);
-    }
+    // Notifications and emails handled by triggerSwapRejected
   }
 
   revalidatePath("/swaps");
