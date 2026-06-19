@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
@@ -20,10 +20,12 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
+  const [noAccountError, setNoAccountError] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setNoAccountError(false);
     try {
       const supabase = createClient();
       let targetEmail = email;
@@ -39,13 +41,25 @@ export default function LoginPage() {
       }
 
       const res = await signInUser({ email: targetEmail, password, honeypot });
-      if (!res.success) throw new Error(res.error);
+      if (!res.success) {
+        if (res.error?.toLowerCase().includes("invalid")) {
+          setNoAccountError(true);
+        } else {
+          throw new Error(res.error);
+        }
+        return;
+      }
 
       // Get profile role to redirect to relevant dashboard
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("user_role")
         .single();
+
+      if (profileError || !profile) {
+        setNoAccountError(true);
+        return;
+      }
 
       if (profile?.user_role === "worker") {
         router.push("/my-shifts");
@@ -151,14 +165,27 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-4 pt-2">
-          <Button 
-            type="submit" 
-            className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20" 
+          <Button
+            type="submit"
+            className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20"
             disabled={loading}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Sign in
           </Button>
+
+          {noAccountError && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-red-300 mb-2">No registered account found</p>
+                <p className="text-xs text-red-200/80 mb-3">We couldn&apos;t find an account with this email. Create a new account to get started.</p>
+                <Link href="/register" className="text-xs font-bold text-red-300 hover:text-red-200 transition-colors underline">
+                  Sign up now →
+                </Link>
+              </div>
+            </div>
+          )}
 
           <p className="text-xs text-white/40 text-center font-medium">
             Don&apos;t have an account?{" "}

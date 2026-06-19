@@ -30,20 +30,24 @@ export default async function LandingPage() {
   if (hasSession) {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
-    user = data.user;
+    const authUser = data.user;
 
-    if (user) {
-      const { data: profile } = await supabase
+    if (authUser) {
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("*, organization:organizations(*)")
-        .eq("id", user.id)
+        .eq("id", authUser.id)
         .single();
-      
-      org = (profile as any)?.organization;
-      if (org?.name) {
-        initials = org.name.substring(0, 2).toUpperCase();
-      } else if (profile?.full_name) {
-        initials = profile.full_name.substring(0, 2).toUpperCase();
+
+      if (profileError || !profile) {
+        user = null;
+        org = null;
+      } else {
+        user = authUser;
+        org = (profile as any)?.organization;
+        if (org?.name) {
+          initials = org.name.substring(0, 2).toUpperCase();
+        }
       }
     }
   }
@@ -379,11 +383,11 @@ export default async function LandingPage() {
           <h2 className="text-4xl md:text-6xl font-black mb-24 tracking-tight">
             Up and running in <br /><span className="text-gold-gradient">3 simple steps</span>
           </h2>
-          <div className="grid md:grid-cols-3 gap-16 relative">
+          <div className="relative">
             {/* Connection Line (Hidden on mobile) */}
             <div className="hidden md:block absolute top-[60px] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gold/20 to-transparent -z-10" />
 
-            <StaggerContainer>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
               {([
                 { step: "01", title: "Set up your org", desc: "Choose your industry, add departments, and invite your team in minutes.", image: "/landing/office-planning.jpg" },
                 { step: "02", title: "Workers request swaps", desc: "Staff post swap requests from their phone. Qualified colleagues can accept instantly.", image: "/landing/mobile-shift.jpg" },
@@ -392,16 +396,16 @@ export default async function LandingPage() {
                 <StaggerItem key={s.step}>
                   <div className="flex flex-col items-center">
                     <div className="relative mb-8">
-                      <div className="relative w-48 h-32 md:w-56 md:h-36 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 mb-4">
+                      <div className="relative w-40 h-28 md:w-56 md:h-36 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 mb-4">
                         <Image src={s.image} alt={s.title} fill className="object-cover" sizes="224px" />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#070707]/70 via-transparent to-transparent" />
                       </div>
-                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full glass flex items-center justify-center text-lg font-black text-gold shadow-xl shadow-gold/5 border border-gold/20">
+                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-11 h-11 md:w-14 md:h-14 rounded-full glass flex items-center justify-center text-sm md:text-lg font-black text-gold shadow-xl shadow-gold/5 border border-gold/20">
                         {s.step}
                       </div>
                     </div>
-                    <h3 className="font-bold text-2xl mb-4 tracking-tight mt-2">{s.title}</h3>
-                    <p className="text-base text-white/50 leading-relaxed font-medium">{s.desc}</p>
+                    <h3 className="font-bold text-lg md:text-2xl mb-2 md:mb-4 tracking-tight mt-6">{s.title}</h3>
+                    <p className="text-xs md:text-base text-white/50 leading-relaxed font-medium">{s.desc}</p>
                   </div>
                 </StaggerItem>
               ))}
