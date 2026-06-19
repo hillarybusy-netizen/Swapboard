@@ -1,55 +1,219 @@
-export async function sendEmail(to: string, subject: string, text: string, html?: string) {
-  // In a real app, this would use Resend, SendGrid, etc.
-  // Example Resend implementation:
-  /*
-  import { Resend } from 'resend';
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({
-    from: 'SwapBoard <noreply@swapboard.ca>',
-    to,
-    subject,
-    text,
-    html: html || text,
-  });
-  */
+import { Resend } from 'resend';
+import * as React from 'react';
+import { SwapApprovedEmail } from './email-templates/SwapApprovedEmail';
+import { SwapRejectedEmail } from './email-templates/SwapRejectedEmail';
+import { ShiftAssignedEmail } from './email-templates/ShiftAssignedEmail';
+import { PendingApprovalEmail } from './email-templates/PendingApprovalEmail';
+import { DigestEmail } from './email-templates/DigestEmail';
 
-  if (process.env.NODE_ENV === "development") {
-    console.log(`\n================= EMAIL DISPATCH =================`);
-    console.log(`To: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Body: ${text}`);
-    console.log(`==================================================\n`);
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'noreply@swapboard.ca';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.swapboard.ca';
+
+// Generic email sending function
+async function sendEmail(
+  to: string,
+  subject: string,
+  component: React.ReactElement,
+) {
+  if (!process.env.RESEND_API_KEY) {
+    // Fallback to logging in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`\n📧 EMAIL (${subject})`);
+      console.log(`To: ${to}`);
+      console.log(`Subject: ${subject}`);
+      console.log(`================================================\n`);
+    }
+    return { success: false, error: 'Resend API key not configured' };
+  }
+
+  try {
+    const result = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject,
+      react: component,
+    });
+
+    if (result.error) {
+      console.error(`[Email Error] Failed to send to ${to}:`, result.error);
+      return { success: false, error: result.error };
+    }
+
+    return { success: true, id: result.data?.id };
+  } catch (error) {
+    console.error(`[Email Error] Exception sending to ${to}:`, error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
 
-export async function sendShiftAssignmentEmail(workerEmail: string, workerName: string, shiftTitle: string, date: string) {
-  await sendEmail(
-    workerEmail,
-    "New Shift Assigned",
-    `Hello ${workerName},\n\nYou have been assigned a new shift: ${shiftTitle} on ${date}.\n\nPlease check your SwapBoard dashboard for details.`
+// Swap notification emails
+export async function sendSwapApprovedEmail(
+  to: string,
+  workerName: string,
+  requesterName: string,
+  shiftTitle: string,
+  managerName: string,
+  managerNotes?: string,
+) {
+  const dashboardUrl = `${APP_URL}/swaps`;
+
+  return sendEmail(
+    to,
+    '✅ Your Swap Has Been Approved',
+    React.createElement(SwapApprovedEmail, {
+      workerName,
+      requesterName,
+      shiftTitle,
+      managerName,
+      managerNotes,
+      dashboardUrl,
+    }),
   );
 }
 
-export async function sendSwapApprovedEmail(workerEmail: string, workerName: string, shiftTitle: string) {
-  await sendEmail(
-    workerEmail,
-    "Swap Approved",
-    `Hello ${workerName},\n\nYour manager has approved the swap for your shift: ${shiftTitle}.\n\nThe shift has been removed from your schedule.`
+export async function sendSwapRejectedEmail(
+  to: string,
+  workerName: string,
+  shiftTitle: string,
+  managerName: string,
+  managerNotes?: string,
+  canReswap: boolean = true,
+) {
+  const dashboardUrl = `${APP_URL}/swaps`;
+
+  return sendEmail(
+    to,
+    '❌ Your Swap Request Was Declined',
+    React.createElement(SwapRejectedEmail, {
+      workerName,
+      shiftTitle,
+      managerName,
+      managerNotes,
+      dashboardUrl,
+      canReswap,
+    }),
   );
 }
 
-export async function sendSwapRejectedEmail(workerEmail: string, workerName: string, shiftTitle: string) {
-  await sendEmail(
-    workerEmail,
-    "Swap Rejected",
-    `Hello ${workerName},\n\nYour manager has rejected the swap request for your shift: ${shiftTitle}.\n\nPlease log in to SwapBoard to review any notes from your manager.`
+// Shift notification emails
+export async function sendShiftAssignedEmail(
+  to: string,
+  workerName: string,
+  shiftTitle: string,
+  shiftDate: string,
+  shiftTime: string,
+  departmentName?: string,
+  notes?: string,
+) {
+  const dashboardUrl = `${APP_URL}/my-shifts`;
+
+  return sendEmail(
+    to,
+    '📋 New Shift Assigned to You',
+    React.createElement(ShiftAssignedEmail, {
+      workerName,
+      shiftTitle,
+      shiftDate,
+      shiftTime,
+      departmentName,
+      notes,
+      dashboardUrl,
+    }),
   );
 }
 
-export async function sendShiftDoneReminderEmail(workerEmail: string, workerName: string, shiftTitle: string) {
-  await sendEmail(
-    workerEmail,
-    "Shift Overdue: Mark as Done",
-    `Hello ${workerName},\n\nYour shift "${shiftTitle}" has ended, but you haven't marked it as done yet.\n\nPlease log in to SwapBoard and mark it as done so your manager can approve it.`
+export async function sendShiftDoneReminderEmail(
+  to: string,
+  workerName: string,
+  shiftTitle: string,
+) {
+  const dashboardUrl = `${APP_URL}/my-shifts`;
+
+  return sendEmail(
+    to,
+    '⏰ Mark Your Shift as Done',
+    React.createElement(ShiftAssignedEmail, {
+      workerName,
+      shiftTitle,
+      shiftDate: 'Today',
+      shiftTime: 'Recently ended',
+      notes: 'Please mark this shift as done in SwapBoard so your manager can approve your completion.',
+      dashboardUrl,
+    }),
+  );
+}
+
+// Manager notification emails
+export async function sendPendingApprovalEmail(
+  to: string,
+  managerName: string,
+  requesterName: string,
+  coverWorkerName: string,
+  shiftTitle: string,
+  reason?: string,
+) {
+  const dashboardUrl = `${APP_URL}/swaps?status=worker_accepted`;
+
+  return sendEmail(
+    to,
+    '⏳ Swap Request Awaiting Your Approval',
+    React.createElement(PendingApprovalEmail, {
+      managerName,
+      requesterName,
+      coverWorkerName,
+      shiftTitle,
+      reason,
+      dashboardUrl,
+    }),
+  );
+}
+
+// Digest emails
+interface DigestItem {
+  title: string;
+  description: string;
+  count?: number;
+}
+
+export async function sendDigestEmail(
+  to: string,
+  userName: string,
+  userRole: 'worker' | 'manager' | 'admin',
+  items: {
+    pending_approvals?: DigestItem[];
+    assigned_shifts?: DigestItem[];
+    swap_updates?: DigestItem[];
+    overdue_items?: DigestItem[];
+  },
+) {
+  const dashboardUrl = `${APP_URL}/dashboard`;
+
+  return sendEmail(
+    to,
+    `📊 Your Daily ${userRole === 'manager' ? 'Management' : 'Work'} Summary`,
+    React.createElement(DigestEmail, {
+      userName,
+      userRole,
+      items,
+      dashboardUrl,
+    }),
+  );
+}
+
+// Test email function
+export async function sendTestEmail(to: string, userName: string) {
+  return sendEmail(
+    to,
+    '🧪 SwapBoard Test Email',
+    React.createElement(ShiftAssignedEmail, {
+      workerName: userName,
+      shiftTitle: 'Test Shift',
+      shiftDate: new Date().toLocaleDateString(),
+      shiftTime: '9:00 AM - 5:00 PM',
+      departmentName: 'Test Department',
+      notes: 'This is a test notification from SwapBoard. If you received this, email delivery is working correctly!',
+      dashboardUrl: `${APP_URL}/my-shifts`,
+    }),
   );
 }

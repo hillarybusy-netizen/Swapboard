@@ -6,6 +6,12 @@ import { requireUser, requireManager } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "./audit";
 import { sendSwapApprovedEmail, sendSwapRejectedEmail } from "@/lib/email";
+import {
+  triggerSwapPosted,
+  triggerCoverOffered,
+  triggerSwapApproved,
+  triggerSwapRejected,
+} from "./notification-triggers";
 
 async function checkCertification(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -73,6 +79,21 @@ export async function requestSwap(shiftId: string, reason: string) {
 
   await logAudit(shift.organization_id, "shift", shiftId, "posted_for_swap", user.id, { reason });
 
+  // Get the swap ID that was just created
+  const { data: newSwap } = await supabase
+    .from("swap_requests")
+    .select("id")
+    .eq("shift_id", shiftId)
+    .eq("requester_id", user.id)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (newSwap) {
+    await triggerSwapPosted(newSwap.id, user.id, shiftId, shift.organization_id);
+  }
+
   revalidatePath("/my-shifts");
   revalidatePath("/swap-requests");
   revalidatePath("/swaps");
@@ -133,6 +154,31 @@ export async function offerToCoverSwap(swapId: string) {
 
   await logAudit(swap.organization_id, "swap", swapId, "swap_claimed", user.id, { shift_id: swap.shift_id });
 
+  // Get shift requester's manager
+  const { data: requester } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", swap.requester_id)
+    .single();
+
+  // Get the department to find manager (simplified - assumes one manager per dept)
+  const { data: shiftData } = await supabase
+    .from("shifts")
+    .select("department_id")
+    .eq("id", swap.shift_id)
+    .single();
+
+  const { data: managers } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("department_ids", `{"${shiftData?.department_id}"}`)
+    .eq("user_role", "manager")
+    .limit(1);
+
+  if (managers && managers.length > 0) {
+    await triggerCoverOffered(swapId, swap.requester_id, user.id, managers[0].id, swap.organization_id);
+  }
+
   revalidatePath("/swaps");
   revalidatePath("/swap-requests");
   return { success: true };
@@ -184,6 +230,15 @@ export async function managerSwapAction(
       if (shiftError) throw new Error(shiftError.message);
     }
     await logAudit(swap.organization_id, "swap", swapId, "swap_approved", user.id, { shift_id: swap.shift_id });
+    // Trigger notifications
+    await triggerSwapApproved(
+      swapId,
+      swap.requester_id,
+      swap.covering_worker_id,
+      user.id,
+      swap.organization_id,
+      managerNotes,
+    );
     // Notify requester by email
     if (requester?.email) {
       await sendSwapApprovedEmail(requester.email, requester.full_name, shiftTitle);
@@ -212,6 +267,15 @@ export async function managerSwapAction(
     if (shiftError) throw new Error(shiftError.message);
     
     await logAudit(swap.organization_id, "swap", swapId, "swap_rejected", user.id, { shift_id: swap.shift_id, block_reswap: blockReswap });
+    // Trigger notifications
+    await triggerSwapRejected(
+      swapId,
+      swap.requester_id,
+      user.id,
+      swap.organization_id,
+      blockReswap,
+      managerNotes,
+    );
     // Notify requester by email
     if (requester?.email) {
       await sendSwapRejectedEmail(requester.email, requester.full_name, shiftTitle);
