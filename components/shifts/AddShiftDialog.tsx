@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createClient } from "@/lib/supabase/client";
+import { createShift } from "@/app/actions/shift";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Loader2 } from "lucide-react";
 import type { Department, Profile } from "@/lib/database.types";
@@ -32,11 +32,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
     if (!form.title || !form.start_time || !form.end_time) return;
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // Ensure the status is valid for the constraint
-      const { error } = await supabase.from("shifts").insert({
+      await createShift({
         organization_id: orgId,
         title: form.title,
         department_id: form.department_id || null,
@@ -44,10 +40,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
         start_time: new Date(form.start_time).toISOString(),
         end_time: new Date(form.end_time).toISOString(),
         notes: form.notes || null,
-        status: (form.assigned_to && form.assigned_to !== "none") ? "scheduled" : "open",
-        created_by: user?.id,
       });
-      if (error) throw error;
       toast({ title: "Shift created successfully", className: "bg-emerald-500/20 border-emerald-500/50 text-emerald-400" });
       setOpen(false);
       setForm({ title: "", department_id: "", assigned_to: "", start_time: "", end_time: "", notes: "" });

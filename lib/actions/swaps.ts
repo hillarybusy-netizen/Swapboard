@@ -164,7 +164,7 @@ export async function managerSwapAction(
   const admin = createAdminClient();
 
   if (action === "approve") {
-    const { error: swapError } = await supabase
+    const { error: swapError } = await admin
       .from("swap_requests")
       .update({
         status: "manager_approved",
@@ -190,7 +190,7 @@ export async function managerSwapAction(
     }
   } else {
     // Reject
-    const { error: swapError } = await supabase
+    const { error: swapError } = await admin
       .from("swap_requests")
       .update({
         status: "rejected",
