@@ -54,7 +54,7 @@ export default async function LandingPage() {
       <LandingStructuredData />
       <LandingSmoothScroll />
       {/* Navbar */}
-      <LandingNavbar user={user} logoUrl={logoUrl} initials={initials} />
+      <LandingNavbar user={user} logoUrl={logoUrl} initials={user ? initials : ""} />
 
       {/* Hero */}
       <section data-hero-section className="relative pt-44 pb-20 md:pb-32 lg:min-h-screen lg:flex lg:items-center px-6 overflow-hidden">
