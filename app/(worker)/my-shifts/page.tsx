@@ -66,15 +66,28 @@ export default async function MyShiftsPage({
 
   const supabase = await createClient();
 
-  const { data: allShiftsData } = await supabase
-    .from("shifts")
-    .select("*, department:departments(*)")
-    .eq("assigned_to", user.id)
-    .is("deleted_at", null)
-    .order("start_time", { ascending: false });
+  const [
+    { data: allShiftsData },
+    { data: departmentData },
+  ] = await Promise.all([
+    supabase
+      .from("shifts")
+      .select("*, department:departments(*)")
+      .eq("assigned_to", user.id)
+      .is("deleted_at", null)
+      .order("start_time", { ascending: false }),
+    profile?.department_id
+      ? supabase
+          .from("departments")
+          .select("*")
+          .eq("id", profile.department_id)
+          .single()
+      : Promise.resolve({ data: null }),
+  ]);
 
   const allShifts = (allShiftsData ?? []) as any[];
   const displayShifts = filterShifts(allShifts, currentTab);
+  const department = departmentData as any;
 
   const upcomingCount = filterShifts(allShifts, "upcoming").length;
   const completedCount = filterShifts(allShifts, "completed").length;
@@ -88,6 +101,17 @@ export default async function MyShiftsPage({
           {allShifts.length} Total ·{" "}
           <span className="text-gold/50">{upcomingCount} Upcoming</span>
         </p>
+        {department && (
+          <div className="flex items-center gap-2 mt-2">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: department.color || "#d4af37" }}
+            />
+            <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
+              {department.name}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Stats Row */}

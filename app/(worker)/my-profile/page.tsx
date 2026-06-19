@@ -1,4 +1,5 @@
 import { getCachedSession } from "@/lib/supabase/cached";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/actions";
 import { getInitials } from "@/lib/utils";
@@ -88,6 +89,18 @@ function calcCompletion(profile: any): CompletionField[] {
 export default async function MyProfilePage() {
   const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
+
+  const supabase = await createClient();
+  let department = null;
+
+  if (profile?.department_id) {
+    const { data } = await supabase
+      .from("departments")
+      .select("*")
+      .eq("id", profile.department_id)
+      .single();
+    department = data;
+  }
 
   const fields = calcCompletion(profile);
   const completedCount = fields.filter((f) => f.done).length;
@@ -227,6 +240,7 @@ export default async function MyProfilePage() {
           {[
             { label: "Email", value: user.email },
             { label: "Role", value: profile?.user_role ? profile.user_role.charAt(0).toUpperCase() + profile.user_role.slice(1) : "Worker" },
+            { label: "Department", value: department?.name || "—" },
             { label: "Timezone", value: (profile as any)?.timezone || "UTC" },
             { label: "Hourly Rate", value: profile?.hourly_rate ? `$${profile.hourly_rate}/hr` : "—" },
           ].map(({ label, value }) => (

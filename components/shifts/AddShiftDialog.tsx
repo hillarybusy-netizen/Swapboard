@@ -13,7 +13,7 @@ import type { Department, Profile } from "@/lib/database.types";
 
 interface Props {
   departments: Department[];
-  profiles: Pick<Profile, "id" | "full_name">[];
+  profiles: Pick<Profile, "id" | "full_name" | "department_id">[];
   orgId: string;
 }
 
@@ -26,6 +26,10 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
   });
 
   function set(field: string, value: string) { setForm((f) => ({ ...f, [field]: value })) }
+
+  const filteredProfiles = form.department_id
+    ? profiles.filter(p => p.department_id === form.department_id)
+    : profiles;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -129,9 +133,14 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-2xl p-1 shadow-2xl">
                   <SelectItem value="none" className="rounded-xl text-xs font-bold py-3 text-red-400 focus:bg-red-400/10 focus:text-red-400">
-                    <span className="uppercase tracking-widest scale-90 origin-left">Unassigned (Open)</span>
+                    <span className="uppercase tracking-widest scale-90 origin-left">
+                      Unassigned ({form.department_id ? "Dept" : "All"})
+                    </span>
                   </SelectItem>
-                  {profiles.map((p) => (
+                  {!form.department_id && (
+                    <div className="px-3 py-2 text-[10px] text-white/30">Select a department first</div>
+                  )}
+                  {filteredProfiles.map((p) => (
                     <SelectItem key={p.id} value={p.id} className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
                       <span className="uppercase tracking-widest scale-90 origin-left">{p.full_name}</span>
                     </SelectItem>

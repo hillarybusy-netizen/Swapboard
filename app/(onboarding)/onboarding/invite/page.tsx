@@ -223,7 +223,7 @@ export default function InvitePage() {
                   <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl text-white font-bold focus:ring-gold/50">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="glass border-white/10 text-white">
+                  <SelectContent className="bg-[#0a0a0a] border-white/10 text-white rounded-2xl shadow-2xl">
                     <SelectItem value="worker" className="focus:bg-gold focus:text-[#050505] font-bold">Worker Access</SelectItem>
                     <SelectItem value="manager" className="focus:bg-gold focus:text-[#050505] font-bold">Manager Access</SelectItem>
                   </SelectContent>
@@ -235,7 +235,7 @@ export default function InvitePage() {
                     <SelectTrigger className={`h-14 rounded-2xl font-bold transition-colors ${missingDept ? "bg-red-500/10 border-red-500/40 text-red-400" : "bg-white/5 border-white/10 text-white"}`}>
                       <SelectValue placeholder={missingDept ? "Required ↑" : "Department"} />
                     </SelectTrigger>
-                    <SelectContent className="glass border-white/10 text-white">
+                    <SelectContent className="bg-[#0a0a0a] border-white/10 text-white rounded-2xl shadow-2xl">
                       {pendingDepartments.length === 0 ? (
                         <div className="px-3 py-2 text-xs text-white/30">No departments set up yet</div>
                       ) : (

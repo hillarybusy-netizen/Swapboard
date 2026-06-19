@@ -82,10 +82,10 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
               <Label className="text-[10px] font-black uppercase tracking-widest text-gold">
                 {memberRole === "manager" ? "Assigned Departments" : "Primary Department"}
               </Label>
-              <div className="grid gap-2">
+              <div className="grid gap-2 w-full max-w-sm mx-auto">
                 {departments.map(dept => {
-                  const isSelected = memberRole === "manager" 
-                    ? selectedDeptIds.includes(dept.id) 
+                  const isSelected = memberRole === "manager"
+                    ? selectedDeptIds.includes(dept.id)
                     : selectedDeptId === dept.id;
 
                   return (
@@ -95,13 +95,13 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                       onClick={() => handleToggleDept(dept.id)}
                       className={cn(
                         "flex items-center justify-between p-3 rounded-2xl border transition-all text-left group",
-                        isSelected 
-                          ? "bg-gold/10 border-gold/30" 
+                        isSelected
+                          ? "bg-gold/10 border-gold/30"
                           : "bg-white/[0.02] border-white/5 hover:border-white/20"
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <div 
+                        <div
                           className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
                           style={{ backgroundColor: dept.color }}
                         />
