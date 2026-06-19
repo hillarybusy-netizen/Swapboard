@@ -1,5 +1,7 @@
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 
+export const dynamic = "force-dynamic";
+
 export default function NotificationsPage() {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
