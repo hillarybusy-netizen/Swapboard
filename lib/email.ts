@@ -6,9 +6,17 @@ import { ShiftAssignedEmail } from './email-templates/ShiftAssignedEmail';
 import { PendingApprovalEmail } from './email-templates/PendingApprovalEmail';
 import { DigestEmail } from './email-templates/DigestEmail';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'noreply@swapboard.ca';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.swapboard.ca';
+
+// Lazy-load Resend client
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+  return new Resend(apiKey);
+}
 
 // Generic email sending function
 async function sendEmail(
@@ -16,7 +24,9 @@ async function sendEmail(
   subject: string,
   component: React.ReactElement,
 ) {
-  if (!process.env.RESEND_API_KEY) {
+  const resend = getResendClient();
+
+  if (!resend) {
     // Fallback to logging in development
     if (process.env.NODE_ENV === 'development') {
       console.log(`\n📧 EMAIL (${subject})`);
