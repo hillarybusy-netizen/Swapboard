@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut,
+  LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, Bell,
 } from "lucide-react";
 import { cn, INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { ProfileDropdown } from "@/components/layout/ProfileDropdown";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/shifts", label: "Shifts", icon: Calendar },
   { href: "/swaps", label: "Swap Requests", icon: ArrowLeftRight },
   { href: "/team", label: "Team", icon: Users },

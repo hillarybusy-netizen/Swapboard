@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AnimatedFavicon } from "@/components/AnimatedFavicon";
+import { RealtimeNotificationsProvider } from "@/components/layout/RealtimeNotificationsProvider";
 import { DEFAULT_TITLE, SITE_URL } from "@/lib/seo";
 import { rootMetadata } from "@/lib/metadata";
 
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${plusJakartaSans.className}`}>
         <AnimatedFavicon />
+        <RealtimeNotificationsProvider />
         {children}
         <Toaster />
       </body>
