@@ -55,18 +55,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Get profile role to redirect to relevant dashboard
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("user_role")
-        .single();
-
-      if (profileError || !profile) {
-        setShowNoAccount(true);
-        return;
-      }
-
-      if (profile?.user_role === "worker") {
+      if (res.userRole === "worker") {
         router.push("/my-shifts");
       } else {
         router.push("/dashboard");

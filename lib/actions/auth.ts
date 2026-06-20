@@ -191,5 +191,15 @@ export async function signInUser({
     return { success: false, error: "incorrect_password" };
   }
 
-  return { success: true };
+  // Fetch user profile with authenticated session
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("user_role")
+    .single();
+
+  if (profileError || !profile) {
+    return { success: false, error: "profile_fetch_failed" };
+  }
+
+  return { success: true, userRole: profile.user_role };
 }
