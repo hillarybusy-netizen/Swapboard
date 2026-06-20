@@ -18,7 +18,7 @@ import { ApproveClaimButton } from "@/components/shifts/ApproveClaimButton";
 import { SwapChartLazy } from "@/components/dashboard/SwapChartLazy";
 import { Lock } from "lucide-react";
 import { ExportReportButton } from "@/components/dashboard/ExportReportButton";
-import { PostShiftDialog } from "@/components/dashboard/PostShiftDialog";
+import { AddShiftDialog } from "@/components/shifts/AddShiftDialog";
 import { ConfirmCompletionButton } from "@/components/shifts/ConfirmCompletionButton";
 import { checkPlanLimit } from "@/lib/plans";
 
@@ -202,7 +202,7 @@ export default async function DashboardPage() {
         </div>
         <div className="flex items-center gap-3">
           <ExportReportButton data={{ metrics, swaps, orgName: org?.name ?? "Organization" }} />
-          <PostShiftDialog organizationId={orgId} departments={departments} profiles={profiles} />
+          <AddShiftDialog orgId={orgId} departments={departments} profiles={profiles} />
         </div>
       </div>
 

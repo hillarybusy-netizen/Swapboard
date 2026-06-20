@@ -178,6 +178,7 @@ export async function offerToCoverSwap(swapId: string) {
     await triggerCoverOffered(swapId, swap.requester_id, user.id, managers[0].id, swap.organization_id);
   }
 
+  revalidatePath("/available-shifts");
   revalidatePath("/swaps");
   revalidatePath("/swap-requests");
   return { success: true };
