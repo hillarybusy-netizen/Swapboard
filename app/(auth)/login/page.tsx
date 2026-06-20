@@ -30,19 +30,19 @@ export default function LoginPage() {
     setShowNoAccount(false);
     try {
       const supabase = createClient();
-      let targetEmail = email;
+      let targetEmail = email.trim().toLowerCase();
       let identifierType = "email";
 
       if (loginMode === "member") {
         identifierType = "Member ID";
         const { data: lookedUpEmail, error: rpcError } = await supabase
-          .rpc("get_email_by_member_id", { p_member_id: memberId });
+          .rpc("get_email_by_member_id", { p_member_id: memberId.trim().toUpperCase() });
         if (rpcError) throw rpcError;
         if (!lookedUpEmail) {
           setShowNoAccount(true);
           return;
         }
-        targetEmail = lookedUpEmail;
+        targetEmail = lookedUpEmail.trim().toLowerCase();
       }
 
       const res = await signInUser({ email: targetEmail, password, honeypot });

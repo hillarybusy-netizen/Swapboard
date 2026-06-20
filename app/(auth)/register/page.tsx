@@ -25,6 +25,9 @@ export default function RegisterPage() {
       const result = await registerUser({ email, password, fullName, honeypot });
       if (!result.success) throw new Error(result.error);
 
+      // Wait a brief moment for the profile to be created by the trigger
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       const signInResult = await signInUser({ email: email.trim().toLowerCase(), password, honeypot });
       if (!signInResult.success) throw new Error("Account created but sign-in failed. Please log in manually.");
 

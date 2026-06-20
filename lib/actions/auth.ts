@@ -155,7 +155,6 @@ export async function signInUser({
 }) {
   // 1. Honeypot check
   if (honeypot) {
-    // Silently drop bot
     return { success: false, error: "Invalid credentials" };
   }
 
@@ -171,54 +170,54 @@ export async function signInUser({
     return { success: false, error: "Invalid credentials." };
   }
 
+  const normalizedEmail = email.trim().toLowerCase();
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
+
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: normalizedEmail,
     password,
   });
 
-  if (error) {
-    // Check if user exists in auth.users via admin client
-    const adminClient = createAdminClient();
-    const { data, error: listError } = await adminClient.auth.admin.listUsers();
-
-    const userExists = data?.users?.some((u: any) => u.email?.toLowerCase() === email.toLowerCase());
-
-    if (!userExists) {
-      return { success: false, error: "no_registered_account" };
-    }
-    // User exists but password is wrong
+  if (signInError) {
+    // Sign-in failed - return generic error (don't leak whether email exists)
     return { success: false, error: "incorrect_password" };
   }
 
-  // Fetch user profile with retry for timing issues
-  let profile;
-  let profileError;
-  let retries = 0;
-  const maxRetries = 2;
+  // Sign-in succeeded - session cookie is now set
+  // Try to fetch user role for redirect, but don't fail if it takes a moment
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user?.id;
 
-  while (retries < maxRetries) {
-    const result = await supabase
+  if (!userId) {
+    // Shouldn't happen but if auth is inconsistent, still return success
+    // The layout will handle redirecting based on session state
+    return { success: true, userRole: "manager" };
+  }
+
+  let userRole = "manager"; // Default role
+  let retries = 0;
+
+  // Retry profile fetch with exponential backoff for RLS timing issues
+  while (retries < 5) {
+    const { data: profileData } = await supabase
       .from("profiles")
       .select("user_role")
-      .single();
+      .eq("id", userId)
+      .maybeSingle();
 
-    if (!result.error) {
-      profile = result.data;
+    if (profileData?.user_role) {
+      userRole = profileData.user_role;
       break;
     }
 
-    profileError = result.error;
     retries++;
-    if (retries < maxRetries) {
-      // Small delay before retry to allow session to settle
-      await new Promise(resolve => setTimeout(resolve, 100));
+    if (retries < 5) {
+      // Exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms
+      await new Promise(resolve => setTimeout(resolve, 100 * Math.pow(2, retries - 1)));
     }
   }
 
-  if (profileError || !profile) {
-    return { success: false, error: "profile_fetch_failed" };
-  }
-
-  return { success: true, userRole: profile.user_role };
+  // Return success even if we couldn't fetch the role - the session is valid
+  // The layout will verify the role on next page load
+  return { success: true, userRole };
 }
