@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createShift } from "@/app/actions/shift";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { detectUserTimezone, COMMON_TIMEZONES } from "@/lib/timezone";
 import type { Department, Profile } from "@/lib/database.types";
 
 interface Props {
@@ -22,9 +23,15 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userTimezone, setUserTimezone] = useState<string>("UTC");
   const [form, setForm] = useState({
     title: "", department_id: "", assigned_to: "", start_time: "", end_time: "", notes: "",
   });
+
+  // Detect timezone on mount
+  useEffect(() => {
+    setUserTimezone(detectUserTimezone());
+  }, []);
 
   function set(field: string, value: string) { setForm((f) => ({ ...f, [field]: value })) }
 
@@ -37,6 +44,13 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
       : profiles.filter(p => p.department_id === form.department_id)
     : profiles;
 
+  // Convert local time to UTC for submission
+  function localToUTC(localDateTime: string): string {
+    if (!localDateTime) return "";
+    const localDate = new Date(localDateTime);
+    return localDate.toISOString();
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.title || !form.start_time || !form.end_time) return;
@@ -47,8 +61,8 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
         title: form.title,
         department_id: form.department_id || null,
         assigned_to: (form.assigned_to && form.assigned_to !== "none") ? form.assigned_to : null,
-        start_time: new Date(form.start_time).toISOString(),
-        end_time: new Date(form.end_time).toISOString(),
+        start_time: localToUTC(form.start_time),
+        end_time: localToUTC(form.end_time),
         notes: form.notes || null,
       });
       toast({ title: "Shift created successfully", className: "bg-emerald-500/20 border-emerald-500/50 text-emerald-400" });
@@ -75,6 +89,10 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
         <DialogHeader className="p-8 pb-0">
           <DialogTitle className="text-2xl font-black tracking-tight text-white mb-1">Create Shift</DialogTitle>
           <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">New Deployment Details</p>
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+            <Globe className="w-3.5 h-3.5 text-gold" />
+            <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Timezone: {userTimezone}</span>
+          </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6 relative">
@@ -91,23 +109,23 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Start Time</Label>
-              <Input 
-                type="datetime-local" 
+              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Start Time ({userTimezone})</Label>
+              <Input
+                type="datetime-local"
                 className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all [color-scheme:dark]"
-                value={form.start_time} 
-                onChange={(e) => set("start_time", e.target.value)} 
-                required 
+                value={form.start_time}
+                onChange={(e) => set("start_time", e.target.value)}
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">End Time</Label>
-              <Input 
-                type="datetime-local" 
+              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">End Time ({userTimezone})</Label>
+              <Input
+                type="datetime-local"
                 className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all [color-scheme:dark]"
-                value={form.end_time} 
-                onChange={(e) => set("end_time", e.target.value)} 
-                required 
+                value={form.end_time}
+                onChange={(e) => set("end_time", e.target.value)}
+                required
               />
             </div>
           </div>

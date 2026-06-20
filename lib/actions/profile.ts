@@ -96,3 +96,15 @@ export async function updateMemberDepartments(
   revalidatePath("/team");
   return { success: true };
 }
+
+export async function updateUserTimezone(timezone: string) {
+  const { supabase, user } = await getAuthenticatedUser();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ timezone })
+    .eq("id", user.id);
+
+  if (error) throw new Error(error.message);
+  return { success: true };
+}
