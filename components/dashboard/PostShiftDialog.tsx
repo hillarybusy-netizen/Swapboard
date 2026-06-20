@@ -68,31 +68,31 @@ export function PostShiftDialog({ organizationId, departments, profiles }: PostS
           Post Shift
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] glass border-white/5 text-white">
+      <DialogContent className="w-[95vw] max-w-[500px] sm:max-w-[550px] md:max-w-[600px] lg:max-w-[700px] glass border-white/5 text-white rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-black uppercase tracking-tight">Post New Shift</DialogTitle>
-          <DialogDescription className="text-white/40 text-xs font-medium">
+          <DialogTitle className="text-lg sm:text-xl font-black uppercase tracking-tight">Post New Shift</DialogTitle>
+          <DialogDescription className="text-white/40 text-xs sm:text-sm font-medium mt-1">
             Fill in the details to add a new shift to the schedule.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-widest text-white/30">Shift Title</Label>
-            <Input 
-              id="title" 
-              placeholder="e.g. Morning Server" 
-              className="bg-white/5 border-white/10 rounded-xl"
+            <Label htmlFor="title" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/30">Shift Title</Label>
+            <Input
+              id="title"
+              placeholder="e.g. Morning Server"
+              className="bg-white/5 border-white/10 rounded-xl h-10 sm:h-11 text-sm"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               required
             />
           </div>
-          
-          <div className="grid grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Department</Label>
+              <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/30">Department</Label>
               <Select onValueChange={(v) => setFormData({ ...formData, department_id: v })} required>
-                <SelectTrigger className="bg-white/5 border-white/10 rounded-xl">
+                <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-10 sm:h-11">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#050505] border-white/10">
@@ -103,9 +103,9 @@ export function PostShiftDialog({ organizationId, departments, profiles }: PostS
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Assign To</Label>
+              <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/30">Assign To</Label>
               <Select onValueChange={(v) => setFormData({ ...formData, assigned_to: v })}>
-                <SelectTrigger className="bg-white/5 border-white/10 rounded-xl">
+                <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-10 sm:h-11">
                   <SelectValue placeholder="Open Shift" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#050505] border-white/10">
@@ -118,22 +118,22 @@ export function PostShiftDialog({ organizationId, departments, profiles }: PostS
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Start Time</Label>
-              <Input 
-                type="datetime-local" 
-                className="bg-white/5 border-white/10 rounded-xl [color-scheme:dark]"
+              <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/30">Start Time</Label>
+              <Input
+                type="datetime-local"
+                className="bg-white/5 border-white/10 rounded-xl h-10 sm:h-11 [color-scheme:dark] text-sm"
                 value={formData.start_time}
                 onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">End Time</Label>
-              <Input 
-                type="datetime-local" 
-                className="bg-white/5 border-white/10 rounded-xl [color-scheme:dark]"
+              <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/30">End Time</Label>
+              <Input
+                type="datetime-local"
+                className="bg-white/5 border-white/10 rounded-xl h-10 sm:h-11 [color-scheme:dark] text-sm"
                 value={formData.end_time}
                 onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
                 required
@@ -142,17 +142,17 @@ export function PostShiftDialog({ organizationId, departments, profiles }: PostS
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Notes</Label>
-            <Input 
-              placeholder="Optional notes..." 
-              className="bg-white/5 border-white/10 rounded-xl"
+            <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/30">Notes</Label>
+            <Input
+              placeholder="Optional notes..."
+              className="bg-white/5 border-white/10 rounded-xl h-10 sm:h-11 text-sm"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
           </div>
 
           <DialogFooter className="pt-4">
-            <Button type="submit" className="w-full btn-gold rounded-full uppercase font-black text-xs h-12" disabled={loading}>
+            <Button type="submit" className="w-full btn-gold rounded-full uppercase font-black text-xs sm:text-sm h-11 sm:h-12" disabled={loading}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
               Post Shift
             </Button>
