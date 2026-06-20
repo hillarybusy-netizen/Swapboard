@@ -20,32 +20,37 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
-  const [noAccountError, setNoAccountError] = useState(false);
+  const [credentialError, setCredentialError] = useState<string>("");
+  const [showNoAccount, setShowNoAccount] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setNoAccountError(false);
+    setCredentialError("");
+    setShowNoAccount(false);
     try {
       const supabase = createClient();
       let targetEmail = email;
+      let identifierType = "email";
 
       if (loginMode === "member") {
+        identifierType = "Member ID";
         const { data: lookedUpEmail, error: rpcError } = await supabase
           .rpc("get_email_by_member_id", { p_member_id: memberId });
         if (rpcError) throw rpcError;
         if (!lookedUpEmail) {
-          throw new Error("Invalid Member ID. Please check and try again.");
+          setShowNoAccount(true);
+          return;
         }
         targetEmail = lookedUpEmail;
       }
 
       const res = await signInUser({ email: targetEmail, password, honeypot });
       if (!res.success) {
-        if (res.error?.toLowerCase().includes("invalid")) {
-          setNoAccountError(true);
+        if (res.error === "no_registered_account") {
+          setShowNoAccount(true);
         } else {
-          throw new Error(res.error);
+          setCredentialError(`Incorrect ${identifierType} or password`);
         }
         return;
       }
@@ -57,7 +62,7 @@ export default function LoginPage() {
         .single();
 
       if (profileError || !profile) {
-        setNoAccountError(true);
+        setShowNoAccount(true);
         return;
       }
 
@@ -174,7 +179,16 @@ export default function LoginPage() {
             Sign in
           </Button>
 
-          {noAccountError && (
+          {credentialError && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-red-300 mb-2">{credentialError}</p>
+              </div>
+            </div>
+          )}
+
+          {showNoAccount && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex gap-3">
               <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1">

@@ -171,6 +171,11 @@ export async function signInUser({
     return { success: false, error: "Invalid credentials." };
   }
 
+  // 4. Check if user exists
+  const adminClient = createAdminClient();
+  const { data: userData } = await adminClient.auth.admin.listUsers();
+  const userExists = userData?.users?.some(u => u.email?.toLowerCase() === email.toLowerCase());
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -178,7 +183,12 @@ export async function signInUser({
   });
 
   if (error) {
-    return { success: false, error: error.message };
+    // If user doesn't exist, return specific error message
+    if (!userExists) {
+      return { success: false, error: "no_registered_account" };
+    }
+    // User exists but password is wrong
+    return { success: false, error: "incorrect_password" };
   }
 
   return { success: true };
