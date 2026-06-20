@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { InviteTeam } from "@/components/settings/InviteTeam";
 import { RevokeInviteButton } from "@/components/team/RevokeInviteButton";
 import { EditMemberDialog } from "@/components/team/EditMemberDialog";
+import { AddShiftDialog } from "@/components/shifts/AddShiftDialog";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ export default async function TeamPage() {
             Staff Overview · <span className="text-gold/60">{members.length} Active Members</span>
           </p>
         </div>
+        <AddShiftDialog orgId={orgId} departments={departments} profiles={members} />
       </div>
 
       {/* Add Team Section */}

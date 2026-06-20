@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createShift } from "@/app/actions/shift";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Department, Profile } from "@/lib/database.types";
 
 interface Props {
@@ -27,8 +28,13 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
 
   function set(field: string, value: string) { setForm((f) => ({ ...f, [field]: value })) }
 
+  const selectedDept = departments.find(d => d.id === form.department_id);
+  const isGeneralDept = selectedDept?.name?.toLowerCase() === "general";
+
   const filteredProfiles = form.department_id
-    ? profiles.filter(p => p.department_id === form.department_id)
+    ? isGeneralDept
+      ? [] // General department only allows open shifts
+      : profiles.filter(p => p.department_id === form.department_id)
     : profiles;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -127,20 +133,32 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
             </div>
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Assignment</Label>
-              <Select value={form.assigned_to} onValueChange={(v) => set("assigned_to", v)}>
-                <SelectTrigger className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 transition-all">
-                  <SelectValue placeholder="Mark as Open" />
+              <Select
+                value={form.assigned_to}
+                onValueChange={(v) => set("assigned_to", v)}
+                disabled={isGeneralDept}
+              >
+                <SelectTrigger className={cn(
+                  "glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 transition-all",
+                  isGeneralDept && "opacity-50 cursor-not-allowed"
+                )}>
+                  <SelectValue placeholder={isGeneralDept ? "Only Open Shifts" : "Mark as Open"} />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-2xl p-1 shadow-2xl">
                   <SelectItem value="none" className="rounded-xl text-xs font-bold py-3 text-red-400 focus:bg-red-400/10 focus:text-red-400">
                     <span className="uppercase tracking-widest scale-90 origin-left">
-                      Unassigned ({form.department_id ? "Dept" : "All"})
+                      Unassigned ({isGeneralDept ? "General" : form.department_id ? "Dept" : "All"})
                     </span>
                   </SelectItem>
                   {!form.department_id && (
                     <div className="px-3 py-2 text-[10px] text-white/30">Select a department first</div>
                   )}
-                  {filteredProfiles.map((p) => (
+                  {isGeneralDept && (
+                    <div className="px-3 py-2 text-[10px] text-white/50 font-medium italic">
+                      General department allows only open shifts
+                    </div>
+                  )}
+                  {!isGeneralDept && filteredProfiles.map((p) => (
                     <SelectItem key={p.id} value={p.id} className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
                       <span className="uppercase tracking-widest scale-90 origin-left">{p.full_name}</span>
                     </SelectItem>
