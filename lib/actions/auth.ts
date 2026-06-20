@@ -191,11 +191,30 @@ export async function signInUser({
     return { success: false, error: "incorrect_password" };
   }
 
-  // Fetch user profile with authenticated session
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("user_role")
-    .single();
+  // Fetch user profile with retry for timing issues
+  let profile;
+  let profileError;
+  let retries = 0;
+  const maxRetries = 2;
+
+  while (retries < maxRetries) {
+    const result = await supabase
+      .from("profiles")
+      .select("user_role")
+      .single();
+
+    if (!result.error) {
+      profile = result.data;
+      break;
+    }
+
+    profileError = result.error;
+    retries++;
+    if (retries < maxRetries) {
+      // Small delay before retry to allow session to settle
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
 
   if (profileError || !profile) {
     return { success: false, error: "profile_fetch_failed" };
