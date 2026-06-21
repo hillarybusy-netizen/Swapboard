@@ -31,13 +31,7 @@ export async function requestSwap(shiftId: string, reason: string) {
     throw new Error("This shift is not available for swap");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("organization_id")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile || profile.organization_id !== shift.organization_id) {
+  if (!profile.organization_id || profile.organization_id !== shift.organization_id) {
     throw new Error("Unauthorized");
   }
 
@@ -187,6 +181,8 @@ export async function managerSwapAction(
 
   if (profile.user_role === "manager" && !profile.department_ids?.includes(swap.shift?.department_id)) {
     throw new Error("Unauthorized to manage swaps in this department");
+  } else if (profile.user_role !== "manager" && profile.user_role !== "admin") {
+    throw new Error("Unauthorized");
   }
 
   const requester = swap.requester as any;

@@ -52,7 +52,7 @@ export function SwapActionButtons({ swap, userId, isManager, isRequester, isCove
   return (
     <Card>
       <CardContent className="pt-6 space-y-4">
-        {swap.status === "pending" && !isRequester && !isCovering && (
+        {swap.status === "pending" && !isRequester && !isCovering && !isManager && (
           <Button className="w-full" onClick={() => action("offer")} disabled={!!loading}>
             {loading === "offer" ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
             Offer to cover this shift

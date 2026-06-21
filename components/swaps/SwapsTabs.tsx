@@ -85,7 +85,7 @@ function SwapCard({ swap }: { swap: any }) {
 
             <div className="min-w-0">
               <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2 flex-wrap">
-                <p className="text-sm md:text-base font-black tracking-tight text-white">{swap.requester?.full_name ?? "Unknown"}</p>
+                <p className="text-sm md:text-base font-black tracking-tight text-white truncate">{swap.requester?.full_name ?? "Unknown"}</p>
                 <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-white/10" />
                 <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gold/60">Requested Swap</p>
               </div>
@@ -107,8 +107,8 @@ function SwapCard({ swap }: { swap: any }) {
               <div className="flex flex-col items-start sm:items-end gap-1.5 pr-6 md:pr-8 border-r border-white/5">
                 <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/20 italic">Covering Partner</span>
                 <div className="flex items-center gap-2 md:gap-3">
-                  <span className="text-[11px] md:text-xs font-bold text-white/80">{swap.covering_worker.full_name}</span>
-                  <Avatar className="w-6 h-6 md:w-7 md:h-7 rounded-full opacity-60">
+                  <span className="text-[11px] md:text-xs font-bold text-white/80 truncate max-w-[120px]">{swap.covering_worker.full_name}</span>
+                  <Avatar className="w-6 h-6 md:w-7 md:h-7 rounded-full opacity-60 shrink-0">
                     <AvatarFallback className="bg-white/5 text-white/40 text-[9px] md:text-[10px] font-black">
                        {swap.covering_worker.full_name?.charAt(0) ?? "?"}
                     </AvatarFallback>

@@ -17,6 +17,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/my-shifts");
   }
 
+  if (profile?.user_role === "admin") {
+    redirect("/admin");
+  }
+
   const org = (profile as any)?.organization ?? null;
 
   // If no org yet, redirect to onboarding

@@ -17,6 +17,10 @@ export default async function WorkerLayout({ children }: { children: React.React
     .eq("id", user.id)
     .single();
 
+  if (profile?.user_role !== "worker") {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex min-h-screen bg-[#050505]">
       <RealtimeNotifications userId={user.id} departmentId={profile?.department_id} />
