@@ -171,7 +171,9 @@ export async function managerSwapAction(
 ) {
   const { supabase, user, profile } = await requireUser();
 
-  const { data: swap, error } = await supabase
+  const admin = createAdminClient();
+
+  const { data: swap, error } = await admin
     .from("swap_requests")
     .select("*, shift:shifts(id, title, department_id), requester:profiles!swap_requests_requester_id_fkey(full_name, email)")
     .eq("id", swapId)
@@ -187,8 +189,6 @@ export async function managerSwapAction(
 
   const requester = swap.requester as any;
   const shiftTitle = (swap.shift as any)?.title ?? "Shift";
-
-  const admin = createAdminClient();
 
   if (action === "approve") {
     const { error: swapError } = await admin

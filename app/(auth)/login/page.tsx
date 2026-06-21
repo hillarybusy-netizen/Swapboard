@@ -57,6 +57,8 @@ export default function LoginPage() {
 
       if (res.userRole === "worker") {
         router.push("/my-shifts");
+      } else if (res.userRole === "admin") {
+        router.push("/admin");
       } else {
         router.push("/dashboard");
       }

@@ -127,7 +127,7 @@ export default async function DashboardPage() {
     // At-risk shifts (unassigned or swap_pending within 48h)
     addShiftDeptScope(supabase
       .from("shifts")
-      .select("*, department:departments(*), profile:profiles!assigned_to(*)")
+      .select("*, department:departments(*), profile:profiles!shifts_assigned_to_fkey(*)")
       .eq("organization_id", orgId)
       .is("deleted_at", null)
       .in("status", ["not_started", "up_for_swap", "pending_approval_swap"])

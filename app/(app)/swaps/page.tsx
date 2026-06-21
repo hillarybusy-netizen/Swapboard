@@ -23,11 +23,11 @@ export default async function SwapsPage() {
     .select(`
       *,
       shift:shifts(*, department:departments(id, name, color)),
-      requester:profiles!requester_id(id, full_name, email),
-      covering_worker:profiles!covering_worker_id(id, full_name)
+      requester:profiles!swap_requests_requester_id_fkey(id, full_name, email),
+      covering_worker:profiles!swap_requests_covering_worker_id_fkey(id, full_name)
     `)
     .eq("organization_id", orgId)
-    .order("requested_at", { ascending: false });
+    .order("created_at", { ascending: false });
 
   const { data: allSwapsData, error: swapsError } = await query;
   
