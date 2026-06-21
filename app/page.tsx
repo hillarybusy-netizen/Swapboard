@@ -120,7 +120,7 @@ export default async function LandingPage() {
                     className="flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors"
                   >
                     <Gift className="w-4 h-4" />
-                    <span>Try for free — 14-day premium trial included</span>
+                    <span>14-day free trial included</span>
                   </Link>
                 </>
               )}

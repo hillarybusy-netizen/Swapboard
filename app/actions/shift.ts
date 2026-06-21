@@ -22,7 +22,8 @@ export async function createShift(input: CreateShiftInput) {
   const admin = createAdminClient();
 
   // Determine shift status based on assignment
-  const status = input.assigned_to ? "scheduled" : "open";
+  // Unassigned shifts are "not_started", assigned shifts are also "not_started"
+  const status = "not_started";
 
   const { data: shift, error } = await admin
     .from("shifts")

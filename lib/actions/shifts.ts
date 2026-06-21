@@ -1,9 +1,41 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { requireManager, requireUser } from "@/lib/auth-helpers";
 import { logAudit } from "./audit";
+
+export async function autoCloseExpiredShifts(orgId: string) {
+  const admin = createAdminClient();
+  const now = new Date().toISOString();
+
+  // Find all shifts that have passed their end_time but aren't closed yet
+  const { data: expiredShifts, error: fetchError } = await admin
+    .from("shifts")
+    .select("id, organization_id, status")
+    .eq("organization_id", orgId)
+    .lt("end_time", now)
+    .in("status", ["not_started", "started"])
+    .is("deleted_at", null);
+
+  if (fetchError) throw fetchError;
+  if (!expiredShifts || expiredShifts.length === 0) return { count: 0 };
+
+  // Update all expired shifts to "overdue_not_done"
+  const { error: updateError } = await admin
+    .from("shifts")
+    .update({ status: "overdue_not_done" })
+    .in("id", expiredShifts.map(s => s.id));
+
+  if (updateError) throw updateError;
+
+  revalidatePath("/shifts");
+  revalidatePath("/my-shifts");
+  revalidatePath("/dashboard");
+
+  return { count: expiredShifts.length };
+}
 
 export async function createShift(formData: {
   organization_id: string;

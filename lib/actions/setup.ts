@@ -35,9 +35,26 @@ export async function setupWorkspace(
 
   if (orgErr) throw new Error("Failed to create organization: " + orgErr.message);
 
-  // 2. Create Departments & Roles — build a name→id map for invite resolution
+  // 2. Initialize departmentMap and create General Department (always available for unassigned shifts)
   const departmentMap: Record<string, string> = {};
 
+  const { data: generalDept, error: generalDeptErr } = await supabase
+    .from("departments")
+    .insert({
+      organization_id: org.id,
+      name: "General",
+      color: "#6b7280",
+      requires_certification: false,
+      sort_order: 0,
+    })
+    .select()
+    .single();
+
+  if (generalDeptErr) throw new Error("Failed to create General department: " + generalDeptErr.message);
+
+  departmentMap["General"] = generalDept.id;
+
+  // 3. Create Industry-Specific Departments & Roles — build a name→id map for invite resolution
   for (let i = 0; i < departments.length; i++) {
     const dept = departments[i];
     if (!dept.name.trim()) continue;
@@ -49,7 +66,7 @@ export async function setupWorkspace(
         name: dept.name,
         color: dept.color,
         requires_certification: dept.requiresCertification ?? false,
-        sort_order: i,
+        sort_order: i + 1,
       })
       .select()
       .single();
@@ -72,7 +89,7 @@ export async function setupWorkspace(
     }
   }
 
-  // 3. Update Profile
+  // 4. Update Profile
   const { error: profileErr } = await supabase
     .from("profiles")
     .update({

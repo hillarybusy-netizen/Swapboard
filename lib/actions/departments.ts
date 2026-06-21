@@ -6,7 +6,12 @@ import { checkPlanLimit } from "@/lib/plans";
 import { revalidatePath } from "next/cache";
 
 export async function addDepartment(orgId: string, name: string, sortOrder: number) {
-  const { supabase, user } = await requireManager(orgId);
+  const { supabase, user, profile } = await requireManager(orgId);
+
+  // Only admins can create departments
+  if (profile.user_role !== "admin") {
+    throw new Error("Only organization admins can create departments.");
+  }
 
   // Check the plan limit on the server side
   const [{ data: org }, { count: deptCount }] = await Promise.all([

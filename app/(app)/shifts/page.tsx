@@ -5,9 +5,10 @@ import { formatShiftDate, formatShiftTime, formatShiftDuration, SHIFT_STATUS_LAB
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AddShiftDialog } from "@/components/shifts/AddShiftDialog";
-import { Calendar, Clock, Users } from "lucide-react";
+import { Calendar, Clock, Users, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { ShiftsListClient } from "@/components/shifts/ShiftsListClient";
+import { autoCloseExpiredShifts } from "@/lib/actions/shifts";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,9 @@ export default async function ShiftsPage(props: {
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
 
+  // Auto-close expired shifts
+  await autoCloseExpiredShifts(orgId);
+
   const supabase = await createClient();
 
   let query = supabase
@@ -49,17 +53,31 @@ export default async function ShiftsPage(props: {
     .is("deleted_at", null)
     .order("start_time", { ascending: true });
 
-  // Scope to department_ids if manager
+  // Scope to department_ids if manager (but only if they have departments assigned)
   const isManager = profile?.user_role === "manager";
   const isAdmin = profile?.user_role === "admin";
   const managerDeptIds = profile?.department_ids || [];
 
+  // Managers without assigned departments are "general managers" - see all shifts
+  // Managers with assigned departments see only those departments + General
   if (isManager && managerDeptIds.length > 0) {
-    query = query.in("department_id", managerDeptIds);
-  } else if (isManager) {
-    // If manager has no departments assigned, show nothing
-    query = query.eq("department_id", "00000000-0000-0000-0000-000000000000");
+    // Get General department for managers
+    const { data: generalDeptData } = await supabase
+      .from("departments")
+      .select("id")
+      .eq("organization_id", orgId)
+      .ilike("name", "general")
+      .single();
+    const generalDeptId = generalDeptData?.id;
+
+    if (generalDeptId) {
+      const deptFilter = [...managerDeptIds, generalDeptId];
+      query = query.in("department_id", deptFilter);
+    } else {
+      query = query.in("department_id", managerDeptIds);
+    }
   }
+  // If manager has NO departments OR user is admin, show all shifts (no filtering)
 
   if (searchParams.dept) {
     if (!isManager || managerDeptIds.includes(searchParams.dept)) {
@@ -83,21 +101,16 @@ export default async function ShiftsPage(props: {
   const departments = (departmentsRes.data ?? []) as any[];
   const profiles = (profilesRes.data ?? []) as any[];
   const rawShifts = shiftsRes.data;
-  
+
   const now = new Date();
 
-  const shifts = ((rawShifts ?? []) as any[]).map(s => ({
-    ...s,
-    isEnded: new Date(s.end_time) < now
-  })).sort((a, b) => {
-    if (a.isEnded === b.isEnded) {
-      if (a.isEnded) {
-        return new Date(b.start_time).getTime() - new Date(a.start_time).getTime();
-      }
-      return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
-    }
-    return a.isEnded ? 1 : -1;
+  const allShifts = ((rawShifts ?? []) as any[]).sort((a, b) => {
+    return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
   });
+
+  // Separate active and ended shifts
+  const shifts = allShifts.filter(s => new Date(s.end_time) >= now);
+  const endedShifts = allShifts.filter(s => new Date(s.end_time) < now).reverse(); // Most recent first
 
   const canAddShift = isAdmin || isManager;
 
@@ -120,8 +133,8 @@ export default async function ShiftsPage(props: {
       {/* Filters */}
       <div className="flex flex-wrap gap-2 md:gap-3 px-1 md:px-2">
         <Link href="/shifts">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className={cn(
               "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
               !searchParams.dept && !searchParams.status ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
@@ -133,8 +146,8 @@ export default async function ShiftsPage(props: {
         </Link>
         {departments.map((d) => (
           <Link key={d.id} href={`/shifts?dept=${d.id}`}>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className={cn(
                "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
                 searchParams.dept === d.id ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
@@ -147,8 +160,8 @@ export default async function ShiftsPage(props: {
           </Link>
         ))}
         <Link href="/shifts?status=not_started">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className={cn(
               "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
               searchParams.status === "not_started" ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
@@ -160,14 +173,58 @@ export default async function ShiftsPage(props: {
         </Link>
       </div>
 
-      {/* Shifts list */}
-      <ShiftsListClient 
+      {/* Active Shifts */}
+      <ShiftsListClient
         shifts={shifts}
         canAddShift={canAddShift}
         departments={departments}
         profiles={profiles}
         orgId={orgId}
       />
+
+      {/* Ended Shifts History */}
+      {endedShifts.length > 0 && (
+        <div className="space-y-4 pt-8 border-t border-white/10">
+          <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-3">
+            <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+            Shift History
+          </h2>
+          <div className="space-y-2">
+            {endedShifts.map((shift) => (
+              <div
+                key={shift.id}
+                className="glass rounded-xl p-4 border border-white/5 flex items-center justify-between hover:border-white/10 transition-all"
+              >
+                <div>
+                  <h3 className="font-bold text-white">{shift.title}</h3>
+                  <div className="flex items-center gap-4 mt-2 text-[11px] text-white/40">
+                    {shift.department && (
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className="w-1.5 h-1.5 rounded-full"
+                          style={{ backgroundColor: shift.department.color }}
+                        />
+                        {shift.department.name}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {formatShiftDate(shift.start_time)}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {formatShiftTime(shift.start_time, shift.end_time)}
+                    </div>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 whitespace-nowrap ml-4">
+                  ✓ Ended
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

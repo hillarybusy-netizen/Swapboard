@@ -98,13 +98,18 @@ export async function updateMemberDepartments(
 }
 
 export async function updateUserTimezone(timezone: string) {
-  const { supabase, user } = await getAuthenticatedUser();
+  try {
+    const { supabase, user } = await getAuthenticatedUser();
 
-  const { error } = await supabase
-    .from("profiles")
-    .update({ timezone })
-    .eq("id", user.id);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ timezone })
+      .eq("id", user.id);
 
-  if (error) throw new Error(error.message);
-  return { success: true };
+    if (error) throw new Error(error.message);
+    return { success: true };
+  } catch {
+    // Silently fail if not authenticated
+    return { success: false };
+  }
 }

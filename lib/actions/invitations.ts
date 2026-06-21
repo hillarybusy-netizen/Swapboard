@@ -161,7 +161,12 @@ export async function sendInvitation(inv: {
     return { success: false, error: rl.error };
   }
 
-  const { supabase, user } = await requireManager(inv.organization_id);
+  const { supabase, user, profile } = await requireManager(inv.organization_id);
+
+  // Only admins can send invitations
+  if (profile.user_role !== "admin") {
+    return { success: false, error: "Only organization admins can send invitations." };
+  }
 
   const limits = await checkInviteLimits(supabase, inv.organization_id);
   if (!limits.ok) return { success: false, error: limits.error };
@@ -227,7 +232,12 @@ export async function createManualInvitation(inv: {
     return { success: false, error: rl.error };
   }
 
-  const { supabase, user } = await requireManager(inv.organization_id);
+  const { supabase, user, profile } = await requireManager(inv.organization_id);
+
+  // Only admins can create invitation links
+  if (profile.user_role !== "admin") {
+    return { success: false, error: "Only organization admins can create invitation links." };
+  }
 
   const limits = await checkInviteLimits(supabase, inv.organization_id);
   if (!limits.ok) return { success: false, error: limits.error };
@@ -270,8 +280,8 @@ export async function deleteInvitation(id: string) {
     .eq("id", user.id)
     .single();
 
-  if (profileError || !profile || (profile.user_role !== "manager" && profile.user_role !== "admin")) {
-    return { success: false, error: "Only managers can revoke invitations" };
+  if (profileError || !profile || profile.user_role !== "admin") {
+    return { success: false, error: "Only organization admins can revoke invitations" };
   }
 
   const { error: deleteError } = await supabase

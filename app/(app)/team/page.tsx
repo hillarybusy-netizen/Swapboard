@@ -27,6 +27,11 @@ export default async function TeamPage() {
   const org = (profile as any)?.organization;
   if (!orgId || !org) redirect("/onboarding/industry");
 
+  // Only admins can access team management
+  if (profile?.user_role === "manager") {
+    redirect("/dashboard");
+  }
+
   const [
     { data: membersData },
     { data: pendingInvitesData },

@@ -16,19 +16,29 @@ export default async function AvailableShiftsPage() {
   const deptId = profile?.department_id;
   const orgId = profile?.organization_id;
 
-  // Fetch unassigned shifts in the user's department
+  // Fetch unassigned shifts in user's department + General department
   let unassignedQuery = supabase
     .from("shifts")
     .select("*, department:departments(name, color)")
     .is("assigned_to", null)
     .eq("status", "not_started")
     .is("deleted_at", null)
+    .eq("organization_id", orgId)
     .order("start_time", { ascending: true });
 
-  if (deptId) {
+  // Get General department ID first
+  const { data: generalDept } = await supabase
+    .from("departments")
+    .select("id")
+    .eq("organization_id", orgId)
+    .ilike("name", "general")
+    .single();
+
+  // Filter for worker's department OR General department
+  if (deptId && generalDept?.id) {
+    unassignedQuery = unassignedQuery.or(`department_id.eq.${deptId},department_id.eq.${generalDept.id}`);
+  } else if (deptId) {
     unassignedQuery = unassignedQuery.eq("department_id", deptId);
-  } else if (orgId) {
-    unassignedQuery = unassignedQuery.eq("organization_id", orgId);
   }
 
   // Fetch swaps available for this worker (up_for_swap status)
@@ -54,9 +64,14 @@ export default async function AvailableShiftsPage() {
 
   const unassignedShifts = (unassignedRaw ?? []) as any[];
 
-  // Filter swaps to only those in the user's department
+  // Filter swaps to only those in the user's department or General department
   const availableSwaps = (swapsRaw ?? [])
-    .filter((swap) => !deptId || (swap.shift?.department_id === deptId))
+    .filter((swap) => {
+      if (!deptId || !swap.shift?.department_id) return true;
+      const isInUserDept = swap.shift.department_id === deptId;
+      const isInGeneralDept = generalDept?.id && swap.shift.department_id === generalDept.id;
+      return isInUserDept || isInGeneralDept;
+    })
     .map((swap) => ({
       ...swap,
       isSwap: true,

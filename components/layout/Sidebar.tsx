@@ -35,6 +35,15 @@ export function Sidebar({ org, profile }: SidebarProps) {
   const industryIcon = org ? INDUSTRY_ICONS[org.industry] : "🔄";
   const industryLabel = org ? INDUSTRY_LABELS[org.industry] : "";
 
+  // Filter navigation items based on role
+  const filteredNavItems = NAV_ITEMS.filter(item => {
+    // Managers cannot access Team or Settings
+    if (profile?.user_role === "manager" && (item.href === "/team" || item.href === "/settings")) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <aside className="hidden md:flex flex-col w-64 bg-[#050505] h-screen sticky top-0 border-r border-white/5 relative overflow-hidden group">
       {/* Mesh background */}
@@ -56,7 +65,7 @@ export function Sidebar({ org, profile }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2 mt-2">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+        {filteredNavItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link key={href} href={href} prefetch>

@@ -40,23 +40,40 @@ export default async function DashboardPage() {
 
   // Scope queries for Manager
   const isManager = profile?.user_role === "manager";
+  const isAdmin = profile?.user_role === "admin";
   const managerDeptIds = profile?.department_ids || [];
 
+  // Get General department for managers
+  let generalDeptId: string | null = null;
+  if (isManager) {
+    const { data: generalDept } = await supabase
+      .from("departments")
+      .select("id")
+      .eq("organization_id", orgId)
+      .ilike("name", "general")
+      .single();
+    generalDeptId = generalDept?.id || null;
+  }
+
   const addDeptScope = (q: any, col = "department_id") => {
+    // If manager has departments assigned, filter to those + General
     if (isManager && managerDeptIds.length > 0) {
-      return q.in(col, managerDeptIds);
-    } else if (isManager) {
-      return q.eq(col, "00000000-0000-0000-0000-000000000000"); // Return empty
+      const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
+      return q.in(col, deptFilter);
     }
+    // If manager has NO departments assigned, they're a general manager - show all
+    // If admin, show all (no filtering)
     return q;
   };
 
   const addShiftDeptScope = (q: any) => {
+    // If manager has departments assigned, filter to those + General
     if (isManager && managerDeptIds.length > 0) {
-      return q.in("department_id", managerDeptIds);
-    } else if (isManager) {
-      return q.eq("department_id", "00000000-0000-0000-0000-000000000000");
+      const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
+      return q.in("department_id", deptFilter);
     }
+    // If manager has NO departments assigned, they're a general manager - show all
+    // If admin, show all (no filtering)
     return q;
   };
 
@@ -82,8 +99,12 @@ export default async function DashboardPage() {
       .then(res => {
         // Need to filter in JS since we can't easily filter by joined table in the root array using Supabase filter simply without !inner, wait !inner is used. Let's adjust query
         let q = supabase.from("swap_requests").select("*, shift:shifts!inner(department_id)").eq("organization_id", orgId).gte("created_at", since.toISOString()).order("created_at", { ascending: false });
-        if (isManager && managerDeptIds.length > 0) q = q.in("shift.department_id", managerDeptIds) as any;
-        else if (isManager) q = q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
+        if (isManager && managerDeptIds.length > 0) {
+          const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
+          q = q.in("shift.department_id", deptFilter) as any;
+        } else if (isManager) {
+          q = generalDeptId ? q.eq("shift.department_id", generalDeptId) as any : q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
+        }
         return q;
       }),
     // Pending swaps (need manager approval)
@@ -95,8 +116,12 @@ export default async function DashboardPage() {
         .eq("status", "worker_accepted")
         .order("requested_at", { ascending: false })
         .limit(5);
-      if (isManager && managerDeptIds.length > 0) q = q.in("shift.department_id", managerDeptIds) as any;
-      else if (isManager) q = q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
+      if (isManager && managerDeptIds.length > 0) {
+        const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
+        q = q.in("shift.department_id", deptFilter) as any;
+      } else if (isManager) {
+        q = generalDeptId ? q.eq("shift.department_id", generalDeptId) as any : q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
+      }
       return q;
     })(),
     // At-risk shifts (unassigned or swap_pending within 48h)
@@ -116,12 +141,13 @@ export default async function DashboardPage() {
       .select("*")
       .eq("organization_id", orgId)
       .order("name"), "id"),
-    // Profiles for PostShiftDialog
+    // Profiles for PostShiftDialog (only workers)
     addDeptScope(supabase
       .from("profiles")
       .select("id, full_name, department_id")
       .eq("organization_id", orgId)
       .eq("is_active", true)
+      .eq("user_role", "worker")
       .order("full_name"), "department_id"),
     // Shifts awaiting completion confirmation
     addShiftDeptScope(supabase

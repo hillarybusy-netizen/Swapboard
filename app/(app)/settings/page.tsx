@@ -16,6 +16,11 @@ export default async function SettingsPage(props: {
   const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
 
+  // Only admins can access settings
+  if (profile?.user_role === "manager") {
+    redirect("/dashboard");
+  }
+
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
 

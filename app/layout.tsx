@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { AnimatedFavicon } from "@/components/AnimatedFavicon";
 import { RealtimeNotificationsProvider } from "@/components/layout/RealtimeNotificationsProvider";
 import { TimezoneInitializer } from "@/components/TimezoneInitializer";
 import { DEFAULT_TITLE, SITE_URL } from "@/lib/seo";
@@ -48,7 +47,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable site summary" />
       </head>
       <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${plusJakartaSans.className}`}>
-        <AnimatedFavicon />
         <TimezoneInitializer />
         <RealtimeNotificationsProvider />
         {children}
