@@ -36,7 +36,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
   function set(field: string, value: string) { setForm((f) => ({ ...f, [field]: value })) }
 
   const selectedDept = departments.find(d => d.id === form.department_id);
-  const isGeneralDept = selectedDept?.name?.toLowerCase() === "general";
+  const isGeneralDept = form.department_id === "general" || selectedDept?.name?.toLowerCase() === "general";
 
   const filteredProfiles = form.department_id
     ? isGeneralDept
@@ -47,8 +47,9 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
   // Convert local time to UTC for submission
   function localToUTC(localDateTime: string): string {
     if (!localDateTime) return "";
-    const localDate = new Date(localDateTime);
-    return localDate.toISOString();
+    const local = new Date(localDateTime);
+    const utc = new Date(local.getTime() - local.getTimezoneOffset() * 60000);
+    return utc.toISOString();
   }
 
   function isPastDateTime(localDateTime: string): boolean {
@@ -76,7 +77,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
       await createShift({
         organization_id: orgId,
         title: form.title,
-        department_id: form.department_id || null,
+        department_id: form.department_id === "general" ? null : form.department_id || null,
         assigned_to: (form.assigned_to && form.assigned_to !== "none") ? form.assigned_to : null,
         start_time: localToUTC(form.start_time),
         end_time: localToUTC(form.end_time),
@@ -155,6 +156,9 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
                   <SelectValue placeholder="- select -" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-2xl p-1 shadow-2xl">
+                  <SelectItem value="general" className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
+                    <span className="uppercase tracking-widest">General</span>
+                  </SelectItem>
                   {departments.map((d) => (
                     <SelectItem key={d.id} value={d.id} className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
                       <div className="flex items-center gap-2 uppercase tracking-widest scale-90 origin-left">

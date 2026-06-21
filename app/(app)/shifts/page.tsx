@@ -59,23 +59,10 @@ export default async function ShiftsPage(props: {
   const managerDeptIds = profile?.department_ids || [];
 
   // Managers without assigned departments are "general managers" - see all shifts
-  // Managers with assigned departments see only those departments + General
+  // Managers with assigned departments see only those departments + General (null)
   if (isManager && managerDeptIds.length > 0) {
-    // Get General department for managers
-    const { data: generalDeptData } = await supabase
-      .from("departments")
-      .select("id")
-      .eq("organization_id", orgId)
-      .ilike("name", "general")
-      .single();
-    const generalDeptId = generalDeptData?.id;
-
-    if (generalDeptId) {
-      const deptFilter = [...managerDeptIds, generalDeptId];
-      query = query.in("department_id", deptFilter);
-    } else {
-      query = query.in("department_id", managerDeptIds);
-    }
+    const orConditions = managerDeptIds.map(id => `department_id.eq.${id}`).join(",");
+    query = query.or(`${orConditions},department_id.is.null`);
   }
   // If manager has NO departments OR user is admin, show all shifts (no filtering)
 
