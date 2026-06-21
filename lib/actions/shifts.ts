@@ -149,6 +149,10 @@ export async function bulkSoftDeleteShifts(shiftIds: string[]) {
 export async function claimUnassignedShift(shiftId: string) {
   const { supabase, user, profile } = await requireUser();
 
+  if (profile.user_role === "manager" || profile.user_role === "admin") {
+    throw new Error("Managers and admins cannot claim shifts");
+  }
+
   const { data: shift, error: fetchError } = await supabase
     .from("shifts")
     .select("organization_id, department_id, assigned_to, status, start_time, end_time")

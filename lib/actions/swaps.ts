@@ -13,7 +13,11 @@ import {
 } from "./notification-triggers";
 
 export async function requestSwap(shiftId: string, reason: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user, profile } = await requireUser();
+
+  if (profile.user_role === "manager" || profile.user_role === "admin") {
+    throw new Error("Managers and admins cannot request swaps");
+  }
 
   const { data: shift, error: shiftError } = await supabase
     .from("shifts")
@@ -79,7 +83,11 @@ export async function requestSwap(shiftId: string, reason: string) {
 }
 
 export async function offerToCoverSwap(swapId: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user, profile } = await requireUser();
+
+  if (profile.user_role === "manager" || profile.user_role === "admin") {
+    throw new Error("Managers and admins cannot cover shifts");
+  }
 
   const { data: swap, error } = await supabase
     .from("swap_requests")
