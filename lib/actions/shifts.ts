@@ -30,10 +30,6 @@ export async function autoCloseExpiredShifts(orgId: string) {
 
   if (updateError) throw updateError;
 
-  revalidatePath("/shifts");
-  revalidatePath("/my-shifts");
-  revalidatePath("/dashboard");
-
   return { count: expiredShifts.length };
 }
 

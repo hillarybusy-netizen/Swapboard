@@ -221,7 +221,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-2">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">Manager Dashboard</h1>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">{isAdmin ? "Admin" : "Manager"} Dashboard</h1>
           <p className="text-white/40 text-[10px] md:text-sm font-medium tracking-wide uppercase">
             30-Day Performance Overview · <span className="text-gold/60">{org?.name}</span>
           </p>
