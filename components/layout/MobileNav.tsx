@@ -1,26 +1,42 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/actions";
+import type { Organization, Profile } from "@/lib/database.types";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/shifts", label: "Shifts", icon: Calendar },
-  { href: "/swaps", label: "Swaps", icon: ArrowLeftRight },
+  { href: "/swaps", label: "Swap Requests", icon: ArrowLeftRight },
   { href: "/team", label: "Team", icon: Users },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export function MobileNav() {
+interface MobileNavProps {
+  profile?: Profile | null;
+  org?: Organization | null;
+}
+
+export function MobileNav({ profile, org }: MobileNavProps = {}) {
   const pathname = usePathname();
+
+  // Filter navigation items based on role
+  const filteredNavItems = NAV_ITEMS.filter(item => {
+    // Managers cannot access Team or Settings
+    if (profile?.user_role === "manager" && (item.href === "/team" || item.href === "/settings")) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="md:hidden fixed bottom-6 inset-x-6 z-50">
       <nav className="glass-nav rounded-full border-white/10 shadow-2xl p-2 px-4 shadow-gold/5">
         <div className="flex items-center justify-around h-14">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {filteredNavItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
               <Link key={href} href={href} className="flex flex-col items-center justify-center flex-1 h-full gap-1 group">
@@ -46,7 +62,7 @@ export function MobileNav() {
                 <LogOut className="w-5 h-5" />
               </div>
               <span className="text-[9px] font-black uppercase tracking-widest text-white/20 group-hover:text-red-400 transition-colors">
-                Out
+                Sign Out
               </span>
             </button>
           </form>

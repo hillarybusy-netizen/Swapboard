@@ -127,7 +127,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
-      <MobileNav />
+      <MobileNav profile={profile} org={org} />
     </div>
   );
 }
