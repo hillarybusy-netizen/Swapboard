@@ -64,7 +64,7 @@ export default async function SwapPage({
   const { data: mySwapsData } = await supabase
     .from("swap_requests")
     .select(
-      "*, shift:shifts(id, title, start_time, end_time, department:departments(name, color)), covering_worker:profiles!swap_requests_covering_worker_id_fkey(full_name)"
+      "*, shift:shifts(id, title, start_time, end_time, department:departments(name, color)), covering_worker:profiles!covering_worker_id(full_name)"
     )
     .eq("requester_id", user.id)
     .not("status", "eq", "cancelled")
@@ -76,7 +76,7 @@ export default async function SwapPage({
   let availableQuery = supabase
     .from("swap_requests")
     .select(
-      "*, shift:shifts(id, title, start_time, end_time, department_id, department:departments(name, color)), requester:profiles!swap_requests_requester_id_fkey(full_name, avatar_url)"
+      "*, shift:shifts(id, title, start_time, end_time, department_id, department:departments(name, color)), requester:profiles!requester_id(full_name, avatar_url)"
     )
     .eq("organization_id", orgId ?? "")
     .eq("status", "pending")

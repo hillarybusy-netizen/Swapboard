@@ -32,10 +32,6 @@ function calcProfileCompletion(profile: any): {
     { label: "Emergency contact name", done: !!profile?.emergency_contact_name },
     { label: "Emergency contact phone", done: !!profile?.emergency_contact_phone },
     {
-      label: "Certifications",
-      done: Array.isArray(profile?.certifications) && profile.certifications.length > 0,
-    },
-    {
       label: "Notification preferences",
       done:
         !!profile?.notification_preferences &&
@@ -96,7 +92,7 @@ export default async function HomePage() {
   // Fetch pending swap requests involving the user (as requester or covering_worker)
   const { data: mySwapData } = await supabase
     .from("swap_requests")
-    .select("*, shift:shifts(title, start_time, end_time), covering_worker:profiles!swap_requests_covering_worker_id_fkey(full_name)")
+    .select("*, shift:shifts(title, start_time, end_time), covering_worker:profiles!covering_worker_id(full_name)")
     .eq("requester_id", user.id)
     .in("status", ["pending", "worker_accepted"])
     .order("requested_at", { ascending: false })

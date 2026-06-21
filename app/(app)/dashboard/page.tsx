@@ -111,7 +111,7 @@ export default async function DashboardPage() {
     (async () => {
       let q = supabase
         .from("swap_requests")
-        .select("*, shift:shifts!inner(*, department:departments(*)), requester:profiles!swap_requests_requester_id_fkey(*), covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)")
+        .select("*, shift:shifts(*, department:departments(*)), requester:profiles!requester_id(*), covering_worker:profiles!covering_worker_id(*)")
         .eq("organization_id", orgId)
         .eq("status", "worker_accepted")
         .order("requested_at", { ascending: false })
@@ -127,7 +127,7 @@ export default async function DashboardPage() {
     // At-risk shifts (unassigned or swap_pending within 48h)
     addShiftDeptScope(supabase
       .from("shifts")
-      .select("*, department:departments(*), profile:profiles!shifts_assigned_to_fkey(*)")
+      .select("*, department:departments(*), profile:profiles!assigned_to(*)")
       .eq("organization_id", orgId)
       .is("deleted_at", null)
       .in("status", ["not_started", "up_for_swap", "pending_approval_swap"])

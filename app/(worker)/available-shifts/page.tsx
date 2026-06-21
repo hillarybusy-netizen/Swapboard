@@ -46,7 +46,7 @@ export default async function AvailableShiftsPage() {
   let swapQuery = supabase
     .from("swap_requests")
     .select(
-      "*, shift:shifts(id, title, start_time, end_time, department_id, organization_id, department:departments(name, color)), requester:profiles!swap_requests_requester_id_fkey(full_name)"
+      "*, shift:shifts(id, title, start_time, end_time, department_id, organization_id, department:departments(name, color)), requester:profiles!requester_id(full_name)"
     )
     .eq("status", "pending")
     .is("covering_worker_id", null)

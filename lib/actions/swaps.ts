@@ -12,25 +12,6 @@ import {
   triggerSwapRejected,
 } from "./notification-triggers";
 
-async function checkCertification(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-  departmentId: string | null
-) {
-  if (!departmentId) return;
-
-  const [{ data: dept }, { data: profile }] = await Promise.all([
-    supabase.from("departments").select("requires_certification, name").eq("id", departmentId).single(),
-    supabase.from("profiles").select("certifications").eq("id", userId).single(),
-  ]);
-
-  if (dept?.requires_certification && (!profile?.certifications || profile.certifications.length === 0)) {
-    throw new Error(
-      `This shift requires certification for ${dept.name}. Please ask your manager to add your certifications to your profile.`
-    );
-  }
-}
-
 export async function requestSwap(shiftId: string, reason: string) {
   const { supabase, user } = await requireUser();
 
@@ -55,8 +36,6 @@ export async function requestSwap(shiftId: string, reason: string) {
   if (!profile || profile.organization_id !== shift.organization_id) {
     throw new Error("Unauthorized");
   }
-
-  await checkCertification(supabase, user.id, shift.department_id);
 
   const { error: insertError } = await supabase.from("swap_requests").insert({
     organization_id: shift.organization_id,
@@ -117,8 +96,6 @@ export async function offerToCoverSwap(swapId: string) {
     .select("department_id, start_time, end_time")
     .eq("id", swap.shift_id)
     .single();
-
-  await checkCertification(supabase, user.id, shift?.department_id ?? null);
 
   if (shift && shift.start_time && shift.end_time) {
     const { data: overlappingShifts } = await supabase

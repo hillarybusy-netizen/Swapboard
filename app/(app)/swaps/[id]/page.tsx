@@ -23,9 +23,9 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
       .select(`
         *,
         shift:shifts(*, department:departments(*)),
-        requester:profiles!swap_requests_requester_id_fkey(*),
-        covering_worker:profiles!swap_requests_covering_worker_id_fkey(*),
-        approver:profiles!swap_requests_approved_by_fkey(*)
+        requester:profiles!requester_id(*),
+        covering_worker:profiles!covering_worker_id(*),
+        approver:profiles!approved_by(*)
       `)
       .eq("id", params.id)
       .single()

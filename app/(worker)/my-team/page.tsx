@@ -112,25 +112,6 @@ export default async function MyTeamPage() {
                 </>
               )}
             </div>
-
-            {/* Certifications */}
-            {member.certifications && member.certifications.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1.5">
-                {member.certifications.slice(0, 3).map((cert: string) => (
-                  <span
-                    key={cert}
-                    className="text-[8px] font-black text-white/30 bg-white/5 border border-white/8 px-1.5 py-0.5 rounded-md uppercase tracking-wider"
-                  >
-                    {cert}
-                  </span>
-                ))}
-                {member.certifications.length > 3 && (
-                  <span className="text-[8px] font-bold text-white/20 px-1">
-                    +{member.certifications.length - 3}
-                  </span>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Role badge */}

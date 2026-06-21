@@ -10,7 +10,6 @@ import {
   Phone,
   Mail,
   AlertTriangle,
-  Award,
   Bell,
   LogOut,
   Check,
@@ -65,14 +64,6 @@ function calcCompletion(profile: any): CompletionField[] {
       done: !!profile?.emergency_contact_phone,
       icon: Phone,
       tip: "Add emergency phone below",
-    },
-    {
-      label: "Certifications",
-      done:
-        Array.isArray(profile?.certifications) &&
-        profile.certifications.length > 0,
-      icon: Award,
-      tip: "Ask your manager to add certifications",
     },
     {
       label: "Notification preferences",
@@ -249,21 +240,6 @@ export default async function MyProfilePage() {
               <span className="text-sm font-medium text-white">{value ?? "—"}</span>
             </div>
           ))}
-          {Array.isArray(profile?.certifications) && profile.certifications.length > 0 && (
-            <div className="flex items-start justify-between px-5 py-3.5">
-              <span className="text-sm font-bold text-white/40">Certifications</span>
-              <div className="flex flex-wrap gap-1 max-w-[60%] justify-end">
-                {profile.certifications.map((c: string) => (
-                  <span
-                    key={c}
-                    className="text-[9px] font-black text-gold bg-gold/10 border border-gold/15 px-2 py-0.5 rounded-full uppercase tracking-wider"
-                  >
-                    {c}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

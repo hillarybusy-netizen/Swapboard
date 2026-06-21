@@ -16,7 +16,7 @@ export default async function SwapRequestsPage() {
   const [profileRes, myRequestsRes] = await Promise.all([
     supabase.from("profiles").select("organization_id, department_id").eq("id", user.id).single(),
     supabase.from("swap_requests")
-      .select("*, shift:shifts(*, department:departments(*)), covering_worker:profiles!swap_requests_covering_worker_id_fkey(*)")
+      .select("*, shift:shifts(*, department:departments(*)), covering_worker:profiles!covering_worker_id(*)")
       .eq("requester_id", user.id)
       .order("requested_at", { ascending: false })
   ]);
@@ -26,7 +26,7 @@ export default async function SwapRequestsPage() {
 
   const { data: availableSwapsData } = await supabase
     .from("swap_requests")
-    .select("*, shift:shifts(*, department:departments(*)), requester:profiles!swap_requests_requester_id_fkey(*)")
+    .select("*, shift:shifts(*, department:departments(*)), requester:profiles!requester_id(*)")
     .eq("organization_id", profile?.organization_id ?? "")
     .eq("status", "pending")
     .neq("requester_id", user.id)

@@ -44,7 +44,7 @@ export default async function ShiftDetailPage(props: {
     supabase
       .from("shifts")
       .select(
-        "*, department:departments(*), role:roles(*), profile:profiles!shifts_assigned_to_fkey(id, full_name, email, phone), creator:profiles!shifts_created_by_fkey(id, full_name)"
+        "*, department:departments(*), role:roles(*), profile:profiles!assigned_to(id, full_name, email, phone), creator:profiles!created_by(id, full_name)"
       )
       .eq("id", params.id)
       .single(),
