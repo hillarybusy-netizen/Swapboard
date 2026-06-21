@@ -51,9 +51,26 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
     return localDate.toISOString();
   }
 
+  function isPastDateTime(localDateTime: string): boolean {
+    if (!localDateTime) return false;
+    const selectedDateTime = new Date(localDateTime);
+    const now = new Date();
+    return selectedDateTime < now;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.title || !form.start_time || !form.end_time) return;
+    if (!form.title || !form.start_time || !form.end_time || !form.department_id) return;
+
+    if (isPastDateTime(form.start_time)) {
+      toast({ title: "Cannot create shift in the past", variant: "destructive" });
+      return;
+    }
+    if (isPastDateTime(form.end_time)) {
+      toast({ title: "End time cannot be in the past", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
     try {
       await createShift({
@@ -91,13 +108,13 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
           <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">New Deployment Details</p>
           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
             <Globe className="w-3.5 h-3.5 text-gold" />
-            <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Timezone: {userTimezone}</span>
+            <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Timezone: {userTimezone} • 24 Hour Clock</span>
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6 relative">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Shift Title</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Shift Title <span className="text-red-400">*</span></Label>
             <Input 
               placeholder="e.g. Morning service, Day shift" 
               className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all placeholder:text-white/10"
@@ -109,7 +126,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Start Time ({userTimezone})</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Start Time <span className="text-red-400">*</span></Label>
               <Input
                 type="datetime-local"
                 className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all [color-scheme:dark]"
@@ -119,7 +136,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">End Time ({userTimezone})</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">End Time <span className="text-red-400">*</span></Label>
               <Input
                 type="datetime-local"
                 className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all [color-scheme:dark]"
@@ -132,10 +149,10 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Department</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Department <span className="text-red-400">*</span></Label>
               <Select value={form.department_id} onValueChange={(v) => set("department_id", v)}>
                 <SelectTrigger className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 transition-all">
-                  <SelectValue placeholder="Select dept" />
+                  <SelectValue placeholder="- select -" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-2xl p-1 shadow-2xl">
                   {departments.map((d) => (
@@ -160,7 +177,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
                   "glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 transition-all",
                   isGeneralDept && "opacity-50 cursor-not-allowed"
                 )}>
-                  <SelectValue placeholder={isGeneralDept ? "Only Open Shifts" : "Mark as Open"} />
+                  <SelectValue placeholder={isGeneralDept ? "Only Open Shifts" : "- select -"} />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-2xl p-1 shadow-2xl">
                   <SelectItem value="none" className="rounded-xl text-xs font-bold py-3 text-red-400 focus:bg-red-400/10 focus:text-red-400">
