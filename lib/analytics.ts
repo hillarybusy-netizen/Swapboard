@@ -4,7 +4,6 @@ import { formatCurrency } from "@/lib/utils";
 // ROI constants (industry averages)
 const OVERTIME_PREMIUM_PER_HOUR = 15; // avg $ saved per shift hour by avoiding overtime/agency
 const MANAGER_MINS_PER_SWAP = 30; // avg minutes manager spends coordinating a swap manually
-const AVG_SHIFT_HOURS = 8;
 
 export interface ROIMetrics {
   totalSwapsRequested: number;
@@ -23,25 +22,38 @@ export interface WeeklySwapData {
   rate: number;
 }
 
-export function calculateROI(swaps: SwapRequest[]): ROIMetrics {
+function calculateShiftHours(startTime: string, endTime: string): number {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+}
+
+export function calculateROI(swaps: (SwapRequest & { shift?: any })[]): ROIMetrics {
   const total = swaps.length;
-  const fulfilled = swaps.filter((s) => s.status === "manager_approved").length;
+  const fulfilled = swaps.filter((s) => s.status === "manager_approved");
   const active = swaps.filter((s) => s.status === "pending" || s.status === "worker_accepted").length;
 
-  const fulfillmentRate = total > 0 ? Math.round((fulfilled / total) * 100) : 0;
-  const costSavings = fulfilled * AVG_SHIFT_HOURS * OVERTIME_PREMIUM_PER_HOUR;
-  const managerHoursSaved = (fulfilled * MANAGER_MINS_PER_SWAP) / 60;
+  const fulfillmentRate = total > 0 ? Math.round((fulfilled.length / total) * 100) : 0;
 
-  // Average hours to fulfill (from requested_at to manager_responded_at)
-  const fulfilledWithTimes = swaps.filter(
-    (s) => s.status === "manager_approved" && s.manager_responded_at
-  );
+  // Calculate cost savings based on actual shift duration
+  const costSavings = fulfilled.reduce((sum, swap) => {
+    if (swap.shift?.start_time && swap.shift?.end_time) {
+      const hours = calculateShiftHours(swap.shift.start_time, swap.shift.end_time);
+      return sum + (hours * OVERTIME_PREMIUM_PER_HOUR);
+    }
+    return sum;
+  }, 0);
+
+  const managerHoursSaved = (fulfilled.length * MANAGER_MINS_PER_SWAP) / 60;
+
+  // Average hours to fulfill (from created_at to manager_responded_at)
+  const fulfilledWithTimes = fulfilled.filter((s) => s.manager_responded_at);
   const avgFulfillmentHours =
     fulfilledWithTimes.length > 0
       ? fulfilledWithTimes.reduce((acc, s) => {
           const diff =
             (new Date(s.manager_responded_at!).getTime() -
-              new Date(s.requested_at).getTime()) /
+              new Date(s.created_at).getTime()) /
             (1000 * 60 * 60);
           return acc + diff;
         }, 0) / fulfilledWithTimes.length
@@ -49,7 +61,7 @@ export function calculateROI(swaps: SwapRequest[]): ROIMetrics {
 
   return {
     totalSwapsRequested: total,
-    totalSwapsFulfilled: fulfilled,
+    totalSwapsFulfilled: fulfilled.length,
     fulfillmentRate,
     costSavings,
     managerHoursSaved,

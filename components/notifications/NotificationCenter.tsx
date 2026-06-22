@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Check, Trash2, Filter } from "lucide-react";
+import { Bell, Check, Trash2, Filter, ChevronDown } from "lucide-react";
 import { getUserNotifications, markNotificationAsRead, getUnreadNotificationCount, type NotificationType } from "@/lib/actions/notifications";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const NOTIFICATION_COLORS: Record<NotificationType, { bg: string; border: string; text: string }> = {
   shift_assigned: { bg: "bg-blue-500/10", border: "border-blue-500/20", text: "text-blue-400" },
@@ -27,11 +28,20 @@ const NOTIFICATION_COLORS: Record<NotificationType, { bg: string; border: string
   upcoming_shifts_digest: { bg: "bg-gold/10", border: "border-gold/20", text: "text-gold" },
 };
 
+const ENTITY_LINKS: Record<string, (id: string) => string> = {
+  shift: (id) => `/dashboard?shift=${id}`,
+  swap_request: (id) => `/swaps?swap=${id}`,
+};
+
 export function NotificationCenter() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread">("all");
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const LIMIT = 20;
 
   useEffect(() => {
     loadNotifications();
@@ -39,24 +49,42 @@ export function NotificationCenter() {
       getUnreadNotificationCount().then((res) => {
         if (res.success) setUnreadCount(res.count);
       });
-    }, 5000); // Poll every 5 seconds
+    }, 10000); // Poll every 10 seconds for unread count
 
     return () => clearInterval(interval);
   }, [filter]);
 
   async function loadNotifications() {
     setLoading(true);
-    const result = await getUserNotifications(undefined, 20, 0, {
+    setOffset(0);
+    const result = await getUserNotifications(undefined, LIMIT, 0, {
       unreadOnly: filter === "unread",
     });
 
     if (result.success) {
       setNotifications(result.data);
+      setHasMore(result.hasMore);
       const countResult = await getUnreadNotificationCount();
       if (countResult.success) setUnreadCount(countResult.count);
     }
 
     setLoading(false);
+  }
+
+  async function loadMore() {
+    setIsLoadingMore(true);
+    const newOffset = offset + LIMIT;
+    const result = await getUserNotifications(undefined, LIMIT, newOffset, {
+      unreadOnly: filter === "unread",
+    });
+
+    if (result.success) {
+      setNotifications((prev) => [...prev, ...result.data]);
+      setHasMore(result.hasMore);
+      setOffset(newOffset);
+    }
+
+    setIsLoadingMore(false);
   }
 
   async function handleMarkAsRead(notificationId: string) {
@@ -68,6 +96,19 @@ export function NotificationCenter() {
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
   }
+
+  async function handleDelete(notificationId: string) {
+    // Note: delete functionality would require a deleteNotification action
+    setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+  }
+
+  const getEntityLink = (notification: any): string | null => {
+    if (notification.related_entity_type && notification.related_entity_id) {
+      const linkFn = ENTITY_LINKS[notification.related_entity_type];
+      return linkFn ? linkFn(notification.related_entity_id) : null;
+    }
+    return null;
+  };
 
   const colors = (type: NotificationType) => NOTIFICATION_COLORS[type] || NOTIFICATION_COLORS.swap_approved;
 
@@ -109,54 +150,91 @@ export function NotificationCenter() {
           <p>No notifications</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {notifications.map((notification) => {
-            const color = colors(notification.type);
-            const isUnread = !notification.read_at;
+        <>
+          <div className="space-y-2">
+            {notifications.map((notification) => {
+              const color = colors(notification.type);
+              const isUnread = !notification.read_at;
+              const entityLink = getEntityLink(notification);
 
-            return (
-              <div
-                key={notification.id}
-                className={cn(
-                  "p-4 rounded-xl border transition-colors",
-                  color.bg,
-                  color.border,
-                  isUnread ? "bg-opacity-40" : "bg-opacity-20"
-                )}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className={cn("font-bold text-sm", color.text)}>
-                        {notification.title}
-                      </h3>
-                      {isUnread && (
-                        <div className="w-2 h-2 rounded-full bg-blue-500" />
+              return (
+                <div
+                  key={notification.id}
+                  className={cn(
+                    "p-4 rounded-xl border transition-colors",
+                    color.bg,
+                    color.border,
+                    isUnread ? "bg-opacity-40" : "bg-opacity-20"
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className={cn("font-bold text-sm", color.text)}>
+                          {notification.title}
+                        </h3>
+                        {isUnread && (
+                          <div className="w-2 h-2 rounded-full bg-blue-500" />
+                        )}
+                      </div>
+                      <p className="text-xs text-white/60 mt-1">{notification.message}</p>
+                      <p className="text-[10px] text-white/40 mt-2">
+                        {new Date(notification.created_at).toLocaleString()}
+                      </p>
+
+                      {entityLink && (
+                        <Link href={entityLink}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs h-7 mt-2 text-blue-400 border-blue-500/30 hover:bg-blue-500/10"
+                          >
+                            View Details →
+                          </Button>
+                        </Link>
                       )}
                     </div>
-                    <p className="text-xs text-white/60 mt-1">{notification.message}</p>
-                    <p className="text-[10px] text-white/40 mt-2">
-                      {new Date(notification.created_at).toLocaleString()}
-                    </p>
-                  </div>
 
-                  <div className="flex gap-2">
-                    {isUnread && (
+                    <div className="flex gap-2">
+                      {isUnread && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleMarkAsRead(notification.id)}
+                          className="text-xs h-8 w-8 p-0"
+                          title="Mark as read"
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleMarkAsRead(notification.id)}
-                        className="text-xs h-8 w-8 p-0"
+                        onClick={() => handleDelete(notification.id)}
+                        className="text-xs h-8 w-8 p-0 text-red-400 hover:bg-red-500/10"
+                        title="Delete"
                       >
-                        <Check className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
-                    )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+
+          {hasMore && (
+            <Button
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              variant="outline"
+              className="w-full text-xs"
+            >
+              {isLoadingMore ? "Loading..." : "Load More"}
+              <ChevronDown className="w-4 h-4 ml-2" />
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

@@ -17,10 +17,14 @@ import { ApproveSwapButton } from "@/components/dashboard/ApproveSwapButton";
 import { ApproveClaimButton } from "@/components/shifts/ApproveClaimButton";
 import { SwapChartLazy } from "@/components/dashboard/SwapChartLazy";
 import { Lock } from "lucide-react";
-import { ExportReportButton } from "@/components/dashboard/ExportReportButton";
+import { ExportReportDropdown } from "@/components/dashboard/ExportReportDropdown";
 import { AddShiftDialog } from "@/components/shifts/AddShiftDialog";
 import { ConfirmCompletionButton } from "@/components/shifts/ConfirmCompletionButton";
 import { checkPlanLimit } from "@/lib/plans";
+import { calculateBasicAnalytics, calculateAdvancedAnalytics, calculateEnterpriseAnalytics } from "@/lib/advanced-analytics";
+import { DepartmentPerformance } from "@/components/analytics/DepartmentPerformance";
+import { WorkerPerformance } from "@/components/analytics/WorkerPerformance";
+import { EnterpriseMetrics } from "@/components/analytics/EnterpriseMetrics";
 
 
 
@@ -90,38 +94,29 @@ export default async function DashboardPage() {
     { data: pendingClaimsData },
   ] = await Promise.all([
     // Swap data (last 30 days)
-    supabase
-      .from("swap_requests")
-      .select("*, shift:shifts!inner(department_id)")
-      .eq("organization_id", orgId)
-      .gte("created_at", since.toISOString())
-      .order("created_at", { ascending: false })
-      .then(res => {
-        // Need to filter in JS since we can't easily filter by joined table in the root array using Supabase filter simply without !inner, wait !inner is used. Let's adjust query
-        let q = supabase.from("swap_requests").select("*, shift:shifts!inner(department_id)").eq("organization_id", orgId).gte("created_at", since.toISOString()).order("created_at", { ascending: false });
-        if (isManager && managerDeptIds.length > 0) {
-          const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
-          q = q.in("shift.department_id", deptFilter) as any;
-        } else if (isManager) {
-          q = generalDeptId ? q.eq("shift.department_id", generalDeptId) as any : q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
-        }
-        return q;
-      }),
+    (async () => {
+      let q = supabase
+        .from("swap_requests")
+        .select("*, shift:shifts(start_time, end_time)")
+        .eq("organization_id", orgId)
+        .gte("created_at", since.toISOString())
+        .order("created_at", { ascending: false });
+      return q;
+    })(),
     // Pending swaps (need manager approval)
     (async () => {
       let q = supabase
         .from("swap_requests")
-        .select("*, shift:shifts(*, department:departments(*)), requester:profiles!requester_id(*), covering_worker:profiles!covering_worker_id(*)")
+        .select(`
+          *,
+          shift:shifts!swap_requests_shift_id_fkey(id, start_time, end_time, title, department_id),
+          requester:profiles!requester_id(id, full_name),
+          covering_worker:profiles!covering_worker_id(id, full_name)
+        `)
         .eq("organization_id", orgId)
-        .eq("status", "worker_accepted")
-        .order("requested_at", { ascending: false })
+        .in("status", ["pending", "worker_accepted"])
+        .order("created_at", { ascending: false })
         .limit(5);
-      if (isManager && managerDeptIds.length > 0) {
-        const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
-        q = q.in("shift.department_id", deptFilter) as any;
-      } else if (isManager) {
-        q = generalDeptId ? q.eq("shift.department_id", generalDeptId) as any : q.eq("shift.department_id", "00000000-0000-0000-0000-000000000000") as any;
-      }
       return q;
     })(),
     // At-risk shifts (unassigned or swap_pending within 48h)
@@ -177,7 +172,17 @@ export default async function DashboardPage() {
   const pendingCompletions = (pendingCompletionsData ?? []) as any[];
   const pendingClaims = (pendingClaimsData ?? []) as any[];
 
-  const metrics = calculateROI(swaps as any);
+  // Calculate analytics based on plan
+  const hasAdvancedAnalytics = checkPlanLimit(org?.plan, "hasAdvancedAnalytics");
+  const hasEnterpriseAnalytics = checkPlanLimit(org?.plan, "hasEnterpriseAnalytics");
+
+  const analytics = hasEnterpriseAnalytics
+    ? calculateEnterpriseAnalytics(swaps, {}, [])
+    : hasAdvancedAnalytics
+    ? calculateAdvancedAnalytics(swaps, {})
+    : calculateBasicAnalytics(swaps);
+
+  const metrics = analytics;
   const weeklyData = groupSwapsByWeek(swaps as any);
   const trialStatus = getTrialStatus(org);
 
@@ -185,27 +190,51 @@ export default async function DashboardPage() {
     {
       title: "Swap Fulfillment Rate",
       value: `${metrics.fulfillmentRate}%`,
-      sub: `${metrics.totalSwapsFulfilled} of ${metrics.totalSwapsRequested} requests fulfilled`,
+      sub: `${swaps.filter(s => s.status === "manager_approved").length} of ${metrics.totalSwaps} requests fulfilled`,
       icon: TrendingUp,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
+      locked: false,
     },
-    {
-      title: "Cost Savings",
-      value: formatCurrency(metrics.costSavings),
-      sub: "vs. overtime & agency fees (30 days)",
-      icon: DollarSign,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
-    },
-    {
-      title: "Manager Time Saved",
-      value: `${metrics.managerHoursSaved.toFixed(1)}h`,
-      sub: "vs. manual phone coordination",
-      icon: Clock,
-      color: "text-purple-600",
-      bg: "bg-purple-50",
-    },
+    ...(hasAdvancedAnalytics ? [
+      {
+        title: "Cost Savings",
+        value: formatCurrency((metrics as any).costSavings || 0),
+        sub: "vs. overtime & agency fees (30 days)",
+        icon: DollarSign,
+        color: "text-blue-600",
+        bg: "bg-blue-50",
+        locked: false,
+      },
+      {
+        title: "Manager Time Saved",
+        value: `${((metrics as any).managerHoursSaved || 0).toFixed(1)}h`,
+        sub: "vs. manual phone coordination",
+        icon: Clock,
+        color: "text-purple-600",
+        bg: "bg-purple-50",
+        locked: false,
+      },
+    ] : [
+      {
+        title: "Cost Savings",
+        value: "—",
+        sub: "Upgrade to Growth plan to unlock",
+        icon: DollarSign,
+        color: "text-blue-600",
+        bg: "bg-blue-50",
+        locked: true,
+      },
+      {
+        title: "Manager Time Saved",
+        value: "—",
+        sub: "Upgrade to Growth plan to unlock",
+        icon: Clock,
+        color: "text-purple-600",
+        bg: "bg-purple-50",
+        locked: true,
+      },
+    ]),
     {
       title: "Active Swaps",
       value: metrics.activeSwaps.toString(),
@@ -213,6 +242,7 @@ export default async function DashboardPage() {
       icon: RefreshCw,
       color: "text-orange-600",
       bg: "bg-orange-50",
+      locked: false,
     },
   ];
 
@@ -227,7 +257,10 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <ExportReportButton data={{ metrics, swaps, orgName: org?.name ?? "Organization" }} />
+          <Link href="/analytics" className="px-4 py-2 rounded-lg bg-gold/10 hover:bg-gold/20 border border-gold/30 text-gold text-xs font-black uppercase tracking-widest transition-all">
+            Analytics Report
+          </Link>
+          <ExportReportDropdown data={{ metrics, swaps, orgName: org?.name ?? "Organization" }} />
           <AddShiftDialog orgId={orgId} departments={departments} profiles={profiles} />
         </div>
       </div>
@@ -258,8 +291,13 @@ export default async function DashboardPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-1 md:px-2">
-        {kpis.map((kpi) => (
+        {kpis.map((kpi: any) => (
           <div key={kpi.title} className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden group">
+            {kpi.locked && (
+              <div className="absolute inset-0 z-20 bg-[#050505]/40 backdrop-blur-sm flex items-center justify-center">
+                <Lock className="w-5 h-5 text-gold/60" />
+              </div>
+            )}
             <div className="absolute top-0 right-0 w-24 h-24 bg-white/[0.02] blur-2xl group-hover:bg-gold/[0.05] transition-colors" />
             <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl ${kpi.bg.replace('bg-', 'bg-gold/').replace('50', '10')} flex items-center justify-center mb-4 md:mb-6 border border-white/5`}>
               <kpi.icon className="w-5 h-5 md:w-6 md:h-6 text-gold" />
@@ -519,6 +557,160 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Advanced Analytics Section */}
+      {hasAdvancedAnalytics && (
+        <div className="space-y-8 px-1 md:px-2">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white mb-2">Advanced Analytics</h2>
+            <p className="text-white/40 text-[10px] md:text-sm font-medium tracking-wide uppercase">
+              Detailed insights into your swap operations
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Top Workers */}
+            <div className="lg:col-span-1">
+              <WorkerPerformance workers={(analytics as any).topWorkers || []} />
+            </div>
+
+            {/* Advanced Metrics */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="card-premium p-6 rounded-2xl">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                    Overtime Avoided
+                  </div>
+                  <p className="text-4xl font-black text-yellow-400 mb-2">
+                    {((analytics as any).overtimeAvoided || 0).toFixed(1)}h
+                  </p>
+                  <p className="text-[10px] text-white/40">shift hours covered by swaps</p>
+                </div>
+
+                <div className="card-premium p-6 rounded-2xl">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                    Cancellation Rate
+                  </div>
+                  <p className="text-4xl font-black text-red-400 mb-2">
+                    {((analytics as any).cancellationRate || 0)}%
+                  </p>
+                  <p className="text-[10px] text-white/40">of swap requests cancelled</p>
+                </div>
+
+                {((analytics as any).avgFulfillmentTime !== null) && (
+                  <div className="card-premium p-6 rounded-2xl">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                      Avg Fulfillment Time
+                    </div>
+                    <p className="text-4xl font-black text-purple-400 mb-2">
+                      {((analytics as any).avgFulfillmentTime || 0).toFixed(1)}h
+                    </p>
+                    <p className="text-[10px] text-white/40">to approve swap requests</p>
+                  </div>
+                )}
+
+                <div className="card-premium p-6 rounded-2xl">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                    Swaps by Department
+                  </div>
+                  <div className="space-y-2">
+                    {Object.entries(((analytics as any).swapsByDepartment || {}))
+                      .slice(0, 3)
+                      .map(([deptId, count]: any) => (
+                        <div key={deptId} className="flex justify-between text-sm">
+                          <span className="text-white/60">Dept {deptId.slice(0, 8)}</span>
+                          <span className="font-bold text-gold">{count}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enterprise Analytics Section */}
+      {hasEnterpriseAnalytics && (
+        <div className="space-y-8 px-1 md:px-2">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white mb-2">Enterprise Insights</h2>
+            <p className="text-white/40 text-[10px] md:text-sm font-medium tracking-wide uppercase">
+              Advanced analytics and performance metrics
+            </p>
+          </div>
+
+          {/* Enterprise Metrics Cards */}
+          <EnterpriseMetrics
+            workerEngagementScore={(analytics as any).workerEngagementScore || 0}
+            shiftCoverageRate={(analytics as any).shiftCoverageRate || 0}
+            predictedBusyTimes={(analytics as any).predictedBusyTimes || []}
+            overtimeAvoided={(analytics as any).overtimeAvoided || 0}
+            cancellationRate={(analytics as any).cancellationRate || 0}
+            avgFulfillmentTime={(analytics as any).avgFulfillmentTime || null}
+          />
+
+          {/* Department Performance */}
+          {((analytics as any).departmentPerformance || []).length > 0 && (
+            <DepartmentPerformance departments={(analytics as any).departmentPerformance || []} />
+          )}
+
+          {/* Manager Workload */}
+          {((analytics as any).managerWorkload || []).length > 0 && (
+            <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl">
+              <h3 className="text-lg font-black mb-6">Manager Workload</h3>
+              <div className="space-y-3">
+                {((analytics as any).managerWorkload || []).slice(0, 5).map((manager: any) => (
+                  <div key={manager.managerId} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                    <span className="text-sm font-bold text-white/80">Manager {manager.managerId.slice(0, 8)}</span>
+                    <span className="text-lg font-black text-gold">{manager.swaps}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Swap Reasons */}
+          {Object.keys(((analytics as any).swapReasons || {})).length > 0 && (
+            <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl">
+              <h3 className="text-lg font-black mb-6">Top Swap Reasons</h3>
+              <div className="space-y-2">
+                {Object.entries(((analytics as any).swapReasons || {}))
+                  .sort(([, a]: any, [, b]: any) => b - a)
+                  .slice(0, 5)
+                  .map(([reason, count]: any) => (
+                    <div key={reason} className="flex items-center justify-between text-sm p-2">
+                      <span className="text-white/70 truncate">{reason}</span>
+                      <span className="text-gold font-bold">{count}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Upgrade Prompt for Basic Plan */}
+      {!hasAdvancedAnalytics && (
+        <div className="glass rounded-2xl p-8 border-gold/20 mx-1 md:mx-2 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
+          <div className="flex items-start gap-4">
+            <Lock className="w-6 h-6 text-gold flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-xl font-black text-white mb-2">Unlock Advanced Analytics</h3>
+              <p className="text-white/60 mb-4">
+                Upgrade to Growth plan to access detailed performance metrics, worker analytics, cancellation rates, and more.
+              </p>
+              <Link
+                href="/analytics"
+                className="inline-block px-6 py-2 bg-gold/10 hover:bg-gold/20 border border-gold/30 rounded-lg font-bold text-gold transition-colors text-sm"
+              >
+                View Full Analytics
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

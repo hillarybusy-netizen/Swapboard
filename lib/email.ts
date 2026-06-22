@@ -5,6 +5,10 @@ import { SwapRejectedEmail } from './email-templates/SwapRejectedEmail';
 import { ShiftAssignedEmail } from './email-templates/ShiftAssignedEmail';
 import { PendingApprovalEmail } from './email-templates/PendingApprovalEmail';
 import { DigestEmail } from './email-templates/DigestEmail';
+import { GeneralShiftAvailableEmail } from './email-templates/GeneralShiftAvailableEmail';
+import { SwapPostedEmail } from './email-templates/SwapPostedEmail';
+import { ShiftCompletedEmail } from './email-templates/ShiftCompletedEmail';
+import { SwapOfferEmail } from './email-templates/SwapOfferEmail';
 
 const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'noreply@swapboard.ca';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.swapboard.ca';
@@ -174,6 +178,102 @@ export async function sendPendingApprovalEmail(
       coverWorkerName,
       shiftTitle,
       reason,
+      dashboardUrl,
+    }),
+  );
+}
+
+// General shift availability
+export async function sendGeneralShiftAvailableEmail(
+  to: string,
+  workerName: string,
+  shiftTitle: string,
+  shiftDate: string,
+  shiftTime: string,
+  departmentName?: string,
+  notes?: string,
+) {
+  const dashboardUrl = `${APP_URL}/available-shifts`;
+
+  return sendEmail(
+    to,
+    '📢 New General Shift Available',
+    React.createElement(GeneralShiftAvailableEmail, {
+      workerName,
+      shiftTitle,
+      shiftDate,
+      shiftTime,
+      departmentName,
+      notes,
+      dashboardUrl,
+    }),
+  );
+}
+
+// Swap posted notification
+export async function sendSwapPostedEmail(
+  to: string,
+  departmentWorkerName: string,
+  originalWorkerName: string,
+  shiftTitle: string,
+  shiftDate: string,
+  reason?: string,
+) {
+  const dashboardUrl = `${APP_URL}/available-shifts`;
+
+  return sendEmail(
+    to,
+    '🔄 Shift Available for Swap in Your Department',
+    React.createElement(SwapPostedEmail, {
+      departmentWorkerName,
+      originalWorkerName,
+      shiftTitle,
+      shiftDate,
+      reason,
+      dashboardUrl,
+    }),
+  );
+}
+
+// Swap offer notification (for shift owner)
+export async function sendSwapOfferEmail(
+  to: string,
+  shiftOwnerName: string,
+  offeringWorkerName: string,
+  shiftTitle: string,
+) {
+  const dashboardUrl = `${APP_URL}/swaps`;
+
+  return sendEmail(
+    to,
+    '✋ Someone Offered to Cover Your Shift',
+    React.createElement(SwapOfferEmail, {
+      shiftOwnerName,
+      offeringWorkerName,
+      shiftTitle,
+      dashboardUrl,
+    }),
+  );
+}
+
+// Shift completed notification
+export async function sendShiftCompletedEmail(
+  to: string,
+  recipientName: string,
+  workerName: string,
+  shiftTitle: string,
+  recipientRole: 'admin' | 'manager',
+) {
+  const dashboardUrl = `${APP_URL}/dashboard`;
+
+  return sendEmail(
+    to,
+    '✅ Shift Completion Awaiting Review',
+    React.createElement(ShiftCompletedEmail, {
+      recipientName,
+      workerName,
+      shiftTitle,
+      recipientRole,
       dashboardUrl,
     }),
   );

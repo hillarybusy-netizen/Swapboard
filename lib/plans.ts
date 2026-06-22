@@ -5,6 +5,9 @@ export interface PlanLimits {
   maxDepartments: number;
   hasROIMetrics: boolean;
   hasPrioritySupport: boolean;
+  hasBasicAnalytics: boolean;
+  hasAdvancedAnalytics: boolean;
+  hasEnterpriseAnalytics: boolean;
   label: string;
   price: number;
   priceLabel: string;
@@ -18,19 +21,25 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     maxDepartments: 100,
     hasROIMetrics: true,
     hasPrioritySupport: true,
+    hasBasicAnalytics: true,
+    hasAdvancedAnalytics: true,
+    hasEnterpriseAnalytics: true,
     label: "Free Trial",
     price: 0,
     priceLabel: "$0",
-    features: ["All Growth features", "14-day trial", "No credit card required"],
+    features: ["All Enterprise features", "14-day trial", "No credit card required"],
   },
   starter: {
     maxWorkers: 100,
     maxDepartments: 3,
     hasROIMetrics: false,
     hasPrioritySupport: false,
+    hasBasicAnalytics: true,
+    hasAdvancedAnalytics: false,
+    hasEnterpriseAnalytics: false,
     label: "Starter",
     price: 79,
-    priceLabel: "$79",
+    priceLabel: "$79/month",
     features: ["Up to 100 workers", "3 departments", "Basic analytics", "Email support"],
   },
   pro: {
@@ -38,9 +47,12 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     maxDepartments: 100,
     hasROIMetrics: true,
     hasPrioritySupport: true,
+    hasBasicAnalytics: true,
+    hasAdvancedAnalytics: true,
+    hasEnterpriseAnalytics: false,
     label: "Growth",
     price: 199,
-    priceLabel: "$199",
+    priceLabel: "$199/month",
     features: ["Up to 200 workers", "Unlimited departments", "ROI analytics", "Priority support", "Custom roles"],
     highlight: true,
   },
@@ -49,9 +61,12 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     maxDepartments: 1000,
     hasROIMetrics: true,
     hasPrioritySupport: true,
+    hasBasicAnalytics: true,
+    hasAdvancedAnalytics: true,
+    hasEnterpriseAnalytics: true,
     label: "Enterprise",
     price: 499,
-    priceLabel: "$499",
+    priceLabel: "$499/month",
     features: ["Unlimited workers", "Multi-location", "Advanced analytics", "Dedicated support", "SSO & compliance"],
   },
 };

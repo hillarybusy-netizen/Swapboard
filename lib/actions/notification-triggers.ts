@@ -7,6 +7,10 @@ import {
   sendSwapRejectedEmail,
   sendShiftAssignedEmail,
   sendPendingApprovalEmail,
+  sendGeneralShiftAvailableEmail,
+  sendSwapPostedEmail,
+  sendSwapOfferEmail,
+  sendShiftCompletedEmail,
 } from "@/lib/email";
 
 interface NotificationTriggerOptions {
@@ -553,5 +557,274 @@ export async function triggerCompletionApproved(
       relatedEntityType: 'shift',
       relatedEntityId: shiftId,
     });
+  }
+}
+
+// ============================================================================
+// GENERAL SHIFT & SWAP POSTED NOTIFICATIONS
+// ============================================================================
+
+/**
+ * General shift posted (unassigned shift for all workers to claim)
+ */
+export async function triggerGeneralShiftPosted(
+  shiftId: string,
+  organizationId: string,
+) {
+  const admin = createAdminClient();
+
+  // Fetch shift details
+  const { data: shift } = await admin
+    .from('shifts')
+    .select('title, start_time, end_time, notes')
+    .eq('id', shiftId)
+    .single();
+
+  if (!shift) return;
+
+  // Get all workers in organization
+  const { data: workers } = await admin
+    .from('profiles')
+    .select('id, email, full_name')
+    .eq('organization_id', organizationId)
+    .eq('user_role', 'worker');
+
+  if (!workers || workers.length === 0) return;
+
+  const startDate = new Date(shift.start_time);
+  const endDate = new Date(shift.end_time);
+  const dateStr = startDate.toLocaleDateString();
+  const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+  // Notify each worker
+  for (const worker of workers) {
+    await createNotification({
+      userId: worker.id,
+      organizationId,
+      type: 'shift_assigned',
+      title: 'General Shift Available',
+      message: `"${shift.title}" is available to claim on ${dateStr} at ${timeStr}. Claim it now!`,
+      relatedEntityType: 'shift',
+      relatedEntityId: shiftId,
+    });
+
+    // Send email if notifications enabled
+    if (shouldSendNotification(worker.id, 'email', 'shift_assigned')) {
+      if (worker.email) {
+        await sendGeneralShiftAvailableEmail(
+          worker.email,
+          worker.full_name || 'Worker',
+          shift.title,
+          dateStr,
+          timeStr,
+          'General',
+          shift.notes,
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Shift posted for swap (notify department workers)
+ */
+export async function triggerSwapPostedNotification(
+  swapId: string,
+  requesterUserId: string,
+  shiftId: string,
+  departmentId: string,
+  organizationId: string,
+  reason?: string,
+) {
+  const admin = createAdminClient();
+
+  // Fetch shift and requester details
+  const { data: shift } = await admin
+    .from('shifts')
+    .select('title, start_time')
+    .eq('id', shiftId)
+    .single();
+
+  const { data: requester } = await admin
+    .from('profiles')
+    .select('full_name')
+    .eq('id', requesterUserId)
+    .single();
+
+  if (!shift || !requester) return;
+
+  // Get all workers in department (excluding requester)
+  const { data: workers } = await admin
+    .from('profiles')
+    .select('id, email, full_name')
+    .eq('organization_id', organizationId)
+    .eq('user_role', 'worker');
+
+  if (!workers || workers.length === 0) return;
+
+  const startDate = new Date(shift.start_time);
+  const dateStr = startDate.toLocaleDateString();
+
+  // Filter to department workers (if department_ids contains this department)
+  for (const worker of workers) {
+    if (worker.id === requesterUserId) continue; // Don't notify requester
+
+    await createNotification({
+      userId: worker.id,
+      organizationId,
+      type: 'swap_posted',
+      title: 'Shift Available for Swap',
+      message: `${requester.full_name} posted "${shift.title}" for swap on ${dateStr}. Offer to cover it if interested!`,
+      relatedEntityType: 'swap_request',
+      relatedEntityId: swapId,
+    });
+
+    // Send email if notifications enabled
+    if (shouldSendNotification(worker.id, 'email', 'swap_posted')) {
+      if (worker.email) {
+        await sendSwapPostedEmail(
+          worker.email,
+          worker.full_name || 'Worker',
+          requester.full_name || 'A worker',
+          shift.title,
+          dateStr,
+          reason,
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Shift completed (notify admins and managers)
+ */
+export async function triggerShiftCompletedNotification(
+  shiftId: string,
+  workerId: string,
+  organizationId: string,
+) {
+  const admin = createAdminClient();
+
+  // Fetch shift and worker details
+  const { data: shift } = await admin
+    .from('shifts')
+    .select('title, department_id')
+    .eq('id', shiftId)
+    .single();
+
+  const { data: worker } = await admin
+    .from('profiles')
+    .select('full_name, email')
+    .eq('id', workerId)
+    .single();
+
+  if (!shift || !worker) return;
+
+  // Get all admins
+  const { data: admins } = await admin
+    .from('profiles')
+    .select('id, email, full_name')
+    .eq('organization_id', organizationId)
+    .eq('user_role', 'admin');
+
+  // Get department managers (if shift has a department)
+  let managers: any[] = [];
+  if (shift.department_id) {
+    const { data: deptManagers } = await admin
+      .from('profiles')
+      .select('id, email, full_name')
+      .eq('organization_id', organizationId)
+      .eq('user_role', 'manager');
+
+    // Filter managers who manage this department
+    managers = deptManagers?.filter((m: any) => {
+      return m.department_ids && m.department_ids.includes(shift.department_id);
+    }) || [];
+  }
+
+  const recipients = [...(admins || []), ...managers];
+  const uniqueRecipients = Array.from(
+    new Map(recipients.map((r) => [r.id, r])).values()
+  );
+
+  // Notify each admin/manager
+  for (const recipient of uniqueRecipients) {
+    await createNotification({
+      userId: recipient.id,
+      organizationId,
+      type: 'shift_completion_pending',
+      title: 'Shift Completion Awaiting Review',
+      message: `${worker.full_name} marked "${shift.title}" as complete. Please review and approve.`,
+      relatedEntityType: 'shift',
+      relatedEntityId: shiftId,
+    });
+
+    // Send email if notifications enabled
+    if (shouldSendNotification(recipient.id, 'email', 'shift_completion_pending')) {
+      if (recipient.email) {
+        await sendShiftCompletedEmail(
+          recipient.email,
+          recipient.full_name || recipient.id === admins?.[0]?.id ? 'Admin' : 'Manager',
+          worker.full_name || 'A worker',
+          shift.title,
+          admins?.some((a: any) => a.id === recipient.id) ? 'admin' : 'manager',
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Shift claim approved (notify worker)
+ */
+export async function triggerShiftApprovedNotification(
+  shiftId: string,
+  workerId: string,
+  organizationId: string,
+) {
+  const admin = createAdminClient();
+
+  // Fetch shift details
+  const { data: shift } = await admin
+    .from('shifts')
+    .select('title, start_time, end_time')
+    .eq('id', shiftId)
+    .single();
+
+  const { data: worker } = await admin
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', workerId)
+    .single();
+
+  if (!shift || !worker) return;
+
+  const startDate = new Date(shift.start_time);
+  const endDate = new Date(shift.end_time);
+  const dateStr = startDate.toLocaleDateString();
+  const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+  if (shouldSendNotification(workerId, 'email', 'shift_claim_approved')) {
+    await createNotification({
+      userId: workerId,
+      organizationId,
+      type: 'shift_claim_approved',
+      title: 'Shift Claim Approved ✅',
+      message: `Your claim for "${shift.title}" on ${dateStr} has been approved!`,
+      relatedEntityType: 'shift',
+      relatedEntityId: shiftId,
+    });
+
+    if (worker.email) {
+      await sendShiftAssignedEmail(
+        worker.email,
+        worker.full_name || 'Worker',
+        shift.title,
+        dateStr,
+        timeStr,
+        undefined,
+        'Your shift claim has been approved. See you then!',
+      );
+    }
   }
 }

@@ -10,6 +10,7 @@ import {
   triggerCoverOffered,
   triggerSwapApproved,
   triggerSwapRejected,
+  triggerSwapPostedNotification,
 } from "./notification-triggers";
 
 export async function requestSwap(shiftId: string, reason: string) {
@@ -68,6 +69,24 @@ export async function requestSwap(shiftId: string, reason: string) {
 
   if (newSwap) {
     await triggerSwapPosted(newSwap.id, user.id, shiftId, shift.organization_id);
+
+    // Get shift department for swap notification
+    const { data: shiftData } = await supabase
+      .from("shifts")
+      .select("department_id")
+      .eq("id", shiftId)
+      .single();
+
+    if (shiftData?.department_id) {
+      await triggerSwapPostedNotification(
+        newSwap.id,
+        user.id,
+        shiftId,
+        shiftData.department_id,
+        shift.organization_id,
+        reason
+      );
+    }
   }
 
   revalidatePath("/my-shifts");
@@ -175,13 +194,18 @@ export async function managerSwapAction(
 
   const { data: swap, error } = await admin
     .from("swap_requests")
-    .select("*, shift:shifts(id, title, department_id), requester:profiles!swap_requests_requester_id_fkey(full_name, email)")
+    .select(`
+      *,
+      shift:shifts!swap_requests_shift_id_fkey(id, title, department_id),
+      requester:profiles!requester_id(full_name, email),
+      covering_worker:profiles!covering_worker_id(id, full_name)
+    `)
     .eq("id", swapId)
     .single();
 
   if (error || !swap) throw new Error("Swap request not found");
 
-  if (profile.user_role === "manager" && !profile.department_ids?.includes(swap.shift?.department_id)) {
+  if (profile.user_role === "manager" && profile.department_ids && profile.department_ids.length > 0 && !profile.department_ids.includes(swap.shift?.department_id)) {
     throw new Error("Unauthorized to manage swaps in this department");
   } else if (profile.user_role !== "manager" && profile.user_role !== "admin") {
     throw new Error("Unauthorized");

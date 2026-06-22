@@ -5,6 +5,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { requireManager, requireUser } from "@/lib/auth-helpers";
 import { logAudit } from "./audit";
+import {
+  triggerShiftAssigned,
+  triggerGeneralShiftPosted,
+  triggerShiftCompletedNotification,
+  triggerShiftApprovedNotification,
+} from "./notification-triggers";
 
 export async function autoCloseExpiredShifts(orgId: string) {
   const admin = createAdminClient();
@@ -64,6 +70,15 @@ export async function createShift(formData: {
   await logAudit(formData.organization_id, "shift", shift.id, "created", user.id, {
     assigned_to: formData.assigned_to || null,
   });
+
+  // Trigger notifications
+  if (formData.assigned_to) {
+    // Specific worker assigned - send assignment notification
+    await triggerShiftAssigned(shift.id, formData.assigned_to, formData.organization_id);
+  } else if (formData.department_id === 'general' || formData.department_id === 'General') {
+    // General shift - notify all workers
+    await triggerGeneralShiftPosted(shift.id, formData.organization_id);
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/shifts");
@@ -213,6 +228,11 @@ export async function managerApproveClaim(shiftId: string, approve: boolean) {
     const { error } = await supabase.from("shifts").update({ status: "not_started" }).eq("id", shiftId);
     if (error) throw error;
     await logAudit(shift.organization_id, "shift", shiftId, "claim_approved", user.id, { worker: shift.assigned_to });
+
+    // Send approval notification to worker
+    if (shift.assigned_to) {
+      await triggerShiftApprovedNotification(shiftId, shift.assigned_to, shift.organization_id);
+    }
   } else {
     // Return to unassigned
     const { error } = await supabase.from("shifts").update({ status: "not_started", assigned_to: null }).eq("id", shiftId);
@@ -248,6 +268,9 @@ export async function markShiftDone(shiftId: string) {
   if (error) throw error;
 
   await logAudit(shift.organization_id, "shift", shiftId, "marked_done", user.id);
+
+  // Send notification to admins/managers
+  await triggerShiftCompletedNotification(shiftId, shift.assigned_to, shift.organization_id);
 
   revalidatePath("/my-shifts");
   revalidatePath("/shifts");
