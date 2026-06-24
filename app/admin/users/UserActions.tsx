@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { deactivateUser } from "@/lib/actions/admin";
+import { deactivateUser, assignUserRole, createApiKey } from "@/lib/actions/admin";
 import { 
   MoreVertical, 
   UserMinus, 
   UserPlus,
   ShieldAlert,
-  Loader2
+  Loader2,
+  Key,
+  UserCheck
 } from "lucide-react";
 import { 
   DropdownMenu,
@@ -41,6 +43,36 @@ export function UserActions({ user }: { user: any }) {
     }
   };
 
+  const handleMakeManager = async () => {
+    try {
+      setLoading(true);
+      await assignUserRole(user.id, "manager");
+      toast({ title: "Role Updated", description: `${user.full_name || user.email} is now a manager.` });
+    } catch (err) {
+      toast({ title: "Failed", description: "Could not update role.", variant: "destructive" });
+    } finally { setLoading(false); }
+  };
+
+  const handleMakeAdmin = async () => {
+    try {
+      setLoading(true);
+      await assignUserRole(user.id, "admin");
+      toast({ title: "Role Updated", description: `${user.full_name || user.email} is now an admin.` });
+    } catch (err) {
+      toast({ title: "Failed", description: "Could not update role.", variant: "destructive" });
+    } finally { setLoading(false); }
+  };
+
+  const handleCreateApiKey = async () => {
+    try {
+      setLoading(true);
+      const key = await createApiKey(user.id);
+      toast({ title: "API Key Created", description: key });
+    } catch (err) {
+      toast({ title: "Failed", description: "Could not create API key.", variant: "destructive" });
+    } finally { setLoading(false); }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -64,6 +96,21 @@ export function UserActions({ user }: { user: any }) {
           {user.is_active ? "Deactivate User" : "Activate User"}
         </DropdownMenuItem>
         
+        <DropdownMenuItem onClick={handleMakeManager} className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer">
+          <UserCheck className="w-3.5 h-3.5" />
+          Make Manager
+        </DropdownMenuItem>
+
+        <DropdownMenuItem onClick={handleMakeAdmin} className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer">
+          <ShieldAlert className="w-3.5 h-3.5" />
+          Make Admin
+        </DropdownMenuItem>
+
+        <DropdownMenuItem onClick={handleCreateApiKey} className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer">
+          <Key className="w-3.5 h-3.5" />
+          Create API Key
+        </DropdownMenuItem>
+
         <DropdownMenuItem className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer">
           <ShieldAlert className="w-3.5 h-3.5" />
           Force Reset Password

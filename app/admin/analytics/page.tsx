@@ -3,7 +3,8 @@ import { getOrganizations } from "@/lib/actions/admin";
 import { calculateBasicAnalytics, calculateAdvancedAnalytics, calculateEnterpriseAnalytics } from "@/lib/advanced-analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Users, Activity, Clock } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import dynamic from "next/dynamic";
+const AnalyticsCharts = dynamic(() => import("@/components/admin/AnalyticsChartsClient"), { ssr: false });
 
 export const dynamic = "force-dynamic";
 
@@ -113,42 +114,8 @@ export default async function AdminAnalyticsPage() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Plan Distribution */}
-        {planDistribution.length > 0 && (
-          <Card className="bg-white/[0.02] border-white/10">
-            <CardHeader>
-              <CardTitle className="text-base font-bold">Plan Distribution</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={planDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {planDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1a1a1a",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "8px",
-                    }}
-                    labelStyle={{ color: "#fff" }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        )}
+        {/* Charts (client-side) */}
+        <AnalyticsCharts planDistribution={planDistribution} orgStats={orgStats} analytics={analytics} />
 
         {/* Top Organizations */}
         <Card className="bg-white/[0.02] border-white/10">

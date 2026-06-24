@@ -6,6 +6,7 @@ import { isPlatformAdmin } from "@/lib/admin-config";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import crypto from "crypto";
 
 async function ensureAdmin() {
   const supabase = await createClient();
@@ -105,4 +106,48 @@ export async function deactivateUser(userId: string, isActive: boolean) {
 
   if (error) throw error;
   revalidatePath("/admin/users");
+}
+
+export async function assignUserRole(userId: string, role: string) {
+  await ensureAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("profiles")
+    .update({ user_role: role })
+    .eq("id", userId);
+
+  if (error) throw error;
+  revalidatePath("/admin/users");
+}
+
+export async function createApiKey(userId: string) {
+  // Creates a one-time API key delivered to the admin and stores a hash in audit_logs
+  const { user } = await ensureAdmin();
+  const admin = createAdminClient();
+
+  // fetch target user's org for audit record
+  const { data: target } = await admin.from("profiles").select("organization_id").eq("id", userId).single();
+  const orgId = (target as any)?.organization_id || null;
+
+  const rawKey = crypto.randomBytes(32).toString("hex");
+  const hash = crypto.createHash("sha256").update(rawKey).digest("hex");
+
+  const { error } = await admin.from("audit_logs").insert({
+    organization_id: orgId,
+    entity_type: "api_key",
+    entity_id: userId,
+    action: "create",
+    actor_id: user.id,
+    metadata: { key_hash: hash },
+  });
+
+  if (error) throw error;
+  // Return the raw key once — admin must copy it now
+  return rawKey;
+}
+
+export async function impersonateUser(userId: string) {
+  // Placeholder: implementing secure impersonation requires creating a temporary session token
+  // with the Supabase service role key and setting cookies. This is left as a TODO.
+  throw new Error("Impersonation not implemented. Requires server session creation with SUPABASE_SERVICE_ROLE_KEY.");
 }
