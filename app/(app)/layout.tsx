@@ -8,6 +8,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { signOut } from "@/app/actions";
 import { AlertTriangle, LogOut, ArrowRight } from "lucide-react";
+import { isPlatformAdmin } from "@/lib/admin-config";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, profile } = await getCachedSession();
@@ -18,7 +19,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   if (profile?.user_role === "admin") {
-    redirect("/admin");
+    const isAdmin = await isPlatformAdmin(user.email);
+    if (isAdmin) {
+      redirect("/admin");
+    }
   }
 
   const org = (profile as any)?.organization ?? null;

@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { requireManager, requireUser } from "@/lib/auth-helpers";
 import { logAudit } from "./audit";
+import { canManagerAccessDepartment } from "@/lib/managers";
 import {
   triggerShiftAssigned,
   triggerGeneralShiftPosted,
@@ -97,7 +98,7 @@ export async function softDeleteShift(shiftId: string) {
 
   if (fetchError || !shift) throw new Error("Shift not found");
 
-  if (profile.user_role === "manager" && !profile.department_ids?.includes(shift.department_id)) {
+  if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, shift.department_id)) {
     throw new Error("Managers can only delete shifts within their own departments");
   } else if (profile.user_role === "worker") {
     throw new Error("Workers cannot delete shifts");
@@ -135,7 +136,7 @@ export async function bulkSoftDeleteShifts(shiftIds: string[]) {
   }
 
   const allowedIds = shifts
-    .filter(shift => profile.user_role === "admin" || profile.department_ids?.includes(shift.department_id))
+    .filter(shift => profile.user_role === "admin" || canManagerAccessDepartment(profile, shift.department_id))
     .map(shift => shift.id);
 
   if (allowedIds.length === 0) {
@@ -290,7 +291,7 @@ export async function reviewShiftCompletion(shiftId: string, action: "approve" |
 
   if (fetchError || !shift) throw new Error("Shift not found");
   if (profile.user_role === "worker") throw new Error("Unauthorized");
-  if (profile.user_role === "manager" && !profile.department_ids?.includes(shift.department_id)) {
+  if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, shift.department_id)) {
     throw new Error("Unauthorized for this department");
   }
 

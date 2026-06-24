@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireUser, requireManager } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "./audit";
+import { canManagerAccessDepartment } from "@/lib/managers";
 import {
   triggerSwapPosted,
   triggerCoverOffered,
@@ -168,8 +169,8 @@ export async function offerToCoverSwap(swapId: string) {
   const { data: managers } = await supabase
     .from("profiles")
     .select("id")
-    .eq("department_ids", `{"${shiftData?.department_id}"}`)
     .eq("user_role", "manager")
+    .or(`manager_type.eq.general,and(manager_type.eq.department,department_id.eq.${shiftData?.department_id})`)
     .limit(1);
 
   if (managers && managers.length > 0) {
@@ -205,7 +206,7 @@ export async function managerSwapAction(
 
   if (error || !swap) throw new Error("Swap request not found");
 
-  if (profile.user_role === "manager" && profile.department_ids && profile.department_ids.length > 0 && !profile.department_ids.includes(swap.shift?.department_id)) {
+  if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, swap.shift?.department_id)) {
     throw new Error("Unauthorized to manage swaps in this department");
   } else if (profile.user_role !== "manager" && profile.user_role !== "admin") {
     throw new Error("Unauthorized");

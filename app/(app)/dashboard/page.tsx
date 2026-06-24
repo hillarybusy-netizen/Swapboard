@@ -45,7 +45,14 @@ export default async function DashboardPage() {
   // Scope queries for Manager
   const isManager = profile?.user_role === "manager";
   const isAdmin = profile?.user_role === "admin";
-  const managerDeptIds = profile?.department_ids || [];
+
+  // Determine which departments this manager can access
+  let managerDeptIds: string[] = [];
+  if (isManager && profile?.manager_type === "department" && profile?.department_id) {
+    // Department manager: can only see their assigned department
+    managerDeptIds = [profile.department_id];
+  }
+  // If manager_type === 'general' or no assignment, managerDeptIds stays empty (means show all)
 
   // Get General department for managers
   let generalDeptId: string | null = null;
@@ -65,7 +72,7 @@ export default async function DashboardPage() {
       const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
       return q.in(col, deptFilter);
     }
-    // If manager has NO departments assigned, they're a general manager - show all
+    // If manager has NO departments assigned (general manager), they're a general manager - show all
     // If admin, show all (no filtering)
     return q;
   };
@@ -76,7 +83,7 @@ export default async function DashboardPage() {
       const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
       return q.in("department_id", deptFilter);
     }
-    // If manager has NO departments assigned, they're a general manager - show all
+    // If manager has NO departments assigned (general manager), they're a general manager - show all
     // If admin, show all (no filtering)
     return q;
   };

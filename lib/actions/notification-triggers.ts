@@ -734,12 +734,10 @@ export async function triggerShiftCompletedNotification(
       .from('profiles')
       .select('id, email, full_name')
       .eq('organization_id', organizationId)
-      .eq('user_role', 'manager');
+      .eq('user_role', 'manager')
+      .or(`manager_type.eq.general,and(manager_type.eq.department,department_id.eq.${shift.department_id})`);
 
-    // Filter managers who manage this department
-    managers = deptManagers?.filter((m: any) => {
-      return m.department_ids && m.department_ids.includes(shift.department_id);
-    }) || [];
+    managers = deptManagers || [];
   }
 
   const recipients = [...(admins || []), ...managers];

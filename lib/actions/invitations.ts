@@ -95,6 +95,7 @@ export async function acceptInvitation({
       organization_id: invite.organization_id,
       department_id: invite.department_id,
       user_role: invite.user_role,
+      manager_type: invite.manager_type,
       onboarding_complete: true,
     })
     .eq("id", userId);
@@ -151,6 +152,7 @@ export async function sendInvitation(inv: {
   email: string;
   role: string;
   department_id: string;
+  manager_type?: string;
   organization_id: string;
   organization_name: string;
 }) {
@@ -174,13 +176,19 @@ export async function sendInvitation(inv: {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7);
 
+  // For managers, use the provided manager_type or default to 'general'
+  // For other roles, don't set manager_type
+  const managerType = inv.role === "manager" ? inv.manager_type || "general" : null;
+  const deptId = inv.role === "manager" && managerType === "department" ? inv.department_id : null;
+
   const { data: invitation, error: dbError } = await supabase
     .from("invitations")
     .insert({
       organization_id: inv.organization_id,
       email: inv.email.trim().toLowerCase(),
       user_role: inv.role,
-      department_id: inv.department_id || null,
+      department_id: deptId,
+      manager_type: managerType,
       invited_by: user.id,
       expires_at: expiresAt.toISOString(),
     })
@@ -223,6 +231,7 @@ export async function sendInvitation(inv: {
 export async function createManualInvitation(inv: {
   role: string;
   department_id: string;
+  manager_type?: string;
   organization_id: string;
 }) {
   // Rate limit: max 10 link generations per minute per org
@@ -245,13 +254,18 @@ export async function createManualInvitation(inv: {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7);
 
+  // For managers, use the provided manager_type or default to 'general'
+  const managerType = inv.role === "manager" ? inv.manager_type || "general" : null;
+  const deptId = inv.role === "manager" && managerType === "department" ? inv.department_id : null;
+
   const { data: invitation, error: dbError } = await supabase
     .from("invitations")
     .insert({
       organization_id: inv.organization_id,
       email: null,
       user_role: inv.role,
-      department_id: inv.department_id || null,
+      department_id: deptId,
+      manager_type: managerType,
       invited_by: user.id,
       expires_at: expiresAt.toISOString(),
     })

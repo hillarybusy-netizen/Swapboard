@@ -53,13 +53,20 @@ export default async function ShiftsPage(props: {
     .is("deleted_at", null)
     .order("start_time", { ascending: true });
 
-  // Scope to department_ids if manager (but only if they have departments assigned)
+  // Scope to department_id if manager (but only if they are a department manager)
   const isManager = profile?.user_role === "manager";
   const isAdmin = profile?.user_role === "admin";
-  const managerDeptIds = profile?.department_ids || [];
 
-  // Managers without assigned departments are "general managers" - see all shifts
-  // Managers with assigned departments see only those departments + General (null)
+  // Build list of departments this manager can access
+  let managerDeptIds: string[] = [];
+  if (isManager && profile?.manager_type === "department" && profile?.department_id) {
+    // Department manager: can only see their assigned department
+    managerDeptIds = [profile.department_id];
+  }
+  // If manager_type === 'general' or no assignment, managerDeptIds stays empty (means show all)
+
+  // General managers see all shifts
+  // Department managers see only their departments + General (null)
   if (isManager && managerDeptIds.length > 0) {
     const orConditions = managerDeptIds.map(id => `department_id.eq.${id}`).join(",");
     query = query.or(`${orConditions},department_id.is.null`);
@@ -67,7 +74,7 @@ export default async function ShiftsPage(props: {
   // If manager has NO departments OR user is admin, show all shifts (no filtering)
 
   if (searchParams.dept) {
-    if (!isManager || managerDeptIds.includes(searchParams.dept)) {
+    if (!isManager || managerDeptIds.length === 0 || managerDeptIds.includes(searchParams.dept)) {
       query = query.eq("department_id", searchParams.dept);
     }
   }

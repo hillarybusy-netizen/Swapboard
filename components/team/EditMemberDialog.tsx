@@ -21,14 +21,16 @@ interface Props {
   memberRole: "worker" | "manager" | "admin";
   currentDeptId?: string | null;
   currentDeptIds?: string[] | null;
+  currentManagerType?: "general" | "department" | null;
   departments: Department[];
 }
 
-export function EditMemberDialog({ memberId, memberName, memberRole, currentDeptId, currentDeptIds, departments }: Props) {
+export function EditMemberDialog({ memberId, memberName, memberRole, currentDeptId, currentDeptIds, currentManagerType, departments }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedDeptId, setSelectedDeptId] = useState<string | null>(currentDeptId ?? null);
   const [selectedDeptIds, setSelectedDeptIds] = useState<string[]>(currentDeptIds ?? []);
+  const [managerType, setManagerType] = useState<"general" | "department">(currentManagerType ?? "general");
 
   const handleToggleDept = (deptId: string) => {
     if (memberRole === "worker") {
@@ -43,7 +45,13 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
   const handleSave = async () => {
     setLoading(true);
     try {
-      await updateMemberDepartments(memberId, selectedDeptId, selectedDeptIds);
+      const deptId = memberRole === "manager" && managerType === "department" ? selectedDeptId : null;
+      await updateMemberDepartments(
+        memberId,
+        deptId,
+        selectedDeptIds,
+        memberRole === "manager" ? managerType : undefined
+      );
       toast({
         title: "Saved",
         description: `${memberName}'s department assignments updated.`,
@@ -78,44 +86,88 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
           </DialogHeader>
 
           <div className="space-y-6">
-            <div className="space-y-4">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-gold">
-                {memberRole === "manager" ? "Assigned Departments" : "Primary Department"}
-              </Label>
-              <div className="grid gap-2 w-full max-w-sm mx-auto">
-                {departments.map(dept => {
-                  const isSelected = memberRole === "manager"
-                    ? selectedDeptIds.includes(dept.id)
-                    : selectedDeptId === dept.id;
-
-                  return (
+            {memberRole === "manager" && (
+              <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-gold">Manager Type</Label>
+                <div className="grid gap-2">
+                  {["general", "department"].map((type) => (
                     <button
-                      key={dept.id}
+                      key={type}
                       type="button"
-                      onClick={() => handleToggleDept(dept.id)}
+                      onClick={() => {
+                        setManagerType(type as "general" | "department");
+                        if (type === "general") {
+                          setSelectedDeptId(null);
+                        }
+                      }}
                       className={cn(
-                        "flex items-center justify-between p-3 rounded-2xl border transition-all text-left group",
-                        isSelected
+                        "flex items-center justify-between p-3 rounded-2xl border transition-all text-left",
+                        managerType === type
                           ? "bg-gold/10 border-gold/30"
                           : "bg-white/[0.02] border-white/5 hover:border-white/20"
                       )}
                     >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
-                          style={{ backgroundColor: dept.color }}
-                        />
-                        <span className={cn(
-                          "text-sm font-bold",
-                          isSelected ? "text-gold" : "text-white/60 group-hover:text-white"
-                        )}>
-                          {dept.name}
-                        </span>
-                      </div>
-                      {isSelected && <Check className="w-4 h-4 text-gold" />}
+                      <span className={cn(
+                        "text-sm font-bold",
+                        managerType === type ? "text-gold" : "text-white/60"
+                      )}>
+                        {type === "general" ? "General Manager" : "Department Manager"}
+                      </span>
+                      {managerType === type && <Check className="w-4 h-4 text-gold" />}
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-gold">
+                {memberRole === "manager" && managerType === "general" ? "All Departments (General Access)" : memberRole === "manager" ? "Assigned Department" : "Primary Department"}
+              </Label>
+              <div className="grid gap-2 w-full max-w-sm mx-auto">
+                {memberRole === "manager" && managerType === "general" ? (
+                  <p className="text-xs text-white/40 italic text-center py-4">General Managers have access to all departments</p>
+                ) : (
+                  departments.map(dept => {
+                    const isSelected = memberRole === "manager"
+                      ? selectedDeptId === dept.id
+                      : selectedDeptId === dept.id;
+
+                    return (
+                      <button
+                        key={dept.id}
+                        type="button"
+                        onClick={() => {
+                          if (memberRole === "manager") {
+                            setSelectedDeptId(isSelected ? null : dept.id);
+                          } else {
+                            setSelectedDeptId(dept.id);
+                          }
+                        }}
+                        className={cn(
+                          "flex items-center justify-between p-3 rounded-2xl border transition-all text-left group",
+                          isSelected
+                            ? "bg-gold/10 border-gold/30"
+                            : "bg-white/[0.02] border-white/5 hover:border-white/20"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+                            style={{ backgroundColor: dept.color }}
+                          />
+                          <span className={cn(
+                            "text-sm font-bold",
+                            isSelected ? "text-gold" : "text-white/60 group-hover:text-white"
+                          )}>
+                            {dept.name}
+                          </span>
+                        </div>
+                        {isSelected && <Check className="w-4 h-4 text-gold" />}
+                      </button>
+                    );
+                  })
+                )}
                 {departments.length === 0 && (
                   <p className="text-xs text-white/30 italic">No departments created yet.</p>
                 )}

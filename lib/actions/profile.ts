@@ -49,7 +49,8 @@ export async function updateProfile(formData: FormData) {
 export async function updateMemberDepartments(
   memberId: string,
   departmentId: string | null,
-  departmentIds: string[] | null
+  departmentIds: string[] | null,
+  managerType?: "general" | "department" | null
 ) {
   const { supabase, user } = await getAuthenticatedUser();
 
@@ -83,7 +84,19 @@ export async function updateMemberDepartments(
   if (targetProfile.user_role === "worker") {
     updatePayload = { department_id: departmentId };
   } else if (targetProfile.user_role === "manager") {
-    updatePayload = { department_ids: departmentIds };
+    if (managerType !== undefined) {
+      updatePayload.manager_type = managerType;
+      // If changing to general manager, clear department_id
+      if (managerType === "general") {
+        updatePayload.department_id = null;
+      } else if (managerType === "department" && departmentId) {
+        // If changing to department manager, set department_id
+        updatePayload.department_id = departmentId;
+      }
+    } else {
+      // Legacy: just update department_ids
+      updatePayload = { department_ids: departmentIds };
+    }
   }
 
   const { error } = await supabase

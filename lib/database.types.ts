@@ -3,6 +3,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Industry = "restaurant" | "healthcare" | "retail" | "hospitality";
 export type Plan = "trial" | "starter" | "pro" | "enterprise";
 export type UserRole = "worker" | "manager" | "admin";
+export type ManagerType = "general" | "department";
 export type ShiftStatus = "not_started" | "started" | "up_for_swap" | "pending_approval_claim" | "pending_approval_swap" | "swapped" | "overdue_not_done" | "done_pending_approval" | "done_manager_approved" | "done_rejected" | "no_show" | "cancelled";
 export type SwapStatus = "pending" | "worker_accepted" | "manager_approved" | "rejected" | "cancelled";
 export type FeedbackType = "swap" | "nps" | "general";
@@ -48,6 +49,7 @@ export interface Profile {
   phone: string | null;
   hourly_rate: number;
   user_role: UserRole;
+  manager_type: ManagerType | null;
   is_active: boolean;
   certifications: string[];
   avatar_url: string | null;
