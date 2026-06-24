@@ -67,6 +67,34 @@ export async function getAllUsers() {
   return data || [];
 }
 
+export async function getDetailedUsers() {
+  await ensureAdmin();
+  const admin = createAdminClient();
+  
+  const { data: usersData } = await admin
+    .from("profiles")
+    .select("*, organization:organizations(name, plan)")
+    .order("created_at", { ascending: false });
+
+  if (!usersData) return [];
+
+  const users = await Promise.all(
+    usersData.map(async (user: any) => {
+      const { count } = await admin
+        .from("swap_requests")
+        .select("*", { count: "exact", head: true })
+        .eq("initiator_id", user.id);
+
+      return {
+        ...user,
+        swapCount: count || 0,
+      };
+    })
+  );
+
+  return users;
+}
+
 export async function deactivateUser(userId: string, isActive: boolean) {
   await ensureAdmin();
   const admin = createAdminClient();

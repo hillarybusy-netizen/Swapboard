@@ -1,4 +1,4 @@
-import { getAdminStats, getOrganizations } from "@/lib/actions/admin";
+import { getAdminStats, getOrganizations, getDetailedUsers } from "@/lib/actions/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Building2, 
@@ -16,6 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminOverview() {
   const stats = await getAdminStats();
   const orgs = await getOrganizations();
+  const users = await getDetailedUsers();
 
   const cards = [
     { 
@@ -129,6 +130,69 @@ export default async function AdminOverview() {
               )
             })}
           </div>
+        </div>
+      </div>
+
+      {/* Recently Joined Members */}
+      <div className="glass rounded-[2.5rem] p-10 border-white/5">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h3 className="text-xl font-black text-white uppercase tracking-tighter">Recently Joined Members</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1">New signups and invited members</p>
+          </div>
+          <a href="/admin/users" className="text-[10px] font-black uppercase tracking-widest text-gold hover:text-gold/80 transition-colors">View All</a>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Member</th>
+                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Email</th>
+                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Organization</th>
+                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Plan</th>
+                <th className="text-center py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Swaps</th>
+                <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.slice(0, 10).map((user: any) => (
+                <tr key={user.id} className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-bold text-white/20 text-xs">
+                        {user.full_name?.charAt(0) ?? "?"}
+                      </div>
+                      <span className="font-bold text-white">{user.full_name ?? "Anonymous"}</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-4 text-white/60 text-[13px]">{user.email}</td>
+                  <td className="py-4 px-4 text-white/60 text-[13px]">{user.organization?.name ?? "N/A"}</td>
+                  <td className="py-4 px-4">
+                    <span className={cn(
+                      "text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full",
+                      user.organization?.plan === "trial" ? "bg-white/5 text-white/40" :
+                      user.organization?.plan === "starter" ? "bg-blue-500/10 text-blue-400" :
+                      user.organization?.plan === "growth" ? "bg-emerald-500/10 text-emerald-400" :
+                      "bg-gold/10 text-gold"
+                    )}>
+                      {user.organization?.plan ?? "N/A"}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4 text-center">
+                    <span className="font-bold text-white">{user.swapCount}</span>
+                  </td>
+                  <td className="py-4 px-4 text-right text-white/60 text-[13px]">
+                    {new Date(user.created_at).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

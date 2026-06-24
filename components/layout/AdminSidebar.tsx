@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   LogOut,
   Menu,
-  X
+  X,
+  TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const ITEMS = [
   { href: "/admin", label: "Overview", icon: BarChart3 },
+  { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
   { href: "/admin/organizations", label: "Organizations", icon: Building2 },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/settings", label: "Internal Settings", icon: Settings },

@@ -26,22 +26,39 @@ export default async function AnalyticsPage() {
 
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-  const { data: swapsData } = await supabase
-    .from("swap_requests")
-    .select("*, shift:shifts(start_time, end_time, department_id)")
-    .eq("organization_id", orgId)
-    .gte("created_at", since.toISOString())
-    .order("created_at", { ascending: false });
+  const [
+    { data: swapsData },
+    { data: departmentsData },
+    { data: managersData }
+  ] = await Promise.all([
+    supabase
+      .from("swap_requests")
+      .select("*, shift:shifts(start_time, end_time, department_id), covering_worker:profiles!covering_worker_id(id, full_name), manager:profiles!approved_by(id, full_name)")
+      .eq("organization_id", orgId)
+      .gte("created_at", since.toISOString())
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("departments")
+      .select("id, name")
+      .eq("organization_id", orgId),
+    supabase
+      .from("profiles")
+      .select("id, full_name")
+      .eq("organization_id", orgId)
+      .in("user_role", ["admin", "manager"])
+  ]);
 
   const swaps = (swapsData ?? []) as any[];
+  const departments = (departmentsData ?? []) as any[];
+  const managers = (managersData ?? []) as any[];
 
   const hasAdvancedAnalytics = checkPlanLimit(org?.plan, "hasAdvancedAnalytics");
   const hasEnterpriseAnalytics = checkPlanLimit(org?.plan, "hasEnterpriseAnalytics");
 
   const analytics = hasEnterpriseAnalytics
-    ? calculateEnterpriseAnalytics(swaps, {}, [])
+    ? calculateEnterpriseAnalytics(swaps, {}, departments, managers)
     : hasAdvancedAnalytics
-    ? calculateAdvancedAnalytics(swaps, {})
+    ? calculateAdvancedAnalytics(swaps, {}, departments)
     : calculateBasicAnalytics(swaps);
 
   return (

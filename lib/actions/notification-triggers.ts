@@ -75,6 +75,62 @@ async function getUserProfile(userId: string) {
   return profile;
 }
 
+/**
+ * Get all admins and managers in an organization
+ */
+async function getAdminsAndManagers(organizationId: string) {
+  const admin = createAdminClient();
+  
+  const { data } = await admin
+    .from('profiles')
+    .select('id, email, full_name')
+    .eq('organization_id', organizationId)
+    .in('user_role', ['admin', 'manager']);
+  
+  return data || [];
+}
+
+/**
+ * Get workers in a specific department
+ */
+async function getWorkersInDepartment(departmentId: string) {
+  const admin = createAdminClient();
+  
+  const { data } = await admin
+    .from('profiles')
+    .select('id, email, full_name')
+    .contains('department_ids', [departmentId])
+    .eq('user_role', 'worker');
+  
+  return data || [];
+}
+
+/**
+ * Notify all admins and managers in organization
+ */
+async function notifyAdminsAndManagers(
+  organizationId: string,
+  notificationType: NotificationType,
+  title: string,
+  message: string,
+  relatedEntityType?: 'shift' | 'swap_request',
+  relatedEntityId?: string,
+) {
+  const adminsAndManagers = await getAdminsAndManagers(organizationId);
+  
+  for (const user of adminsAndManagers) {
+    await createNotification({
+      userId: user.id,
+      organizationId,
+      type: notificationType,
+      title,
+      message,
+      relatedEntityType,
+      relatedEntityId,
+    });
+  }
+}
+
 // ============================================================================
 // SWAP NOTIFICATIONS
 // ============================================================================
@@ -227,6 +283,16 @@ export async function triggerSwapApproved(
     .single();
 
   const shiftTitle = shift?.title || 'Shift';
+
+  // Notify all admins and other managers about the approved swap
+  await notifyAdminsAndManagers(
+    organizationId,
+    'swap_approved',
+    'Swap Approved',
+    `${manager?.full_name || 'A manager'} approved swap: ${requester?.full_name || 'Worker'} ↔ ${coverWorker?.full_name || 'Worker'} for "${shiftTitle}".`,
+    'swap_request',
+    swapId,
+  );
 
   // Notify requester
   if (shouldSendNotification(requesterUserId, 'email', 'swap_approved')) {
@@ -566,6 +632,7 @@ export async function triggerCompletionApproved(
 
 /**
  * General shift posted (unassigned shift for all workers to claim)
+ * Also notifies all admins and managers
  */
 export async function triggerGeneralShiftPosted(
   shiftId: string,
@@ -582,6 +649,21 @@ export async function triggerGeneralShiftPosted(
 
   if (!shift) return;
 
+  const startDate = new Date(shift.start_time);
+  const endDate = new Date(shift.end_time);
+  const dateStr = startDate.toLocaleDateString();
+  const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+  // Notify all admins and managers
+  await notifyAdminsAndManagers(
+    organizationId,
+    'shift_assigned',
+    'General Shift Posted',
+    `"${shift.title}" is available to claim on ${dateStr} at ${timeStr}.`,
+    'shift',
+    shiftId,
+  );
+
   // Get all workers in organization
   const { data: workers } = await admin
     .from('profiles')
@@ -590,11 +672,6 @@ export async function triggerGeneralShiftPosted(
     .eq('user_role', 'worker');
 
   if (!workers || workers.length === 0) return;
-
-  const startDate = new Date(shift.start_time);
-  const endDate = new Date(shift.end_time);
-  const dateStr = startDate.toLocaleDateString();
-  const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
   // Notify each worker
   for (const worker of workers) {
@@ -626,7 +703,7 @@ export async function triggerGeneralShiftPosted(
 }
 
 /**
- * Shift posted for swap (notify department workers)
+ * Shift posted for swap (notify department workers and all admins/managers)
  */
 export async function triggerSwapPostedNotification(
   swapId: string,
@@ -641,7 +718,7 @@ export async function triggerSwapPostedNotification(
   // Fetch shift and requester details
   const { data: shift } = await admin
     .from('shifts')
-    .select('title, start_time')
+    .select('title, start_time, department_id')
     .eq('id', shiftId)
     .single();
 
@@ -653,21 +730,35 @@ export async function triggerSwapPostedNotification(
 
   if (!shift || !requester) return;
 
-  // Get all workers in department (excluding requester)
-  const { data: workers } = await admin
+  // Notify all admins and managers
+  await notifyAdminsAndManagers(
+    organizationId,
+    'swap_posted',
+    'Swap Posted - Department',
+    `${requester.full_name} posted "${shift.title}" for swap. Check details to approve or manage.`,
+    'swap_request',
+    swapId,
+  );
+
+  // Get workers in the same department
+  const { data: departmentWorkers } = await admin
     .from('profiles')
-    .select('id, email, full_name')
+    .select('id, email, full_name, department_ids')
     .eq('organization_id', organizationId)
     .eq('user_role', 'worker');
 
-  if (!workers || workers.length === 0) return;
+  if (!departmentWorkers || departmentWorkers.length === 0) return;
 
   const startDate = new Date(shift.start_time);
   const dateStr = startDate.toLocaleDateString();
 
-  // Filter to department workers (if department_ids contains this department)
-  for (const worker of workers) {
+  // Notify only workers in the same department
+  for (const worker of departmentWorkers) {
     if (worker.id === requesterUserId) continue; // Don't notify requester
+    
+    // Check if worker is in the department
+    const departmentIds = worker.department_ids || [];
+    if (!departmentIds.includes(departmentId) && !departmentIds.includes(shift.department_id)) continue;
 
     await createNotification({
       userId: worker.id,

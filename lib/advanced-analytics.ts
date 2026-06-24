@@ -29,7 +29,7 @@ export interface EnterpriseAnalytics extends AdvancedAnalytics {
   peakHours: Array<{ hour: number; swaps: number }>;
   shiftCoverageRate: number;
   swapReasons: Record<string, number>;
-  managerWorkload: Array<{ managerId: string; swaps: number }>;
+  managerWorkload: Array<{ managerId: string; name: string; swaps: number }>;
   predictedBusyTimes: string[];
 }
 
@@ -53,7 +53,8 @@ export function calculateBasicAnalytics(swaps: any[]): BasicAnalytics {
 
 export function calculateAdvancedAnalytics(
   swaps: any[],
-  profiles: Record<string, any>
+  profiles: Record<string, any>,
+  departments?: any[]
 ): AdvancedAnalytics {
   const basic = calculateBasicAnalytics(swaps);
   const approved = swaps.filter(s => s.status === "manager_approved");
@@ -82,9 +83,12 @@ export function calculateAdvancedAnalytics(
 
   // Swaps by department
   const swapsByDepartment: Record<string, number> = {};
+  const deptMap = departments ? Object.fromEntries(departments.map((d: any) => [d.id, d.name])) : {};
+  
   swaps.forEach(swap => {
     const deptId = swap.shift?.department_id || "unknown";
-    swapsByDepartment[deptId] = (swapsByDepartment[deptId] || 0) + 1;
+    const deptName = deptMap[deptId] || deptId;
+    swapsByDepartment[deptName] = (swapsByDepartment[deptName] || 0) + 1;
   });
 
   // Top workers (by swap coverage)
@@ -92,9 +96,10 @@ export function calculateAdvancedAnalytics(
   swaps.forEach(swap => {
     if (swap.covering_worker_id) {
       const workerId = swap.covering_worker_id;
+      const workerName = swap.covering_worker?.full_name || swap.profiles_covering?.full_name || "Unknown";
       workerSwaps[workerId] = {
         count: (workerSwaps[workerId]?.count || 0) + 1,
-        name: swap.covering_worker?.full_name || "Unknown",
+        name: workerName,
       };
     }
   });
@@ -131,40 +136,47 @@ export function calculateAdvancedAnalytics(
 export function calculateEnterpriseAnalytics(
   swaps: any[],
   profiles: Record<string, any>,
-  shifts: any[]
+  departments?: any[],
+  managers?: any[]
 ): EnterpriseAnalytics {
-  const advanced = calculateAdvancedAnalytics(swaps, profiles);
+  const advanced = calculateAdvancedAnalytics(swaps, profiles, departments);
 
   // Worker engagement score (0-100)
   const totalWorkerActions = swaps.filter(s => s.covering_worker_id).length;
   const successfulSwaps = swaps.filter(s => s.status === "manager_approved" && s.covering_worker_id).length;
   const workerEngagementScore = totalWorkerActions > 0 ? Math.round((successfulSwaps / totalWorkerActions) * 100) : 0;
 
+  // Create lookup maps
+  const deptMap = departments ? Object.fromEntries(departments.map((d: any) => [d.id, d.name])) : {};
+  const managerMap = managers ? Object.fromEntries(managers.map((m: any) => [m.id, m.full_name])) : {};
+
   // Department performance
   const departmentPerf: Record<string, any> = {};
   swaps.forEach(swap => {
     const deptId = swap.shift?.department_id || "unknown";
-    if (!departmentPerf[deptId]) {
-      departmentPerf[deptId] = {
+    const deptName = deptMap[deptId] || deptId;
+    
+    if (!departmentPerf[deptName]) {
+      departmentPerf[deptName] = {
         total: 0,
         approved: 0,
         times: [],
         active: 0,
       };
     }
-    departmentPerf[deptId].total += 1;
-    if (swap.status === "manager_approved") departmentPerf[deptId].approved += 1;
-    if (swap.status === "pending" || swap.status === "worker_accepted") departmentPerf[deptId].active += 1;
+    departmentPerf[deptName].total += 1;
+    if (swap.status === "manager_approved") departmentPerf[deptName].approved += 1;
+    if (swap.status === "pending" || swap.status === "worker_accepted") departmentPerf[deptName].active += 1;
     if (swap.manager_responded_at && swap.created_at) {
       const time = (new Date(swap.manager_responded_at).getTime() - new Date(swap.created_at).getTime()) / (1000 * 60 * 60);
-      departmentPerf[deptId].times.push(time);
+      departmentPerf[deptName].times.push(time);
     }
   });
 
   const departmentPerformance = Object.entries(departmentPerf)
-    .map(([deptId, data]) => ({
-      deptId,
-      name: `Department ${deptId.slice(0, 8)}`,
+    .map(([deptName, data]) => ({
+      deptId: deptName,
+      name: deptName,
       fulfillmentRate: data.total > 0 ? Math.round((data.approved / data.total) * 100) : 0,
       avgTime: data.times.length > 0 ? data.times.reduce((a: number, b: number) => a + b, 0) / data.times.length : 0,
       activeSwaps: data.active,
@@ -196,16 +208,21 @@ export function calculateEnterpriseAnalytics(
     swapReasons[reason] = (swapReasons[reason] || 0) + 1;
   });
 
-  // Manager workload
-  const managerWorkload: Record<string, number> = {};
+  // Manager workload - with manager names
+  const managerWorkload: Record<string, { count: number; name: string }> = {};
   swaps.forEach(swap => {
     if (swap.approved_by) {
-      managerWorkload[swap.approved_by] = (managerWorkload[swap.approved_by] || 0) + 1;
+      const managerId = swap.approved_by;
+      const managerName = managerMap[managerId] || swap.manager?.full_name || managerId;
+      if (!managerWorkload[managerId]) {
+        managerWorkload[managerId] = { count: 0, name: managerName };
+      }
+      managerWorkload[managerId].count += 1;
     }
   });
 
   const managerWorkloadList = Object.entries(managerWorkload)
-    .map(([managerId, swaps]) => ({ managerId, swaps }))
+    .map(([managerId, data]) => ({ managerId, name: data.name, swaps: data.count }))
     .sort((a, b) => b.swaps - a.swaps);
 
   // Predicted busy times (next 7 days based on historical patterns)
@@ -220,7 +237,7 @@ export function calculateEnterpriseAnalytics(
     peakHours,
     shiftCoverageRate,
     swapReasons,
-    managerWorkload: managerWorkloadList,
+    managerWorkload: managerWorkloadList as any,
     predictedBusyTimes,
   };
 }
