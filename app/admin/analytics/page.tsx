@@ -3,8 +3,7 @@ import { getOrganizations } from "@/lib/actions/admin";
 import { calculateBasicAnalytics, calculateAdvancedAnalytics, calculateEnterpriseAnalytics } from "@/lib/advanced-analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Users, Activity, Clock } from "lucide-react";
-import nextDynamic from "next/dynamic";
-const AnalyticsCharts = nextDynamic(() => import("@/components/admin/AnalyticsChartsClient"), { ssr: false });
+import AnalyticsCharts from "@/components/admin/AnalyticsChartsClient";
 
 export const dynamic = "force-dynamic";
 
