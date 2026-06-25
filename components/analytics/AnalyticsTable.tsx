@@ -6,7 +6,7 @@ import { Download } from "lucide-react";
 interface AnalyticsTableProps {
   title: string;
   description?: string;
-  columns: Array<{ key: string; label: string; format?: (value: any) => string }>;
+  columns: Array<{ key: string; label: string }>;
   data: Record<string, any>[];
   onExport?: () => void;
 }
@@ -51,7 +51,7 @@ export function AnalyticsTable({
                 <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                   {columns.map((col) => (
                     <td key={col.key} className="py-3 px-4 text-white/80">
-                      {col.format ? col.format(row[col.key]) : row[col.key]}
+                      {row[col.key]}
                     </td>
                   ))}
                 </tr>

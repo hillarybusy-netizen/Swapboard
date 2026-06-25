@@ -104,7 +104,12 @@ export default async function DashboardPage() {
     (async () => {
       let q = supabase
         .from("swap_requests")
-        .select("*, shift:shifts(start_time, end_time)")
+        .select(`
+          *,
+          shift:shifts(start_time, end_time, department_id),
+          covering_worker:profiles!covering_worker_id(id, full_name),
+          manager:profiles!approved_by_fkey(id, full_name)
+        `)
         .eq("organization_id", orgId)
         .gte("created_at", since.toISOString())
         .order("created_at", { ascending: false });
@@ -183,10 +188,14 @@ export default async function DashboardPage() {
   const hasAdvancedAnalytics = checkPlanLimit(org?.plan, "hasAdvancedAnalytics");
   const hasEnterpriseAnalytics = checkPlanLimit(org?.plan, "hasEnterpriseAnalytics");
 
+  // Build profiles and managers lookup maps for analytics
+  const profilesMap = Object.fromEntries(profiles.map(p => [p.id, p]));
+  const managersData = profiles.filter(p => p.user_role === 'manager' || p.user_role === 'admin');
+
   const analytics = hasEnterpriseAnalytics
-    ? calculateEnterpriseAnalytics(swaps, {}, [])
+    ? calculateEnterpriseAnalytics(swaps, profilesMap, departments, managersData)
     : hasAdvancedAnalytics
-    ? calculateAdvancedAnalytics(swaps, {})
+    ? calculateAdvancedAnalytics(swaps, profilesMap, departments)
     : calculateBasicAnalytics(swaps);
 
   const metrics = analytics;
@@ -623,9 +632,9 @@ export default async function DashboardPage() {
                   <div className="space-y-2">
                     {Object.entries(((analytics as any).swapsByDepartment || {}))
                       .slice(0, 3)
-                      .map(([deptId, count]: any) => (
-                        <div key={deptId} className="flex justify-between text-sm">
-                          <span className="text-white/60">Dept {deptId.slice(0, 8)}</span>
+                      .map(([deptName, count]: any) => (
+                        <div key={deptName} className="flex justify-between text-sm">
+                          <span className="text-white/60 truncate">{deptName}</span>
                           <span className="font-bold text-gold">{count}</span>
                         </div>
                       ))}
@@ -669,7 +678,7 @@ export default async function DashboardPage() {
               <div className="space-y-3">
                 {((analytics as any).managerWorkload || []).slice(0, 5).map((manager: any) => (
                   <div key={manager.managerId} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
-                    <span className="text-sm font-bold text-white/80">Manager {manager.managerId.slice(0, 8)}</span>
+                    <span className="text-sm font-bold text-white/80">{manager.name || `Manager ${manager.managerId.slice(0, 8)}`}</span>
                     <span className="text-lg font-black text-gold">{manager.swaps}</span>
                   </div>
                 ))}

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, Bell } from "lucide-react";
+import { LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, Bell, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/actions";
 import type { Organization, Profile } from "@/lib/database.types";
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/shifts", label: "Shifts", icon: Calendar },
   { href: "/swaps", label: "Swap Requests", icon: ArrowLeftRight },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/team", label: "Team", icon: Users },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

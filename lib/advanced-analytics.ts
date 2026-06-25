@@ -96,7 +96,9 @@ export function calculateAdvancedAnalytics(
   swaps.forEach(swap => {
     if (swap.covering_worker_id) {
       const workerId = swap.covering_worker_id;
-      const workerName = swap.covering_worker?.full_name || swap.profiles_covering?.full_name || "Unknown";
+      // First try to use the covering_worker relation, then fallback to profile lookup
+      const workerProfile = swap.covering_worker || (profiles && profiles[workerId]);
+      const workerName = workerProfile?.full_name || "Unknown";
       workerSwaps[workerId] = {
         count: (workerSwaps[workerId]?.count || 0) + 1,
         name: workerName,
@@ -213,7 +215,9 @@ export function calculateEnterpriseAnalytics(
   swaps.forEach(swap => {
     if (swap.approved_by) {
       const managerId = swap.approved_by;
-      const managerName = managerMap[managerId] || swap.manager?.full_name || managerId;
+      // First try to use the manager relation, then fallback to manager map, then fallback to ID
+      const managerProfile = swap.manager || (profiles && profiles[managerId]);
+      const managerName = managerProfile?.full_name || managerMap[managerId] || managerId.slice(0, 8);
       if (!managerWorkload[managerId]) {
         managerWorkload[managerId] = { count: 0, name: managerName };
       }

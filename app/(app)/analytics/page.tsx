@@ -55,10 +55,24 @@ export default async function AnalyticsPage() {
   const hasAdvancedAnalytics = checkPlanLimit(org?.plan, "hasAdvancedAnalytics");
   const hasEnterpriseAnalytics = checkPlanLimit(org?.plan, "hasEnterpriseAnalytics");
 
+  // Build profiles map from managers and extract workers from swap relations
+  const profilesMap: Record<string, any> = {};
+  managers.forEach(m => {
+    profilesMap[m.id] = m;
+  });
+  swaps.forEach(swap => {
+    if (swap.covering_worker) {
+      profilesMap[swap.covering_worker.id] = swap.covering_worker;
+    }
+    if (swap.manager) {
+      profilesMap[swap.manager.id] = swap.manager;
+    }
+  });
+
   const analytics = hasEnterpriseAnalytics
-    ? calculateEnterpriseAnalytics(swaps, {}, departments, managers)
+    ? calculateEnterpriseAnalytics(swaps, profilesMap, departments, managers)
     : hasAdvancedAnalytics
-    ? calculateAdvancedAnalytics(swaps, {}, departments)
+    ? calculateAdvancedAnalytics(swaps, profilesMap, departments)
     : calculateBasicAnalytics(swaps);
 
   return (
@@ -170,12 +184,13 @@ export default async function AnalyticsPage() {
             description="Workers with the most swap coverage"
             columns={[
               { key: "name", label: "Worker Name" },
-              { key: "swaps", label: "Swaps Covered", format: (v) => v.toString() },
-              { key: "percentage", label: "% of Total", format: (v) => v ? `${v.toFixed(1)}%` : "0%" },
+              { key: "swaps", label: "Swaps Covered" },
+              { key: "percentage", label: "% of Total" },
             ]}
             data={((analytics as any).topWorkers || []).map((w: any) => ({
-              ...w,
-              percentage: swaps.length > 0 ? (w.swaps / swaps.length) * 100 : 0,
+              name: w.name,
+              swaps: w.swaps.toString(),
+              percentage: swaps.length > 0 ? `${((w.swaps / swaps.length) * 100).toFixed(1)}%` : "0%",
             }))}
           />
         </div>
@@ -204,11 +219,16 @@ export default async function AnalyticsPage() {
             description="Performance metrics by department"
             columns={[
               { key: "name", label: "Department" },
-              { key: "fulfillmentRate", label: "Fulfillment Rate", format: (v) => `${v}%` },
-              { key: "avgTime", label: "Avg Fulfillment (hrs)", format: (v) => v.toFixed(1) },
-              { key: "activeSwaps", label: "Active Swaps", format: (v) => v.toString() },
+              { key: "fulfillmentRate", label: "Fulfillment Rate" },
+              { key: "avgTime", label: "Avg Fulfillment (hrs)" },
+              { key: "activeSwaps", label: "Active Swaps" },
             ]}
-            data={(analytics as any).departmentPerformance || []}
+            data={((analytics as any).departmentPerformance || []).map((d: any) => ({
+              name: d.name,
+              fulfillmentRate: `${d.fulfillmentRate}%`,
+              avgTime: d.avgTime.toFixed(1),
+              activeSwaps: d.activeSwaps.toString(),
+            }))}
           />
         </div>
       )}
