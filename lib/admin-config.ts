@@ -1,3 +1,5 @@
+import { createClient } from "@/lib/supabase/server";
+
 export function getPlatformAdminEmails(): string[] {
   const fromEnv = process.env.PLATFORM_ADMIN_EMAILS;
   if (fromEnv) {
@@ -8,5 +10,28 @@ export function getPlatformAdminEmails(): string[] {
 
 export async function isPlatformAdmin(email: string | undefined) {
   if (!email) return false;
-  return getPlatformAdminEmails().includes(email.toLowerCase());
+
+  const normalized = email.toLowerCase();
+  // 1) Check env var overrides
+  if (getPlatformAdminEmails().includes(normalized)) return true;
+
+  // 2) Fallback to database check (profiles.user_role === 'admin')
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("user_role")
+      .eq("email", normalized)
+      .maybeSingle();
+
+    if (error) {
+      console.error("isPlatformAdmin supabase error:", error.message || error);
+      return false;
+    }
+
+    return data?.user_role === "admin";
+  } catch (err) {
+    console.error("isPlatformAdmin error:", err);
+    return false;
+  }
 }
