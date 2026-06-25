@@ -9,14 +9,10 @@ import {
   Users,
   Settings,
   ShieldCheck,
-  LogOut,
   Menu,
-  X,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { signOut } from "@/app/actions";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const ITEMS = [
@@ -71,17 +67,6 @@ function NavContent() {
           );
         })}
       </nav>
-
-      {/* Footer / Sign Out */}
-      <div className="p-4 border-t border-white/5 pt-8 pb-8">
-        <button
-          onClick={() => signOut()}
-          className="flex items-center gap-4 px-4 py-3.5 text-white/30 hover:text-red-400 transition-colors w-full group overflow-hidden"
-        >
-          <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-xs font-black uppercase tracking-widest leading-none mt-0.5">Sign Out</span>
-        </button>
-      </div>
     </>
   );
 }
