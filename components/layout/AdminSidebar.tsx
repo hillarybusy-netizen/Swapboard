@@ -20,7 +20,7 @@ import { signOut } from "@/app/actions";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const ITEMS = [
-  { href: "/admin", label: "Overview", icon: BarChart3 },
+  { href: "/admin/dashboard", label: "Dashboard", icon: BarChart3 },
   { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
   { href: "/admin/organizations", label: "Organizations", icon: Building2 },
   { href: "/admin/users", label: "Users", icon: Users },
