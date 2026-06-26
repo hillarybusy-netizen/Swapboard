@@ -1,36 +1,23 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { AdminSidebar } from "@/components/layout/AdminSidebar";
+import { AdminProfileDropdown } from "@/components/layout/AdminProfileDropdown";
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Check user role - must be org_admin
+  // Only super_admin users can access the platform admin dashboard
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_role, organization_id")
+    .select("user_role")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
-    redirect("/login");
-  }
-
-  // Only org_admin can access the organization admin dashboard
-  // super_admin users should use /super-admin instead
-  if (profile.user_role === "super_admin") {
-    redirect("/super-admin");
-  }
-
-  if (profile.user_role !== "org_admin") {
+  if (!profile || profile.user_role !== "super_admin") {
     redirect("/dashboard");
-  }
-
-  if (!profile.organization_id) {
-    // org_admin without organization is invalid
-    redirect("/onboarding/industry");
   }
 
   return (
@@ -38,17 +25,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Background Mesh */}
       <div className="absolute inset-0 bg-mesh opacity-10 -z-10 pointer-events-none" />
       
-      <div className="flex-1 flex flex-col">
-        <header className="sticky top-0 z-30 h-16 border-b border-white/5 flex items-center justify-between px-6 md:px-10 bg-black/20 backdrop-blur-md">
+      <AdminSidebar />
+      
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="sticky top-0 z-30 h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-10 bg-black/20 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/60 mt-0.5">Organization Admin</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/60 mt-0.5">Platform Status: Online</span>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/40 mt-0.5 hidden sm:inline">Logged in as {user.email}</span>
+            <AdminProfileDropdown email={user.email || ""} />
           </div>
         </header>
-        <main className="flex-1 px-6 md:px-10 py-8 md:py-12">
+        <main className="flex-1 px-10 py-12">
           {children}
         </main>
       </div>

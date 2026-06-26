@@ -44,7 +44,7 @@ export default async function DashboardPage() {
 
   // Scope queries for Manager
   const isManager = profile?.user_role === "manager";
-  const isAdmin = profile?.user_role === "admin";
+  const isAdmin = profile?.user_role === "org_admin";
 
   // Determine which departments this manager can access
   let managerDeptIds: string[] = [];
@@ -190,7 +190,7 @@ export default async function DashboardPage() {
 
   // Build profiles and managers lookup maps for analytics
   const profilesMap = Object.fromEntries(profiles.map(p => [p.id, p]));
-  const managersData = profiles.filter(p => p.user_role === 'manager' || p.user_role === 'admin');
+  const managersData = profiles.filter(p => p.user_role === 'manager' || p.user_role === 'org_admin');
 
   const analytics = hasEnterpriseAnalytics
     ? calculateEnterpriseAnalytics(swaps, profilesMap, departments, managersData)

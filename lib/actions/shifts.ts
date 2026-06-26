@@ -136,7 +136,7 @@ export async function bulkSoftDeleteShifts(shiftIds: string[]) {
   }
 
   const allowedIds = shifts
-    .filter(shift => profile.user_role === "admin" || canManagerAccessDepartment(profile, shift.department_id))
+    .filter(shift => profile.user_role === "org_admin" || canManagerAccessDepartment(profile, shift.department_id))
     .map(shift => shift.id);
 
   if (allowedIds.length === 0) {
@@ -165,7 +165,7 @@ export async function bulkSoftDeleteShifts(shiftIds: string[]) {
 export async function claimUnassignedShift(shiftId: string) {
   const { supabase, user, profile } = await requireUser();
 
-  if (profile.user_role === "manager" || profile.user_role === "admin") {
+  if (profile.user_role === "manager" || profile.user_role === "org_admin") {
     throw new Error("Managers and admins cannot claim shifts");
   }
 

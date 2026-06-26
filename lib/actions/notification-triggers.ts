@@ -85,7 +85,7 @@ async function getAdminsAndManagers(organizationId: string) {
     .from('profiles')
     .select('id, email, full_name')
     .eq('organization_id', organizationId)
-    .in('user_role', ['admin', 'manager']);
+    .in('user_role', ['org_admin', 'manager']);
   
   return data || [];
 }
@@ -816,7 +816,7 @@ export async function triggerShiftCompletedNotification(
     .from('profiles')
     .select('id, email, full_name')
     .eq('organization_id', organizationId)
-    .eq('user_role', 'admin');
+    .eq('user_role', 'org_admin');
 
   // Get department managers (if shift has a department)
   let managers: any[] = [];
@@ -856,7 +856,7 @@ export async function triggerShiftCompletedNotification(
           recipient.full_name || recipient.id === admins?.[0]?.id ? 'Admin' : 'Manager',
           worker.full_name || 'A worker',
           shift.title,
-          admins?.some((a: any) => a.id === recipient.id) ? 'admin' : 'manager',
+          admins?.some((a: any) => a.id === recipient.id) ? 'org_admin' : 'manager',
         );
       }
     }

@@ -9,7 +9,7 @@ interface DigestItem {
 
 interface DigestEmailProps {
   userName: string;
-  userRole: 'worker' | 'manager' | 'admin';
+  userRole: 'worker' | 'manager' | 'org_admin';
   items: {
     pending_approvals?: DigestItem[];
     assigned_shifts?: DigestItem[];

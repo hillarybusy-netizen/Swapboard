@@ -94,7 +94,7 @@ export async function setupWorkspace(
     .from("profiles")
     .update({
       organization_id: org.id,
-      user_role: "admin",
+      user_role: "org_admin",
       onboarding_complete: false,
     })
     .eq("id", userId);

@@ -45,10 +45,10 @@ export default async function MyTeamPage() {
 
   // Separate managers/admins from workers
   const managers = members.filter(
-    (m) => m.user_role === "manager" || m.user_role === "admin"
+    (m) => m.user_role === "manager" || m.user_role === "org_admin"
   );
   const workers = members.filter(
-    (m) => m.user_role !== "manager" && m.user_role !== "admin"
+    (m) => m.user_role !== "manager" && m.user_role !== "org_admin"
   );
 
   function MemberCard({ member, isManager = false }: { member: any; isManager?: boolean }) {
@@ -116,7 +116,7 @@ export default async function MyTeamPage() {
 
           {/* Role badge */}
           <div className="shrink-0">
-            {member.user_role === "admin" ? (
+            {member.user_role === "org_admin" ? (
               <div className="flex flex-col items-center gap-1">
                 <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center shadow-lg shadow-gold/20">
                   <Crown className="w-4 h-4 text-[#050505]" />

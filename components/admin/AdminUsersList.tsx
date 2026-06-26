@@ -61,7 +61,7 @@ export function AdminUsersList({ users }: { users: any[] }) {
                     <td className="px-8 py-6">
                       <Badge className={cn(
                         "rounded-full px-3 py-0.5 text-[8px] font-black uppercase tracking-widest border-none",
-                        user.user_role === "admin" ? "bg-gold text-[#050505]" : "bg-white/5 text-white/40"
+                        user.user_role === "org_admin" ? "bg-gold text-[#050505]" : "bg-white/5 text-white/40"
                       )}>
                         {user.user_role}
                       </Badge>

@@ -34,7 +34,7 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
   if (!user) redirect("/login");
   if (!swap) notFound();
 
-  const isManager = profile?.user_role === "manager" || profile?.user_role === "admin";
+  const isManager = profile?.user_role === "manager" || profile?.user_role === "org_admin";
   const isRequester = (swap as any).requester_id === user.id;
   const isCovering = (swap as any).covering_worker_id === user.id;
 

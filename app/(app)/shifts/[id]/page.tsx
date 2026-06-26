@@ -54,12 +54,12 @@ export default async function ShiftDetailPage(props: {
   if (!shift) notFound();
 
   const isManagerOrAdmin =
-    profile?.user_role === "manager" || profile?.user_role === "admin";
+    profile?.user_role === "manager" || profile?.user_role === "org_admin";
   const isOwner = shift.assigned_to === user.id;
 
   // Manager dept scope check
   const canAct =
-    profile?.user_role === "admin" ||
+    profile?.user_role === "org_admin" ||
     (profile?.user_role === "manager" &&
       profile.department_ids?.includes(shift.department_id));
 

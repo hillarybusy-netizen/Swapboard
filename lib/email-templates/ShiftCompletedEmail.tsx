@@ -5,7 +5,7 @@ interface ShiftCompletedProps {
   recipientName: string;
   workerName: string;
   shiftTitle: string;
-  recipientRole: 'admin' | 'manager';
+  recipientRole: 'org_admin' | 'manager';
   dashboardUrl: string;
 }
 
@@ -16,7 +16,7 @@ export function ShiftCompletedEmail({
   recipientRole,
   dashboardUrl,
 }: ShiftCompletedProps) {
-  const roleLabel = recipientRole === 'admin' ? 'Administrator' : 'Manager';
+  const roleLabel = recipientRole === 'org_admin' ? 'Administrator' : 'Manager';
 
   return (
     <EmailLayout
@@ -26,7 +26,7 @@ export function ShiftCompletedEmail({
     >
       <p>Hi {recipientName},</p>
 
-      <p>{workerName} has marked the following shift as complete and is awaiting {recipientRole === 'admin' ? 'admin' : 'manager'} review:</p>
+      <p>{workerName} has marked the following shift as complete and is awaiting {recipientRole === 'org_admin' ? 'org_admin' : 'manager'} review:</p>
 
       <div className="success-box">
         <p style={{ margin: 0 }}>

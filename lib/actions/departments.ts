@@ -9,7 +9,7 @@ export async function addDepartment(orgId: string, name: string, sortOrder: numb
   const { supabase, user, profile } = await requireManager(orgId);
 
   // Only admins can create departments
-  if (profile.user_role !== "admin") {
+  if (profile.user_role !== "org_admin") {
     throw new Error("Only organization admins can create departments.");
   }
 

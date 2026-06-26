@@ -262,7 +262,7 @@ export async function sendShiftCompletedEmail(
   recipientName: string,
   workerName: string,
   shiftTitle: string,
-  recipientRole: 'admin' | 'manager',
+  recipientRole: 'org_admin' | 'manager',
 ) {
   const dashboardUrl = `${APP_URL}/dashboard`;
 
@@ -289,7 +289,7 @@ interface DigestItem {
 export async function sendDigestEmail(
   to: string,
   userName: string,
-  userRole: 'worker' | 'manager' | 'admin',
+  userRole: 'worker' | 'manager' | 'org_admin',
   items: {
     pending_approvals?: DigestItem[];
     assigned_shifts?: DigestItem[];

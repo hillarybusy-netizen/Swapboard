@@ -55,7 +55,7 @@ export default async function ShiftsPage(props: {
 
   // Scope to department_id if manager (but only if they are a department manager)
   const isManager = profile?.user_role === "manager";
-  const isAdmin = profile?.user_role === "admin";
+  const isAdmin = profile?.user_role === "org_admin";
 
   // Build list of departments this manager can access
   let managerDeptIds: string[] = [];

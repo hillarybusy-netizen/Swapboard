@@ -17,7 +17,7 @@ import {
 export async function requestSwap(shiftId: string, reason: string) {
   const { supabase, user, profile } = await requireUser();
 
-  if (profile.user_role === "manager" || profile.user_role === "admin") {
+  if (profile.user_role === "manager" || profile.user_role === "org_admin") {
     throw new Error("Managers and admins cannot request swaps");
   }
 
@@ -99,7 +99,7 @@ export async function requestSwap(shiftId: string, reason: string) {
 export async function offerToCoverSwap(swapId: string) {
   const { supabase, user, profile } = await requireUser();
 
-  if (profile.user_role === "manager" || profile.user_role === "admin") {
+  if (profile.user_role === "manager" || profile.user_role === "org_admin") {
     throw new Error("Managers and admins cannot cover shifts");
   }
 
@@ -208,7 +208,7 @@ export async function managerSwapAction(
 
   if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, swap.shift?.department_id)) {
     throw new Error("Unauthorized to manage swaps in this department");
-  } else if (profile.user_role !== "manager" && profile.user_role !== "admin") {
+  } else if (profile.user_role !== "manager" && profile.user_role !== "org_admin") {
     throw new Error("Unauthorized");
   }
 

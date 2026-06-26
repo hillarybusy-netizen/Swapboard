@@ -130,12 +130,12 @@ export default async function TeamPage() {
 
                   <Badge className={cn(
                     "rounded-full px-3 md:px-4 py-1 md:py-1.5 text-[8px] md:text-[9px] font-black uppercase tracking-widest border-none shrink-0",
-                    member.user_role === "admin" || member.user_role === "manager" ? "bg-gold text-[#050505]" : "bg-white/10 text-white/40"
+                    member.user_role === "org_admin" || member.user_role === "manager" ? "bg-gold text-[#050505]" : "bg-white/10 text-white/40"
                   )}>
                     {member.user_role}
                   </Badge>
 
-                  {profile?.user_role === "admin" && member.user_role !== "admin" && (
+                  {profile?.user_role === "org_admin" && member.user_role !== "admin" && (
                     <EditMemberDialog 
                       memberId={member.id}
                       memberName={member.full_name ?? "Unknown"}

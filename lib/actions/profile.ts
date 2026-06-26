@@ -61,7 +61,7 @@ export async function updateMemberDepartments(
     .eq("id", user.id)
     .single();
 
-  if (!currentUserProfile || currentUserProfile.user_role !== "admin") {
+  if (!currentUserProfile || currentUserProfile.user_role !== "org_admin") {
     throw new Error("Only admins can modify team member departments.");
   }
 

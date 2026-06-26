@@ -1,65 +1,212 @@
-import { getAdminStats, getOrganizations, getDetailedUsers } from "@/lib/actions/admin";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Building2, 
-  Users, 
-  CreditCard, 
+import { Button } from "@/components/ui/button";
+import {
+  Users,
+  Briefcase,
+  Clock,
   TrendingUp,
   ArrowUpRight,
-  Clock
+  Settings,
+  LogOut,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
 
-export const dynamic = "force-dynamic";
+interface OrgStats {
+  memberCount: number;
+  departmentCount: number;
+  shiftsThisWeek: number;
+  swapsThisWeek: number;
+  organizationName: string;
+}
 
-export default async function AdminOverview() {
-  const stats = await getAdminStats();
-  const orgs = await getOrganizations();
-  const users = await getDetailedUsers();
+export default function AdminDashboard() {
+  const router = useRouter();
+  const [stats, setStats] = useState<OrgStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+
+        // Get user's profile and organization
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("organization_id, user_role")
+          .eq("id", user.id)
+          .single();
+
+        if (!profile || profile.user_role !== "org_admin") {
+          router.push("/dashboard");
+          return;
+        }
+
+        const orgId = profile.organization_id;
+        if (!orgId) {
+          router.push("/onboarding/industry");
+          return;
+        }
+
+        // Get organization details
+        const { data: org } = await supabase
+          .from("organizations")
+          .select("name")
+          .eq("id", orgId)
+          .single();
+
+        // Get member count
+        const { count: memberCount } = await supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .eq("organization_id", orgId);
+
+        // Get department count
+        const { count: departmentCount } = await supabase
+          .from("departments")
+          .select("id", { count: "exact", head: true })
+          .eq("organization_id", orgId);
+
+        // Get this week's shifts count
+        const now = new Date();
+        const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+        const { count: shiftsThisWeek } = await supabase
+          .from("shifts")
+          .select("id", { count: "exact", head: true })
+          .eq("organization_id", orgId)
+          .gte("start_time", weekStart.toISOString());
+
+        // Get this week's swaps count
+        const { count: swapsThisWeek } = await supabase
+          .from("swap_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("organization_id", orgId)
+          .gte("requested_at", weekStart.toISOString());
+
+        setStats({
+          memberCount: memberCount || 0,
+          departmentCount: departmentCount || 0,
+          shiftsThisWeek: shiftsThisWeek || 0,
+          swapsThisWeek: swapsThisWeek || 0,
+          organizationName: org?.name || "Your Organization",
+        });
+      } catch (error) {
+        console.error("Error loading stats:", error);
+        toast({ title: "Error", description: "Failed to load dashboard", variant: "destructive" });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
+  }, [router]);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-8 h-8 rounded-full border-2 border-gold border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-white/60 text-sm">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-white/60">Unable to load dashboard</p>
+      </div>
+    );
+  }
 
   const cards = [
-    { 
-      label: "Total Organizations", 
-      value: stats.orgCount, 
-      icon: Building2, 
+    {
+      label: "Team Members",
+      value: stats.memberCount,
+      icon: Users,
       color: "text-blue-400",
-      bg: "bg-blue-400/10"
+      bg: "bg-blue-400/10",
     },
-    { 
-      label: "Total Users", 
-      value: stats.userCount, 
-      icon: Users, 
+    {
+      label: "Departments",
+      value: stats.departmentCount,
+      icon: Briefcase,
       color: "text-purple-400",
-      bg: "bg-purple-400/10"
+      bg: "bg-purple-400/10",
     },
-    { 
-      label: "Est. MRR", 
-      value: formatCurrency(stats.estimatedMRR), 
-      icon: CreditCard, 
-      color: "text-gold", 
-      bg: "bg-gold/10"
-    },
-    { 
-      label: "Active Trials", 
-      value: stats.planCounts.trial || 0, 
-      icon: Clock, 
+    {
+      label: "Shifts This Week",
+      value: stats.shiftsThisWeek,
+      icon: Clock,
       color: "text-orange-400",
-      bg: "bg-orange-400/10"
+      bg: "bg-orange-400/10",
+    },
+    {
+      label: "Swap Requests",
+      value: stats.swapsThisWeek,
+      icon: TrendingUp,
+      color: "text-gold",
+      bg: "bg-gold/10",
     },
   ];
 
   return (
-    <div className="space-y-12">
-      <div>
-        <h1 className="text-4xl font-black tracking-tight text-white mb-2">Platform Overview</h1>
-        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">Real-time business health and growth metrics</p>
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-black tracking-tight text-white mb-2">
+            {stats.organizationName}
+          </h1>
+          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">
+            Organization Dashboard
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push("/admin/settings")}
+            className="gap-2"
+          >
+            <Settings className="w-4 h-4" />
+            Settings
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </Button>
+        </div>
       </div>
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card) => (
-          <div key={card.label} className="glass rounded-[2rem] p-8 border-white/5 relative overflow-hidden group hover:border-white/10 transition-all">
+          <div
+            key={card.label}
+            className="glass rounded-[2rem] p-8 border-white/5 relative overflow-hidden group hover:border-white/10 transition-all"
+          >
             <div className={`absolute top-0 right-0 w-32 h-32 ${card.bg} blur-3xl -z-10`} />
             <div className="flex justify-between items-start mb-6">
               <div className={`p-3 rounded-xl ${card.bg}`}>
@@ -69,136 +216,46 @@ export default async function AdminOverview() {
                 <ArrowUpRight className="w-5 h-5" />
               </div>
             </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">{card.label}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">
+              {card.label}
+            </p>
             <h2 className="text-3xl font-black text-white">{card.value}</h2>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Signups */}
-        <div className="lg:col-span-2 glass rounded-[2.5rem] p-10 border-white/5">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-white uppercase tracking-tighter">Recent Sign-ups</h3>
-            <button className="text-[10px] font-black uppercase tracking-widest text-gold hover:text-gold/80 transition-colors">View All</button>
-          </div>
-          
-          <div className="space-y-6">
-            {orgs.slice(0, 5).map((org: any) => (
-              <div key={org.id} className="flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center font-black text-white/20 group-hover:bg-gold/10 group-hover:text-gold transition-all">
-                    {org.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black text-white tracking-tight">{org.name}</h4>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20">{org.industry} · {new Date(org.created_at).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                <Badge className={cn(
-                  "rounded-full px-4 py-1 text-[8px] font-black uppercase tracking-widest border-none",
-                  org.plan === "trial" ? "bg-white/5 text-white/40" : "bg-gold text-[#050505]"
-                )}>
-                  {org.plan}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Plan Breakdown */}
-        <div className="glass rounded-[2.5rem] p-10 border-white/5 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gold/[0.02] -z-10" />
-          <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-8">Plan Distribution</h3>
-          
-          <div className="space-y-8">
-            {Object.entries(stats.planCounts).map(([plan, count]: [any, any]) => {
-              const percentage = Math.round((count / stats.orgCount) * 100);
-              return (
-                <div key={plan}>
-                  <div className="flex justify-between items-end mb-2">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">{plan}</p>
-                    <p className="text-[10px] font-black text-white">{count} ({percentage}%)</p>
-                  </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gold shadow-[0_0_10px_rgba(251,191,36,0.3)] transition-all duration-1000" 
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Recently Joined Members */}
+      {/* Quick Links */}
       <div className="glass rounded-[2.5rem] p-10 border-white/5">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h3 className="text-xl font-black text-white uppercase tracking-tighter">Recently Joined Members</h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1">New signups and invited members</p>
-          </div>
-          <a href="/admin/users" className="text-[10px] font-black uppercase tracking-widest text-gold hover:text-gold/80 transition-colors">View All</a>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Member</th>
-                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Email</th>
-                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Organization</th>
-                <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Plan</th>
-                <th className="text-center py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Swaps</th>
-                <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Joined</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.slice(0, 10).map((user: any) => (
-                <tr key={user.id} className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-bold text-white/20 text-xs">
-                        {user.full_name?.charAt(0) ?? "?"}
-                      </div>
-                      <span className="font-bold text-white">{user.full_name ?? "Anonymous"}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-white/60 text-[13px]">{user.email}</td>
-                  <td className="py-4 px-4 text-white/60 text-[13px]">{user.organization?.name ?? "N/A"}</td>
-                  <td className="py-4 px-4">
-                    <span className={cn(
-                      "text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full",
-                      user.organization?.plan === "trial" ? "bg-white/5 text-white/40" :
-                      user.organization?.plan === "starter" ? "bg-blue-500/10 text-blue-400" :
-                      user.organization?.plan === "growth" ? "bg-emerald-500/10 text-emerald-400" :
-                      "bg-gold/10 text-gold"
-                    )}>
-                      {user.organization?.plan ?? "N/A"}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-center">
-                    <span className="font-bold text-white">{user.swapCount}</span>
-                  </td>
-                  <td className="py-4 px-4 text-right text-white/60 text-[13px]">
-                    {new Date(user.created_at).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-8">
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Button
+            variant="outline"
+            className="h-12 rounded-xl justify-start"
+            onClick={() => router.push("/team")}
+          >
+            <Users className="w-5 h-5 mr-3" />
+            Manage Team
+          </Button>
+          <Button
+            variant="outline"
+            className="h-12 rounded-xl justify-start"
+            onClick={() => router.push("/shifts")}
+          >
+            <Clock className="w-5 h-5 mr-3" />
+            View Shifts
+          </Button>
+          <Button
+            variant="outline"
+            className="h-12 rounded-xl justify-start"
+            onClick={() => router.push("/analytics")}
+          >
+            <TrendingUp className="w-5 h-5 mr-3" />
+            Analytics
+          </Button>
         </div>
       </div>
     </div>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
 }

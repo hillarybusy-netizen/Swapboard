@@ -45,7 +45,7 @@ export default async function AnalyticsPage() {
       .from("profiles")
       .select("id, full_name")
       .eq("organization_id", orgId)
-      .in("user_role", ["admin", "manager"])
+      .in("user_role", ["org_admin", "manager"])
   ]);
 
   const swaps = (swapsData ?? []) as any[];
