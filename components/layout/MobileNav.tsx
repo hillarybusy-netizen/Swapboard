@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, Bell, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, Bell, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { signOut } from "@/app/actions";
 import type { Organization, Profile } from "@/lib/database.types";
 
 const NAV_ITEMS = [
@@ -56,20 +55,10 @@ export function MobileNav({ profile, org }: MobileNavProps = {}) {
               </Link>
             );
           })}
-          {/* Logout */}
-          <form action={signOut} className="flex flex-col items-center justify-center flex-1 h-full">
-            <button type="submit" className="flex flex-col items-center gap-1 group">
-              <div className="p-2 rounded-xl text-white/40 group-hover:text-red-400 transition-all duration-300">
-                <LogOut className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-widest text-white/20 group-hover:text-red-400 transition-colors">
-                Sign Out
-              </span>
-            </button>
-          </form>
         </div>
       </nav>
     </div>
   );
 }
+
 
