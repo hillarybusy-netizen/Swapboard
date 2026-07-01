@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCachedSession } from "@/lib/supabase/cached";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { AdminSidebar } from "@/components/layout/AdminSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { TrialBanner } from "@/components/layout/TrialBanner";
 import { needsSubscription } from "@/lib/trial";
@@ -19,9 +20,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/my-shifts");
   }
 
-  if (profile?.user_role === "org_admin") {
-    redirect("/admin");
-  }
+  // org_admin can access shared pages (shifts, swaps, analytics, team)
+  // /admin/* routes are gated separately in app/admin/layout.tsx
 
   if (profile?.user_role === "super_admin") {
     redirect("/super-admin");
@@ -125,17 +125,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     );
   }
 
+  const isAdmin = profile?.user_role === "org_admin";
+
   return (
     <div className="min-h-screen bg-[#050505] flex relative">
       {/* Background Mesh */}
       <div className="absolute inset-0 bg-mesh opacity-10 -z-10 pointer-events-none" />
       
-      <Sidebar org={org} profile={profile} />
+      {isAdmin ? (
+        <AdminSidebar org={org} profile={profile as any} />
+      ) : (
+        <Sidebar org={org} profile={profile} />
+      )}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-20 bg-transparent">
           <div className="flex items-center justify-end px-4 md:px-10 py-2">
-            {/* Profile dropdown shows Notifications and Sign Out */}
-            <ProfileDropdown email={user?.email || ''} />
+            <ProfileDropdown profile={profile as any} email={user?.email || ''} />
           </div>
         </header>
         <TrialBanner org={org} />
@@ -143,7 +148,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
-      <MobileNav profile={profile} org={org} />
+      {!isAdmin && <MobileNav profile={profile} org={org} />}
     </div>
   );
 }

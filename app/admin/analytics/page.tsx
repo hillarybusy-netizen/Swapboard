@@ -30,7 +30,7 @@ export default async function AdminAnalyticsPage() {
   ] = await Promise.all([
     supabase
       .from("swap_requests")
-      .select("*, shift:shifts(start_time, end_time, department_id), covering_worker:profiles!covering_worker_id(id, full_name), manager:profiles!approved_by_fkey(id, full_name)")
+      .select("*, shift:shifts(start_time, end_time, department_id), covering_worker:profiles!covering_worker_id(id, full_name), manager:profiles!approved_by(id, full_name)")
       .gte("created_at", since.toISOString())
       .order("created_at", { ascending: false }),
     supabase

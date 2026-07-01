@@ -38,13 +38,21 @@ export default async function DashboardPage() {
     redirect("/my-shifts");
   }
 
+  if (profile?.user_role === "org_admin") {
+    redirect("/admin");
+  }
+
+  if (profile?.user_role === "super_admin") {
+    redirect("/super-admin");
+  }
+
   const supabase = await createClient();
   const org = (profile as any)?.organization;
   const orgId = profile?.organization_id ?? "";
 
   // Scope queries for Manager
   const isManager = profile?.user_role === "manager";
-  const isAdmin = profile?.user_role === "org_admin";
+  const isAdmin = false;
 
   // Determine which departments this manager can access
   let managerDeptIds: string[] = [];
@@ -108,7 +116,7 @@ export default async function DashboardPage() {
           *,
           shift:shifts(start_time, end_time, department_id),
           covering_worker:profiles!covering_worker_id(id, full_name),
-          manager:profiles!approved_by_fkey(id, full_name)
+          manager:profiles!approved_by(id, full_name)
         `)
         .eq("organization_id", orgId)
         .gte("created_at", since.toISOString())

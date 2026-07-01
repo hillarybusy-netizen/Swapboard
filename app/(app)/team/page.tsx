@@ -135,7 +135,7 @@ export default async function TeamPage() {
                     {member.user_role}
                   </Badge>
 
-                  {profile?.user_role === "org_admin" && member.user_role !== "admin" && (
+                  {profile?.user_role === "org_admin" && member.user_role !== "org_admin" && (
                     <EditMemberDialog 
                       memberId={member.id}
                       memberName={member.full_name ?? "Unknown"}

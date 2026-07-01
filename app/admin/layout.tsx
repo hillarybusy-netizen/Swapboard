@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { AdminSidebar } from "@/components/layout/AdminSidebar";
+import { ProfileDropdown } from "@/components/layout/ProfileDropdown";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -7,48 +9,39 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Check user role - must be org_admin
+  // Check user role — must be org_admin
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_role, organization_id")
+    .select("*, organization:organizations(*)")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
-    redirect("/login");
-  }
+  if (!profile) redirect("/login");
 
-  // Only org_admin can access the organization admin dashboard
-  // super_admin users should use /super-admin instead
-  if (profile.user_role === "super_admin") {
-    redirect("/super-admin");
-  }
+  // super_admin should use /super-admin
+  if (profile.user_role === "super_admin") redirect("/super-admin");
 
-  if (profile.user_role !== "org_admin") {
-    redirect("/dashboard");
-  }
+  // Only org_admin can access /admin
+  if (profile.user_role !== "org_admin") redirect("/dashboard");
 
-  if (!profile.organization_id) {
-    // org_admin without organization is invalid
-    redirect("/onboarding/industry");
-  }
+  if (!profile.organization_id) redirect("/onboarding/industry");
+
+  const org = (profile as any)?.organization ?? null;
 
   return (
     <div className="min-h-screen bg-[#050505] flex relative">
       {/* Background Mesh */}
       <div className="absolute inset-0 bg-mesh opacity-10 -z-10 pointer-events-none" />
-      
-      <div className="flex-1 flex flex-col">
-        <header className="sticky top-0 z-30 h-16 border-b border-white/5 flex items-center justify-between px-6 md:px-10 bg-black/20 backdrop-blur-md">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/60 mt-0.5">Organization Admin</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/40 mt-0.5 hidden sm:inline">Logged in as {user.email}</span>
+
+      <AdminSidebar org={org} profile={profile as any} />
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="sticky top-0 z-20 bg-transparent">
+          <div className="flex items-center justify-end px-4 md:px-10 py-2">
+            <ProfileDropdown profile={profile as any} />
           </div>
         </header>
-        <main className="flex-1 px-6 md:px-10 py-8 md:py-12">
+        <main className="flex-1 px-4 py-8 md:p-10 pb-32 md:pb-10">
           {children}
         </main>
       </div>
