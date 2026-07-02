@@ -46,6 +46,8 @@ export default async function DashboardPage() {
     redirect("/super-admin");
   }
 
+  const tz = profile?.timezone || "UTC";
+
   const supabase = await createClient();
   const org = (profile as any)?.organization;
   const orgId = profile?.organization_id ?? "";
@@ -62,37 +64,21 @@ export default async function DashboardPage() {
   }
   // If manager_type === 'general' or no assignment, managerDeptIds stays empty (means show all)
 
-  // Get General department for managers
-  let generalDeptId: string | null = null;
-  if (isManager) {
-    const { data: generalDept } = await supabase
-      .from("departments")
-      .select("id")
-      .eq("organization_id", orgId)
-      .ilike("name", "general")
-      .single();
-    generalDeptId = generalDept?.id || null;
-  }
-
   const addDeptScope = (q: any, col = "department_id") => {
-    // If manager has departments assigned, filter to those + General
+    // If manager has departments assigned, filter to those
     if (isManager && managerDeptIds.length > 0) {
-      const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
-      return q.in(col, deptFilter);
+      return q.in(col, managerDeptIds);
     }
-    // If manager has NO departments assigned (general manager), they're a general manager - show all
-    // If admin, show all (no filtering)
+    // If general manager or admin, show all
     return q;
   };
 
   const addShiftDeptScope = (q: any) => {
-    // If manager has departments assigned, filter to those + General
+    // If manager has departments assigned, filter to those + General (department_id IS NULL)
     if (isManager && managerDeptIds.length > 0) {
-      const deptFilter = generalDeptId ? [...managerDeptIds, generalDeptId] : managerDeptIds;
-      return q.in("department_id", deptFilter);
+      return q.or(`department_id.in.(${managerDeptIds.join(',')}),department_id.is.null`);
     }
-    // If manager has NO departments assigned (general manager), they're a general manager - show all
-    // If admin, show all (no filtering)
+    // If general manager or admin, show all
     return q;
   };
 
@@ -394,9 +380,9 @@ export default async function DashboardPage() {
                     <div className="flex flex-col">
                       <p className="text-sm font-bold text-white mb-1">{shift.title}</p>
                       <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-white/40 font-medium">
-                        <span>{formatShiftDate(shift.start_time)}</span>
+                        <span>{formatShiftDate(shift.start_time, tz)}</span>
                         <span>·</span>
-                        <span>{formatShiftTime(shift.start_time, shift.end_time)}</span>
+                        <span>{formatShiftTime(shift.start_time, shift.end_time, tz)}</span>
                         {shift.department && (
                           <>
                             <span className="hidden sm:inline">·</span>
@@ -485,7 +471,7 @@ export default async function DashboardPage() {
                         )}
                       </div>
                       <p className="text-[10px] font-bold text-white/30 uppercase mt-1">
-                        {formatShiftDate(shift.start_time)}
+                        {formatShiftDate(shift.start_time, tz)}
                       </p>
                     </div>
                     <ApproveClaimButton
@@ -554,7 +540,7 @@ export default async function DashboardPage() {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest">
                             <Calendar className="w-3 h-3" />
-                            {swap.shift ? `${formatShiftDate(swap.shift.start_time)} · ${formatShiftTime(swap.shift.start_time, swap.shift.end_time)}` : "No shift data"}
+                            {swap.shift ? `${formatShiftDate(swap.shift.start_time, tz)} · ${formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}` : "No shift data"}
                           </div>
                           {swap.reason && (
                             <p className="text-[11px] md:text-xs text-white/50 italic bg-white/[0.03] p-2 md:p-3 rounded-xl border border-white/5 group-hover:bg-white/[0.05] transition-colors">

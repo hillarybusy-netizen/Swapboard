@@ -1,19 +1,25 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { format, formatDistanceToNow, differenceInHours, differenceInMinutes } from "date-fns";
+import { formatDistanceToNow, differenceInHours, differenceInMinutes } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatShiftTime(start: string, end: string): string {
+/**
+ * Format shift start and end times in the given timezone (defaults to UTC to
+ * avoid SSR/client hydration mismatches). Pass the viewer's IANA timezone
+ * string (e.g. "Europe/London") from their profile wherever possible.
+ */
+export function formatShiftTime(start: string, end: string, timezone = "UTC"): string {
   const s = new Date(start);
   const e = new Date(end);
-  return `${format(s, "h:mm a")} – ${format(e, "h:mm a")}`;
+  return `${formatInTimeZone(s, timezone, "h:mm a")} – ${formatInTimeZone(e, timezone, "h:mm a")}`;
 }
 
-export function formatShiftDate(date: string): string {
-  return format(new Date(date), "EEE, MMM d");
+export function formatShiftDate(date: string, timezone = "UTC"): string {
+  return formatInTimeZone(new Date(date), timezone, "EEE, MMM d");
 }
 
 export function formatShiftDuration(start: string, end: string): string {

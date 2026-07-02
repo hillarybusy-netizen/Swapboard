@@ -65,6 +65,7 @@ export function SwapsTabs({ defaultTab, pending, history }: SwapsTabsProps) {
 }
 
 function SwapCard({ swap }: { swap: any }) {
+  const tz = typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC";
   const isActionRequired = swap.status === "worker_accepted";
 
   return (
@@ -94,9 +95,9 @@ function SwapCard({ swap }: { swap: any }) {
                 <div className="flex items-center gap-3 md:gap-4 text-[10px] md:text-[11px] font-bold text-white/30 uppercase tracking-[0.1em] flex-wrap">
                   <span className="text-white/60 font-black truncate max-w-[120px] md:max-w-none">{swap.shift.title}</span>
                   <span className="hidden sm:inline">·</span>
-                  <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time)}</span>
+                  <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time, tz)}</span>
                   <span className="hidden sm:inline">·</span>
-                  <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}</span>
+                  <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}</span>
                 </div>
               )}
             </div>

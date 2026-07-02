@@ -33,9 +33,11 @@ interface Props {
   departments: any[];
   profiles: any[];
   orgId: string;
+  timezone?: string;
 }
 
-export function ShiftsListClient({ shifts, canAddShift, departments, profiles, orgId }: Props) {
+export function ShiftsListClient({ shifts, canAddShift, departments, profiles, orgId, timezone }: Props) {
+  const tz = timezone || (typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -148,11 +150,11 @@ export function ShiftsListClient({ shifts, canAddShift, departments, profiles, o
                       <div className="flex items-center gap-4 md:gap-6 text-[10px] md:text-[11px] font-bold text-white/40 uppercase tracking-[0.1em] flex-wrap">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-gold/60" />
-                          {formatShiftDate(shift.start_time)}
+                          {formatShiftDate(shift.start_time, tz)}
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-gold/60" />
-                          {formatShiftTime(shift.start_time, shift.end_time)} <span className="text-white/10 ml-1 hidden sm:inline">· {formatShiftDuration(shift.start_time, shift.end_time)}</span>
+                          {formatShiftTime(shift.start_time, shift.end_time, tz)} <span className="text-white/10 ml-1 hidden sm:inline">· {formatShiftDuration(shift.start_time, shift.end_time)}</span>
                         </span>
                       </div>
                     </div>

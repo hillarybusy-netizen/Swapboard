@@ -15,6 +15,7 @@ export default async function AvailableShiftsPage() {
   const supabase = await createClient();
   const deptId = profile?.department_id;
   const orgId = profile?.organization_id;
+  const tz = profile?.timezone || "UTC";
 
   // Fetch unassigned shifts in user's department + General department
   let unassignedQuery = supabase
@@ -26,19 +27,12 @@ export default async function AvailableShiftsPage() {
     .eq("organization_id", orgId)
     .order("start_time", { ascending: true });
 
-  // Get General department ID first
-  const { data: generalDept } = await supabase
-    .from("departments")
-    .select("id")
-    .eq("organization_id", orgId)
-    .ilike("name", "general")
-    .single();
-
-  // Filter for worker's department OR General department
-  if (deptId && generalDept?.id) {
-    unassignedQuery = unassignedQuery.or(`department_id.eq.${deptId},department_id.eq.${generalDept.id}`);
-  } else if (deptId) {
-    unassignedQuery = unassignedQuery.eq("department_id", deptId);
+  // Filter for worker's department OR General department (department_id IS NULL)
+  if (deptId) {
+    unassignedQuery = unassignedQuery.or(`department_id.eq.${deptId},department_id.is.null`);
+  } else {
+    // If worker has no department, they can only see general shifts
+    unassignedQuery = unassignedQuery.is("department_id", null);
   }
 
   // Fetch swaps available for this worker (up_for_swap status)
@@ -67,10 +61,9 @@ export default async function AvailableShiftsPage() {
   // Filter swaps to only those in the user's department or General department
   const availableSwaps = (swapsRaw ?? [])
     .filter((swap) => {
-      if (!deptId || !swap.shift?.department_id) return true;
+      if (!deptId || !swap.shift?.department_id) return true; // General shifts have no department
       const isInUserDept = swap.shift.department_id === deptId;
-      const isInGeneralDept = generalDept?.id && swap.shift.department_id === generalDept.id;
-      return isInUserDept || isInGeneralDept;
+      return isInUserDept;
     })
     .map((swap) => ({
       ...swap,
@@ -143,11 +136,11 @@ export default async function AvailableShiftsPage() {
                   <div className="flex flex-wrap gap-3 mb-5">
                     <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest bg-[#050505]/40 px-3 py-1.5 rounded-lg border border-white/5">
                       <Calendar className="w-3.5 h-3.5 text-emerald-400/60" />
-                      {formatShiftDate(shift.start_time)}
+                      {formatShiftDate(shift.start_time, tz)}
                     </div>
                     <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest bg-[#050505]/40 px-3 py-1.5 rounded-lg border border-white/5">
                       <Clock className="w-3.5 h-3.5 text-emerald-400/60" />
-                      {formatShiftTime(shift.start_time, shift.end_time)}
+                      {formatShiftTime(shift.start_time, shift.end_time, tz)}
                     </div>
                   </div>
 
@@ -206,11 +199,11 @@ export default async function AvailableShiftsPage() {
                   <div className="flex flex-wrap gap-3 mb-5">
                     <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest bg-[#050505]/40 px-3 py-1.5 rounded-lg border border-white/5">
                       <Calendar className="w-3.5 h-3.5 text-purple-400/60" />
-                      {formatShiftDate(swap.shift?.start_time)}
+                      {formatShiftDate(swap.shift?.start_time, tz)}
                     </div>
                     <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest bg-[#050505]/40 px-3 py-1.5 rounded-lg border border-white/5">
                       <Clock className="w-3.5 h-3.5 text-purple-400/60" />
-                      {formatShiftTime(swap.shift?.start_time, swap.shift?.end_time)}
+                      {formatShiftTime(swap.shift?.start_time, swap.shift?.end_time, tz)}
                     </div>
                   </div>
 

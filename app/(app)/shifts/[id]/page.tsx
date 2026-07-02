@@ -53,6 +53,8 @@ export default async function ShiftDetailPage(props: {
   if (!user) redirect("/login");
   if (!shift) notFound();
 
+  const tz = profile?.timezone || "UTC";
+
   const isManagerOrAdmin =
     profile?.user_role === "manager" || profile?.user_role === "org_admin";
   const isOwner = shift.assigned_to === user.id;
@@ -118,7 +120,7 @@ export default async function ShiftDetailPage(props: {
             </div>
             <div>
               <p className="text-sm font-black text-white">
-                {formatShiftDate(shift.start_time)}
+                {formatShiftDate(shift.start_time, tz)}
               </p>
               <p className="text-[10px] font-black uppercase tracking-widest text-white/20">
                 Date
@@ -131,7 +133,7 @@ export default async function ShiftDetailPage(props: {
             </div>
             <div>
               <p className="text-sm font-black text-white">
-                {formatShiftTime(shift.start_time, shift.end_time)}
+                {formatShiftTime(shift.start_time, shift.end_time, tz)}
               </p>
               <p className="text-[10px] font-black uppercase tracking-widest text-white/20">
                 {formatShiftDuration(shift.start_time, shift.end_time)}
@@ -150,7 +152,7 @@ export default async function ShiftDetailPage(props: {
                 </div>
                 <div>
                   <p className="text-sm font-black text-white">
-                    {formatShiftTime(shift.actual_start_time, shift.actual_start_time)}
+                    {formatShiftTime(shift.actual_start_time, shift.actual_start_time, tz)}
                   </p>
                   <p className="text-[10px] font-black uppercase tracking-widest text-blue-400/50">
                     Actual Start
@@ -165,7 +167,7 @@ export default async function ShiftDetailPage(props: {
                 </div>
                 <div>
                   <p className="text-sm font-black text-white">
-                    {formatShiftTime(shift.actual_end_time, shift.actual_end_time)}
+                    {formatShiftTime(shift.actual_end_time, shift.actual_end_time, tz)}
                   </p>
                   <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400/50">
                     Actual End

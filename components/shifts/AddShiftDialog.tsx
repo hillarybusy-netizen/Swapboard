@@ -45,12 +45,14 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
       : profiles.filter(p => p.department_id === form.department_id)
     : profiles;
 
-  // Convert local time to UTC for submission
+  // Convert a datetime-local string (browser local time) to UTC ISO string.
+  // We rely on the browser's native Date constructor to handle DST correctly
+  // instead of manually computing getTimezoneOffset(), which is wrong at DST boundaries.
   function localToUTC(localDateTime: string): string {
     if (!localDateTime) return "";
-    const local = new Date(localDateTime);
-    const utc = new Date(local.getTime() - local.getTimezoneOffset() * 60000);
-    return utc.toISOString();
+    // datetime-local gives "YYYY-MM-DDTHH:mm" – pass directly to Date.
+    // The browser interprets it as local time and converts to UTC internally.
+    return new Date(localDateTime).toISOString();
   }
 
   function isPastDateTime(localDateTime: string): boolean {

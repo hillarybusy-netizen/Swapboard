@@ -135,7 +135,8 @@ export async function offerToCoverSwap(swapId: string) {
   }
 
   // Lock the swap (first come first serve)
-  const { error: updateError } = await supabase
+  const admin = createAdminClient();
+  const { error: updateError } = await admin
     .from("swap_requests")
     .update({
       covering_worker_id: user.id,
@@ -148,7 +149,6 @@ export async function offerToCoverSwap(swapId: string) {
   if (updateError) throw new Error(formatError(updateError.message));
 
   // Update shift status
-  const admin = createAdminClient();
   await admin.from("shifts").update({ status: "pending_approval_swap" }).eq("id", swap.shift_id);
 
   await logAudit(swap.organization_id, "swap", swapId, "swap_claimed", user.id, { shift_id: swap.shift_id });

@@ -14,7 +14,7 @@ export default async function SwapRequestsPage() {
   if (!user) redirect("/login");
 
   const [profileRes, myRequestsRes] = await Promise.all([
-    supabase.from("profiles").select("organization_id, department_id").eq("id", user.id).single(),
+    supabase.from("profiles").select("organization_id, department_id, timezone").eq("id", user.id).single(),
     supabase.from("swap_requests")
       .select("*, shift:shifts(*, department:departments(*)), covering_worker:profiles!covering_worker_id(*)")
       .eq("requester_id", user.id)
@@ -23,6 +23,8 @@ export default async function SwapRequestsPage() {
 
   const profile = profileRes.data;
   const myRequests = (myRequestsRes.data ?? []) as any[];
+
+  const tz = profile?.timezone || "UTC";
 
   const { data: availableSwapsData } = await supabase
     .from("swap_requests")
@@ -77,10 +79,10 @@ export default async function SwapRequestsPage() {
                       <p className="text-sm font-bold text-white">{swap.shift.title}</p>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
-                          <Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time)}
+                          <Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time, tz)}
                         </div>
                         <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
-                          <Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}
+                          <Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                         </div>
                       </div>
                     </div>
@@ -124,8 +126,8 @@ export default async function SwapRequestsPage() {
 
                 {swap.shift && (
                   <div className="flex items-center gap-4 text-[11px] font-bold text-white/40 uppercase tracking-widest">
-                    <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time)}</span>
-                    <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}</span>
+                    <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time, tz)}</span>
+                    <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}</span>
                   </div>
                 )}
 

@@ -60,6 +60,7 @@ export default async function MyShiftsPage({
 }) {
   const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
+  const tz = profile?.timezone || "UTC";
 
   const params = await searchParams;
   const currentTab = (params.tab as TabKey) || "all";
@@ -232,11 +233,11 @@ export default async function MyShiftsPage({
                 <div className="flex flex-wrap gap-3 mb-4">
                   <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                     <Calendar className="w-3.5 h-3.5" />
-                    {formatShiftDate(shift.start_time)}
+                    {formatShiftDate(shift.start_time, tz)}
                   </span>
                   <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                     <Clock className="w-3.5 h-3.5" />
-                    {formatShiftTime(shift.start_time, shift.end_time)}
+                    {formatShiftTime(shift.start_time, shift.end_time, tz)}
                   </span>
                   <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/30">
                     <Timer className="w-3.5 h-3.5" />

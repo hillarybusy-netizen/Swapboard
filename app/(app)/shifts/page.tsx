@@ -36,6 +36,7 @@ export default async function ShiftsPage(props: {
 
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
+  const tz = profile?.timezone || "UTC";
 
   // Auto-close expired shifts
   await autoCloseExpiredShifts(orgId);
@@ -174,6 +175,7 @@ export default async function ShiftsPage(props: {
         departments={departments}
         profiles={profiles}
         orgId={orgId}
+        timezone={tz}
       />
 
       {/* Ended Shifts History */}
@@ -203,11 +205,11 @@ export default async function ShiftsPage(props: {
                     )}
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {formatShiftDate(shift.start_time)}
+                      {formatShiftDate(shift.start_time, tz)}
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      {formatShiftTime(shift.start_time, shift.end_time)}
+                      {formatShiftTime(shift.start_time, shift.end_time, tz)}
                     </div>
                   </div>
                 </div>

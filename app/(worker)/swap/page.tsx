@@ -42,6 +42,8 @@ export default async function SwapPage({
   const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
 
+  const tz = profile?.timezone || "UTC";
+
   const params = await searchParams;
   const postShiftId = params.post ?? null;
 
@@ -138,7 +140,7 @@ export default async function SwapPage({
               <div>
                 <p className="text-sm font-black text-gold">Post This Shift for Swap</p>
                 <p className="text-[11px] text-white/40 font-medium">
-                  {postShift.title} · {formatShiftDate(postShift.start_time)}
+                  {postShift.title} · {formatShiftDate(postShift.start_time, tz)}
                 </p>
               </div>
             </div>
@@ -208,11 +210,11 @@ export default async function SwapPage({
                     <div className="flex flex-wrap gap-3 mb-3">
                       <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                         <Calendar className="w-3.5 h-3.5" />
-                        {formatShiftDate(swap.shift.start_time)}
+                        {formatShiftDate(swap.shift.start_time, tz)}
                       </span>
                       <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                         <Clock className="w-3.5 h-3.5" />
-                        {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}
+                        {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                       </span>
                     </div>
                   )}
@@ -311,11 +313,11 @@ export default async function SwapPage({
                     <div className="flex flex-wrap gap-3">
                       <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
                         <Calendar className="w-3.5 h-3.5" />
-                        {formatShiftDate(swap.shift.start_time)}
+                        {formatShiftDate(swap.shift.start_time, tz)}
                       </div>
                       <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
                         <Clock className="w-3.5 h-3.5" />
-                        {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}
+                        {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                       </div>
                     </div>
                     {swap.shift.department && (

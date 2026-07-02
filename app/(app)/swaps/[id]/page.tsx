@@ -34,6 +34,8 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
   if (!user) redirect("/login");
   if (!swap) notFound();
 
+  const tz = profile?.timezone || "UTC";
+
   const isManager = profile?.user_role === "manager" || profile?.user_role === "org_admin";
   const isRequester = (swap as any).requester_id === user.id;
   const isCovering = (swap as any).covering_worker_id === user.id;
@@ -84,11 +86,11 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
                 <div className="flex flex-wrap gap-6 pt-4 border-t border-white/5">
                   <div className="flex items-center gap-3">
                     <Calendar className="w-4 h-4 text-gold/40" />
-                    <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{formatShiftDate(shift.start_time)}</span>
+                    <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{formatShiftDate(shift.start_time, tz)}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="w-4 h-4 text-gold/40" />
-                    <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{formatShiftTime(shift.start_time, shift.end_time)}</span>
+                    <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{formatShiftTime(shift.start_time, shift.end_time, tz)}</span>
                   </div>
                 </div>
               </div>

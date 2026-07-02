@@ -73,6 +73,7 @@ export default async function HomePage() {
   const now = new Date().toISOString();
   const firstName = profile?.full_name?.split(" ")[0] || "there";
   const orgName = (profile as any)?.organization?.name || "your team";
+  const tz = profile?.timezone || "UTC";
 
   const { pct: profilePct, missing: profileMissing } = calcProfileCompletion(profile);
 
@@ -241,11 +242,11 @@ export default async function HomePage() {
                       <div className="flex items-center gap-3 mt-1.5">
                         <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                           <Calendar className="w-3 h-3" />
-                          {formatShiftDate(shift.start_time)}
+                          {formatShiftDate(shift.start_time, tz)}
                         </span>
                         <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                           <Clock className="w-3 h-3" />
-                          {formatShiftTime(shift.start_time, shift.end_time)}
+                          {formatShiftTime(shift.start_time, shift.end_time, tz)}
                         </span>
                       </div>
                       {shift.department && (
@@ -304,7 +305,7 @@ export default async function HomePage() {
                   </p>
                   {swap.shift?.start_time && (
                     <p className="text-[10px] text-white/25 font-bold uppercase tracking-widest mt-1">
-                      {formatShiftDate(swap.shift.start_time)} · {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}
+                      {formatShiftDate(swap.shift.start_time, tz)} · {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                     </p>
                   )}
                 </div>

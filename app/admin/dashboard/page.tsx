@@ -40,6 +40,8 @@ export default async function AdminDashboardPage() {
 
   if (!orgId) redirect("/onboarding/industry");
 
+  const tz = profile?.timezone || "UTC";
+
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const in48h = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
@@ -438,9 +440,9 @@ export default async function AdminDashboardPage() {
                     <div className="flex flex-col">
                       <p className="text-sm font-bold text-white mb-1">{shift.title}</p>
                       <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-white/40 font-medium">
-                        <span>{formatShiftDate(shift.start_time)}</span>
+                        <span>{formatShiftDate(shift.start_time, tz)}</span>
                         <span>·</span>
-                        <span>{formatShiftTime(shift.start_time, shift.end_time)}</span>
+                        <span>{formatShiftTime(shift.start_time, shift.end_time, tz)}</span>
                         {shift.department && (
                           <>
                             <span className="hidden sm:inline">·</span>
@@ -543,7 +545,7 @@ export default async function AdminDashboardPage() {
                         )}
                       </div>
                       <p className="text-[10px] font-bold text-white/30 uppercase mt-1">
-                        {formatShiftDate(shift.start_time)}
+                        {formatShiftDate(shift.start_time, tz)}
                       </p>
                     </div>
                     <ApproveClaimButton
@@ -624,7 +626,7 @@ export default async function AdminDashboardPage() {
                           <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest">
                             <Calendar className="w-3 h-3" />
                             {swap.shift
-                              ? `${formatShiftDate(swap.shift.start_time)} · ${formatShiftTime(swap.shift.start_time, swap.shift.end_time)}`
+                              ? `${formatShiftDate(swap.shift.start_time, tz)} · ${formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}`
                               : "No shift data"}
                           </div>
                           {swap.reason && (

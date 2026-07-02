@@ -26,8 +26,10 @@ function swapStatusBadge(status: string) {
 }
 
 export default async function SwapHistoryPage() {
-  const { user } = await getCachedSession();
+  const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
+
+  const tz = profile?.timezone || "UTC";
 
   const supabase = await createClient();
 
@@ -152,11 +154,11 @@ export default async function SwapHistoryPage() {
                     <div className="flex flex-wrap gap-3 mb-3">
                       <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                         <Calendar className="w-3.5 h-3.5" />
-                        {formatShiftDate(swap.shift.start_time)}
+                        {formatShiftDate(swap.shift.start_time, tz)}
                       </span>
                       <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
                         <Clock className="w-3.5 h-3.5" />
-                        {formatShiftTime(swap.shift.start_time, swap.shift.end_time)}
+                        {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                       </span>
                     </div>
                   )}

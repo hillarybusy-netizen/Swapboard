@@ -180,21 +180,15 @@ export async function claimUnassignedShift(shiftId: string) {
   if (shift.assigned_to) throw new Error("This shift has already been claimed by another team member.");
   if (shift.status !== "not_started") throw new Error("This shift is no longer available to claim.");
 
-  // Allow claiming if the shift is in the worker's own department OR the General department
+  // Allow claiming if the shift is in the worker's own department OR the General department (department_id IS NULL)
   const workerDeptId = profile.department_id;
   if (workerDeptId && workerDeptId !== shift.department_id) {
-    // Check if the shift belongs to the General department
-    const { data: generalDept } = await supabase
-      .from("departments")
-      .select("id")
-      .eq("organization_id", shift.organization_id)
-      .ilike("name", "general")
-      .single();
-
-    const isGeneralDept = generalDept?.id && shift.department_id === generalDept.id;
+    const isGeneralDept = shift.department_id === null;
     if (!isGeneralDept) {
       throw new Error("You can only claim shifts within your assigned department.");
     }
+  } else if (!workerDeptId && shift.department_id !== null) {
+    throw new Error("You can only claim general shifts since you are not assigned to a department.");
   }
 
   // Overlap check
@@ -210,7 +204,8 @@ export async function claimUnassignedShift(shiftId: string) {
     throw new Error("You already have a shift scheduled during this time. Please check your schedule before claiming.");
   }
 
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("shifts")
     .update({ status: "pending_approval_claim", assigned_to: user.id })
     .eq("id", shiftId);
@@ -282,7 +277,8 @@ export async function startShift(shiftId: string) {
     throw new Error("Shift can't start before its time.");
   }
 
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("shifts")
     .update({ status: "started", actual_start_time: new Date().toISOString() })
     .eq("id", shiftId);
@@ -313,7 +309,8 @@ export async function markShiftDone(shiftId: string) {
     throw new Error("This shift cannot be marked as done in its current state. Please contact your manager if you think this is an error.");
   }
 
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("shifts")
     .update({ status: "done_pending_approval", actual_end_time: new Date().toISOString() })
     .eq("id", shiftId);
