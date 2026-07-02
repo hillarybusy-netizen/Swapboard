@@ -217,6 +217,10 @@ export async function managerSwapAction(
   const shiftTitle = (swap.shift as any)?.title ?? "Shift";
 
   if (action === "approve") {
+    if (swap.status !== "worker_accepted" || !swap.covering_worker_id) {
+      throw new Error("Cannot approve this swap because no one has offered to cover it yet.");
+    }
+
     const { error: swapError } = await admin
       .from("swap_requests")
       .update({

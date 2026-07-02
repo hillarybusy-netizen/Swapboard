@@ -564,7 +564,7 @@ export default async function DashboardPage() {
                         </div>
 
                         <div className="pt-2">
-                          <ApproveSwapButton swapId={swap.id} />
+                          <ApproveSwapButton swapId={swap.id} hasCoverage={swap.status === "worker_accepted"} />
                         </div>
                       </div>
                     </div>

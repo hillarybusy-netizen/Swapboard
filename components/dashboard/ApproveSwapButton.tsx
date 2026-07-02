@@ -8,9 +8,10 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   swapId: string;
+  hasCoverage: boolean;
 }
 
-export function ApproveSwapButton({ swapId }: Props) {
+export function ApproveSwapButton({ swapId, hasCoverage }: Props) {
   const [loading, setLoading] = useState<"approve" | "reject" | null>(null);
   const [showRejectNotes, setShowRejectNotes] = useState(false);
   const [notes, setNotes] = useState("");
@@ -57,26 +58,28 @@ export function ApproveSwapButton({ swapId }: Props) {
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
-        <button
-          onClick={handleApprove}
-          disabled={!!loading}
-          className="
-            flex items-center justify-center gap-1.5 flex-1
-            h-8 px-3 rounded-xl
-            bg-emerald-500/10 border border-emerald-500/20
-            text-emerald-400 text-[9px] font-black uppercase tracking-widest
-            hover:bg-emerald-500/20 hover:border-emerald-500/40
-            active:scale-95 transition-all
-            disabled:opacity-50 disabled:cursor-not-allowed
-          "
-        >
-          {loading === "approve" ? (
-            <Loader2 className="w-3 h-3 animate-spin" />
-          ) : (
-            <CheckCircle2 className="w-3 h-3" />
-          )}
-          {loading === "approve" ? "Approving…" : "Approve"}
-        </button>
+        {hasCoverage && (
+          <button
+            onClick={handleApprove}
+            disabled={!!loading}
+            className="
+              flex items-center justify-center gap-1.5 flex-1
+              h-8 px-3 rounded-xl
+              bg-emerald-500/10 border border-emerald-500/20
+              text-emerald-400 text-[9px] font-black uppercase tracking-widest
+              hover:bg-emerald-500/20 hover:border-emerald-500/40
+              active:scale-95 transition-all
+              disabled:opacity-50 disabled:cursor-not-allowed
+            "
+          >
+            {loading === "approve" ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <CheckCircle2 className="w-3 h-3" />
+            )}
+            {loading === "approve" ? "Approving…" : "Approve"}
+          </button>
+        )}
 
         <button
           onClick={() => setShowRejectNotes(!showRejectNotes)}
