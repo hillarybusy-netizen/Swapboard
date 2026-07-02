@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,7 +35,7 @@ export function OrgSettings({ org, userId }: { org: Organization | null; userId:
       toast({ title: "Saved!", variant: "success" });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -66,7 +67,7 @@ export function OrgSettings({ org, userId }: { org: Organization | null; userId:
       toast({ title: "Logo uploaded!", variant: "success" });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: "Upload failed", description: catchError(err), variant: "destructive" });
     } finally {
       setUploadingLogo(false);
       if (fileInputRef.current) {

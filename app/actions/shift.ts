@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "@/lib/actions/audit";
 import { triggerShiftAssigned } from "@/lib/actions/notification-triggers";
+import { formatError } from "@/lib/errors";
 
 interface CreateShiftInput {
   organization_id: string;
@@ -42,7 +43,7 @@ export async function createShift(input: CreateShiftInput) {
     .single();
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(formatError(error.message));
   }
 
   // Log audit

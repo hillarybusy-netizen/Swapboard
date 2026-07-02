@@ -1,8 +1,9 @@
 "use client";
 import { catchError } from "@/lib/errors";
 import { useState } from "react";
-import { CheckCircle2, Loader2, Clock } from "lucide-react";
-import { markShiftDone } from "@/lib/actions/shifts";
+import { useRouter } from "next/navigation";
+import { Play, Loader2 } from "lucide-react";
+import { startShift } from "@/lib/actions/shifts";
 import { toast } from "@/hooks/use-toast";
 
 interface Props {
@@ -10,18 +11,20 @@ interface Props {
   shiftTitle: string;
 }
 
-export function MarkAsDoneButton({ shiftId, shiftTitle }: Props) {
+export function StartShiftButton({ shiftId, shiftTitle }: Props) {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleClick() {
     setLoading(true);
     try {
-      await markShiftDone(shiftId);
+      await startShift(shiftId);
       toast({
-        title: "Awaiting confirmation",
-        description: `"${shiftTitle}" has been marked as done. Your manager will confirm it shortly.`,
+        title: "Shift Started",
+        description: `You have successfully clocked in/started "${shiftTitle}".`,
         className: "bg-blue-500/20 border-blue-500/50 text-blue-300",
       });
+      router.refresh();
     } catch (err: any) {
       toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
@@ -34,21 +37,21 @@ export function MarkAsDoneButton({ shiftId, shiftTitle }: Props) {
       onClick={handleClick}
       disabled={loading}
       className="
-        w-full flex items-center justify-center gap-2 
-        h-11 px-6 rounded-2xl 
-        bg-emerald-500/10 border border-emerald-500/20 
-        text-emerald-400 text-[10px] font-black uppercase tracking-widest
-        hover:bg-emerald-500/20 hover:border-emerald-500/40
+        w-full flex items-center justify-center gap-2
+        h-11 px-6 rounded-2xl
+        bg-blue-500/10 border border-blue-500/20
+        text-blue-400 text-[10px] font-black uppercase tracking-widest
+        hover:bg-blue-500/20 hover:border-blue-500/40
         active:scale-95 transition-all duration-200
-        disabled:opacity-50 disabled:cursor-not-allowed
+        disabled:opacity-50 disabled:pointer-events-none
       "
     >
       {loading ? (
         <Loader2 className="w-3.5 h-3.5 animate-spin" />
       ) : (
-        <CheckCircle2 className="w-3.5 h-3.5" />
+        <Play className="w-3.5 h-3.5 fill-current" />
       )}
-      {loading ? "Submitting…" : "Mark as Done"}
+      {loading ? "Starting…" : "Start Shift"}
     </button>
   );
 }

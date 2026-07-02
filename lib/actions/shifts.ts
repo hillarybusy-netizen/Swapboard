@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireManager, requireUser } from "@/lib/auth-helpers";
 import { logAudit } from "./audit";
 import { canManagerAccessDepartment } from "@/lib/managers";
+import { formatError } from "@/lib/errors";
 import {
   triggerShiftAssigned,
   triggerGeneralShiftPosted,
@@ -54,7 +55,7 @@ export async function createShift(formData: {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) throw new Error("Unauthorized");
+  if (!user) throw new Error("You must be signed in to perform this action.");
 
   const { data: shift, error } = await supabase
     .from("shifts")
@@ -66,7 +67,7 @@ export async function createShift(formData: {
     .select("id")
     .single();
 
-  if (error) throw error;
+  if (error) throw new Error(formatError(error.message));
 
   await logAudit(formData.organization_id, "shift", shift.id, "created", user.id, {
     assigned_to: formData.assigned_to || null,
@@ -96,12 +97,12 @@ export async function softDeleteShift(shiftId: string) {
     .eq("id", shiftId)
     .single();
 
-  if (fetchError || !shift) throw new Error("Shift not found");
+  if (fetchError || !shift) throw new Error("The requested shift could not be found. It may have been deleted.");
 
   if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, shift.department_id)) {
-    throw new Error("Managers can only delete shifts within their own departments");
+    throw new Error("You can only delete shifts within your assigned departments.");
   } else if (profile.user_role === "worker") {
-    throw new Error("Workers cannot delete shifts");
+    throw new Error("You don't have permission to delete shifts.");
   }
 
   const { error } = await supabase
@@ -109,7 +110,7 @@ export async function softDeleteShift(shiftId: string) {
     .update({ status: "cancelled", deleted_at: new Date().toISOString() })
     .eq("id", shiftId);
 
-  if (error) throw error;
+  if (error) throw new Error(formatError(error.message));
 
   await logAudit(shift.organization_id, "shift", shiftId, "soft_deleted", user.id);
 
@@ -129,10 +130,10 @@ export async function bulkSoftDeleteShifts(shiftIds: string[]) {
     .select("id, organization_id, department_id")
     .in("id", shiftIds);
 
-  if (fetchError || !shifts || shifts.length === 0) throw new Error("Shifts not found");
+  if (fetchError || !shifts || shifts.length === 0) throw new Error("The selected shifts could not be found. Please refresh and try again.");
 
   if (profile.user_role === "worker") {
-    throw new Error("Workers cannot delete shifts");
+    throw new Error("You don't have permission to delete shifts.");
   }
 
   const allowedIds = shifts
@@ -140,7 +141,7 @@ export async function bulkSoftDeleteShifts(shiftIds: string[]) {
     .map(shift => shift.id);
 
   if (allowedIds.length === 0) {
-     throw new Error("You do not have permission to delete these shifts");
+     throw new Error("You don't have permission to delete the selected shifts. They may belong to departments outside your access.");
   }
 
   const { error } = await supabase
@@ -175,10 +176,10 @@ export async function claimUnassignedShift(shiftId: string) {
     .eq("id", shiftId)
     .single();
 
-  if (fetchError || !shift) throw new Error("Shift not found");
-  if (shift.assigned_to) throw new Error("This shift is already assigned");
-  if (shift.status !== "not_started") throw new Error("This shift is no longer available to claim");
-  if (profile.department_id !== shift.department_id) throw new Error("You can only claim shifts in your department");
+  if (fetchError || !shift) throw new Error("The requested shift could not be found. It may have been deleted.");
+  if (shift.assigned_to) throw new Error("This shift has already been claimed by another team member.");
+  if (shift.status !== "not_started") throw new Error("This shift is no longer available to claim.");
+  if (profile.department_id !== shift.department_id) throw new Error("You can only claim shifts within your assigned department.");
 
   // Overlap check
   const { data: overlappingShifts } = await supabase
@@ -190,7 +191,7 @@ export async function claimUnassignedShift(shiftId: string) {
     .gt("end_time", shift.start_time);
 
   if (overlappingShifts && overlappingShifts.length > 0) {
-    throw new Error("You are already scheduled for an overlapping shift.");
+    throw new Error("You already have a shift scheduled during this time. Please check your schedule before claiming.");
   }
 
   const { error } = await supabase
@@ -218,8 +219,8 @@ export async function managerApproveClaim(shiftId: string, approve: boolean) {
     .eq("id", shiftId)
     .single();
 
-  if (fetchError || !shift) throw new Error("Shift not found");
-  if (shift.status !== "pending_approval_claim") throw new Error("Shift is not pending a claim approval");
+  if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
+  if (shift.status !== "pending_approval_claim") throw new Error("This shift is not awaiting a claim approval.");
 
   if (profile.user_role === "manager" && !profile.department_ids?.includes(shift.department_id)) {
     throw new Error("Unauthorized to approve this department's claims");
@@ -246,6 +247,37 @@ export async function managerApproveClaim(shiftId: string, approve: boolean) {
   return { success: true };
 }
 
+export async function startShift(shiftId: string) {
+  const { supabase, user } = await requireUser();
+
+  const { data: shift, error: fetchError } = await supabase
+    .from("shifts")
+    .select("assigned_to, status, organization_id")
+    .eq("id", shiftId)
+    .single();
+
+  if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
+  if (shift.assigned_to !== user.id) throw new Error("You are not assigned to this shift.");
+  if (shift.status !== "not_started" && shift.status !== "overdue_not_done") {
+    throw new Error("This shift cannot be started from its current state.");
+  }
+
+  const { error } = await supabase
+    .from("shifts")
+    .update({ status: "started" })
+    .eq("id", shiftId);
+
+  if (error) throw new Error(formatError(error.message));
+
+  await logAudit(shift.organization_id, "shift", shiftId, "started", user.id);
+
+  revalidatePath("/dashboard");
+  revalidatePath("/shifts");
+  revalidatePath("/my-shifts");
+
+  return { success: true };
+}
+
 export async function markShiftDone(shiftId: string) {
   const { supabase, user } = await requireUser();
 
@@ -255,10 +287,10 @@ export async function markShiftDone(shiftId: string) {
     .eq("id", shiftId)
     .single();
 
-  if (fetchError || !shift) throw new Error("Shift not found");
-  if (shift.assigned_to !== user.id) throw new Error("You are not assigned to this shift");
+  if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
+  if (shift.assigned_to !== user.id) throw new Error("You are not assigned to this shift.");
   if (shift.status !== "started" && shift.status !== "not_started" && shift.status !== "overdue_not_done") {
-    throw new Error("Shift cannot be marked as done from its current status");
+    throw new Error("This shift cannot be marked as done in its current state. Please contact your manager if you think this is an error.");
   }
 
   const { error } = await supabase
@@ -289,10 +321,10 @@ export async function reviewShiftCompletion(shiftId: string, action: "approve" |
     .eq("id", shiftId)
     .single();
 
-  if (fetchError || !shift) throw new Error("Shift not found");
-  if (profile.user_role === "worker") throw new Error("Unauthorized");
+  if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
+  if (profile.user_role === "worker") throw new Error("You don't have permission to review shift completions.");
   if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, shift.department_id)) {
-    throw new Error("Unauthorized for this department");
+    throw new Error("You can only review completions for shifts within your assigned departments.");
   }
 
   let newStatus = "";

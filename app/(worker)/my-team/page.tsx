@@ -31,13 +31,14 @@ export default async function MyTeamPage() {
     .from("profiles")
     .select("*, department:departments(name, color), role:roles(name)")
     .eq("organization_id", profile.organization_id)
-    .eq("is_active", true)
-    .order("full_name");
+    .eq("is_active", true);
 
-  // If user belongs to a specific department, filter to same department
+  // If user belongs to a specific department, filter to same department OR any manager/admin
   if (profile.department_id) {
-    teamQuery = teamQuery.eq("department_id", profile.department_id) as any;
+    teamQuery = teamQuery.or(`department_id.eq.${profile.department_id},user_role.in.(manager,org_admin)`);
   }
+
+  teamQuery = teamQuery.order("full_name");
 
   const { data: membersData } = await teamQuery;
 

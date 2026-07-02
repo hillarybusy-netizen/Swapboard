@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState } from "react";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { approveShiftClaim, rejectShiftClaim } from "@/lib/actions/shifts";
@@ -24,7 +25,7 @@ export function ApproveClaimButton({ shiftId, shiftTitle, workerName }: Props) {
         className: "bg-emerald-500/20 border-emerald-500/50 text-emerald-400",
       });
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoadingApprove(false);
     }
@@ -40,7 +41,7 @@ export function ApproveClaimButton({ shiftId, shiftTitle, workerName }: Props) {
         className: "bg-red-500/20 border-red-500/50 text-red-400",
       });
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoadingReject(false);
     }

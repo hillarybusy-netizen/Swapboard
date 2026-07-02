@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

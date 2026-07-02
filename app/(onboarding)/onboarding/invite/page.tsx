@@ -11,6 +11,7 @@ import { setupWorkspace } from "@/lib/actions/setup";
 import { sendInvitation } from "@/lib/actions/invitations";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, X, CheckCircle2, Loader2, ChevronRight, AlertCircle, ChevronLeft } from "lucide-react";
+import { catchError } from "@/lib/errors";
 
 interface Invite { email: string; role: "manager" | "worker"; department_id: string }
 
@@ -128,7 +129,7 @@ export default function InvitePage() {
       }
     } catch (err: any) {
       console.error("[finalize] error:", err);
-      toast({ title: "Setup failed", description: err.message, variant: "destructive" });
+      toast({ title: "Setup Failed", description: catchError(err), variant: "destructive" });
       setLoading(false);
     }
   }

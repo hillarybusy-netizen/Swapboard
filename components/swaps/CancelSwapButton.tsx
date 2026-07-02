@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cancelSwapRequest } from "@/lib/actions/swaps";
@@ -21,7 +22,7 @@ export function CancelSwapButton({ swapId }: Props) {
       toast({ title: "Swap cancelled", description: "Your shift has been returned to scheduled." });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(false);
     }

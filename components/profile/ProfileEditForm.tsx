@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 
 import { useState, useTransition } from "react";
 import { updateProfile } from "@/lib/actions/profile";
@@ -35,7 +36,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
       } catch (err: any) {
-        toast({ title: "Error", description: err.message, variant: "destructive" });
+        toast({ title: "Error", description: catchError(err), variant: "destructive" });
       }
     });
   }

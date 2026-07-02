@@ -10,6 +10,7 @@ import { requireManager } from "@/lib/auth-helpers";
 import { swapboardEmailHtml, isResendConfigured } from "@/lib/email-template";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { headers } from "next/headers";
+import { formatError } from "@/lib/errors";
 
 export async function getInvitationByToken(token: string) {
   const normalizedToken = token?.trim();
@@ -84,7 +85,7 @@ export async function acceptInvitation({
   });
 
   if (signUpError) {
-    return { success: false, error: signUpError.message };
+    return { success: false, error: formatError(signUpError.message) };
   }
 
   const userId = userData.user.id;
@@ -195,7 +196,7 @@ export async function sendInvitation(inv: {
     .select()
     .single();
 
-  if (dbError) return { success: false, error: dbError.message };
+  if (dbError) return { success: false, error: formatError(dbError.message) };
 
   if (!isResendConfigured() || !resend) {
     await supabase.from("invitations").delete().eq("id", invitation.id);
@@ -272,7 +273,7 @@ export async function createManualInvitation(inv: {
     .select()
     .single();
 
-  if (dbError) return { success: false, error: dbError.message };
+  if (dbError) return { success: false, error: formatError(dbError.message) };
 
   revalidatePath("/team");
   revalidatePath("/settings");
@@ -305,7 +306,7 @@ export async function deleteInvitation(id: string) {
     .eq("organization_id", profile.organization_id);
 
   if (deleteError) {
-    return { success: false, error: deleteError.message };
+    return { success: false, error: formatError(deleteError.message) };
   }
 
   revalidatePath("/team");

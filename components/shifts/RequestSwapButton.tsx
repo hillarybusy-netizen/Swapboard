@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -37,7 +38,7 @@ export function RequestSwapButton({ shiftId, shiftTitle }: { shiftId: string; sh
       setOpen(false);
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(false);
     }

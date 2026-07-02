@@ -8,6 +8,7 @@ import { updateMemberDepartments } from "@/lib/actions/profile";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Settings2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { catchError } from "@/lib/errors";
 
 interface Department {
   id: string;
@@ -60,8 +61,8 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
       setOpen(false);
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Update Failed",
+        description: catchError(error),
         variant: "destructive",
       });
     } finally {

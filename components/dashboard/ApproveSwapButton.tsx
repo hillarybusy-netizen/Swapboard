@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState } from "react";
 import { CheckCircle2, XCircle, Loader2, MessageSquare } from "lucide-react";
 import { managerSwapAction } from "@/lib/actions/swaps";
@@ -27,7 +28,7 @@ export function ApproveSwapButton({ swapId }: Props) {
       });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }
@@ -47,7 +48,7 @@ export function ApproveSwapButton({ swapId }: Props) {
       setShowRejectNotes(false);
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }

@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -88,7 +89,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
       setForm({ title: "", department_id: "", assigned_to: "", start_time: "", end_time: "", notes: "" });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Failed to create shift", description: err.message, variant: "destructive" });
+      toast({ title: "Failed to create shift", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(false);
     }

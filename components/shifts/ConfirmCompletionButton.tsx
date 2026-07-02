@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState } from "react";
 import { CheckCircle2, XCircle, AlertTriangle, Loader2 } from "lucide-react";
 import {
@@ -38,7 +39,7 @@ export function ConfirmCompletionButton({
       });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }
@@ -56,7 +57,7 @@ export function ConfirmCompletionButton({
       setShowNotes(false);
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }

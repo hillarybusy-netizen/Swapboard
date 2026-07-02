@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +41,7 @@ export function DepartmentEditor({ departments, orgId, org }: { departments: Dep
       // Router refresh is handled inside the server action, but we'll do it here just in case for client state
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }
@@ -55,7 +56,7 @@ export function DepartmentEditor({ departments, orgId, org }: { departments: Dep
       toast({ title: "Department deleted" });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }
@@ -73,7 +74,7 @@ export function DepartmentEditor({ departments, orgId, org }: { departments: Dep
       toast({ title: "Role added", variant: "success" });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }
@@ -86,7 +87,7 @@ export function DepartmentEditor({ departments, orgId, org }: { departments: Dep
       await supabase.from("roles").delete().eq("id", id);
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(null);
     }

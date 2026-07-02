@@ -6,6 +6,7 @@ import { resend } from "@/lib/resend";
 import { swapboardEmailHtml, isResendConfigured } from "@/lib/email-template";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { headers } from "next/headers";
+import { formatError, catchError } from "@/lib/errors";
 
 const DISALLOWED_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com"];
 
@@ -64,7 +65,7 @@ export async function registerUser({
   });
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: formatError(error.message) };
   }
 
   if (isResendConfigured() && resend) {
@@ -179,7 +180,7 @@ export async function signInUser({
   });
 
   if (signInError) {
-    // Sign-in failed - return generic error (don't leak whether email exists)
+    // Sign-in failed — return a professional generic message (don't leak whether email exists)
     return { success: false, error: "incorrect_password" };
   }
 

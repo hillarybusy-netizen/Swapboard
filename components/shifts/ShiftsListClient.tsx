@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -72,7 +73,7 @@ export function ShiftsListClient({ shifts, canAddShift, departments, profiles, o
       setSelectedIds(new Set());
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoading(false);
     }

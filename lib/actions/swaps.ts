@@ -6,6 +6,7 @@ import { requireUser, requireManager } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "./audit";
 import { canManagerAccessDepartment } from "@/lib/managers";
+import { formatError } from "@/lib/errors";
 import {
   triggerSwapPosted,
   triggerCoverOffered,
@@ -18,7 +19,7 @@ export async function requestSwap(shiftId: string, reason: string) {
   const { supabase, user, profile } = await requireUser();
 
   if (profile.user_role === "manager" || profile.user_role === "org_admin") {
-    throw new Error("Managers and admins cannot request swaps");
+    throw new Error("Managers and admins cannot request shift swaps.");
   }
 
   const { data: shift, error: shiftError } = await supabase
@@ -27,14 +28,14 @@ export async function requestSwap(shiftId: string, reason: string) {
     .eq("id", shiftId)
     .single();
 
-  if (shiftError || !shift) throw new Error("Shift not found");
-  if (shift.assigned_to !== user.id) throw new Error("You can only request swaps for your own shifts");
+  if (shiftError || !shift) throw new Error("The requested shift could not be found. It may have been deleted.");
+  if (shift.assigned_to !== user.id) throw new Error("You can only request swaps for shifts assigned to you.");
   if (shift.status !== "not_started" && shift.status !== "started") {
-    throw new Error("This shift is not available for swap");
+    throw new Error("This shift is not eligible for a swap in its current state.");
   }
 
   if (!profile.organization_id || profile.organization_id !== shift.organization_id) {
-    throw new Error("Unauthorized");
+    throw new Error("You are not authorized to request a swap for this shift.");
   }
 
   const { error: insertError } = await supabase.from("swap_requests").insert({
@@ -45,7 +46,7 @@ export async function requestSwap(shiftId: string, reason: string) {
     status: "pending",
   });
 
-  if (insertError) throw new Error(insertError.message);
+  if (insertError) throw new Error(formatError(insertError.message));
 
   const admin = createAdminClient();
   const { error: updateError } = await admin
@@ -53,7 +54,7 @@ export async function requestSwap(shiftId: string, reason: string) {
     .update({ status: "up_for_swap" })
     .eq("id", shiftId);
 
-  if (updateError) throw new Error(updateError.message);
+  if (updateError) throw new Error(formatError(updateError.message));
 
   await logAudit(shift.organization_id, "shift", shiftId, "posted_for_swap", user.id, { reason });
 
@@ -100,7 +101,7 @@ export async function offerToCoverSwap(swapId: string) {
   const { supabase, user, profile } = await requireUser();
 
   if (profile.user_role === "manager" || profile.user_role === "org_admin") {
-    throw new Error("Managers and admins cannot cover shifts");
+    throw new Error("Managers and admins cannot offer to cover shifts.");
   }
 
   const { data: swap, error } = await supabase
@@ -109,9 +110,9 @@ export async function offerToCoverSwap(swapId: string) {
     .eq("id", swapId)
     .single();
 
-  if (error || !swap) throw new Error("Swap request not found");
-  if (swap.status !== "pending") throw new Error("This swap is no longer available");
-  if (swap.requester_id === user.id) throw new Error("You cannot cover your own shift");
+  if (error || !swap) throw new Error("This swap request could not be found. It may have been cancelled or already claimed.");
+  if (swap.status !== "pending") throw new Error("This swap is no longer available — it may have already been claimed by another team member.");
+  if (swap.requester_id === user.id) throw new Error("You cannot cover your own shift swap request.");
 
   const { data: shift } = await supabase
     .from("shifts")
@@ -129,7 +130,7 @@ export async function offerToCoverSwap(swapId: string) {
       .gt("end_time", shift.start_time);
 
     if (overlappingShifts && overlappingShifts.length > 0) {
-      throw new Error("You are already scheduled for a shift that overlaps with this time.");
+      throw new Error("You already have a shift scheduled during this time. Please check your schedule before offering to cover.");
     }
   }
 
@@ -144,7 +145,7 @@ export async function offerToCoverSwap(swapId: string) {
     .eq("id", swapId)
     .eq("status", "pending"); // ensure it's still pending
 
-  if (updateError) throw new Error(updateError.message);
+  if (updateError) throw new Error(formatError(updateError.message));
 
   // Update shift status
   const admin = createAdminClient();
@@ -204,12 +205,12 @@ export async function managerSwapAction(
     .eq("id", swapId)
     .single();
 
-  if (error || !swap) throw new Error("Swap request not found");
+  if (error || !swap) throw new Error("This swap request could not be found. Please refresh and try again.");
 
   if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, swap.shift?.department_id)) {
-    throw new Error("Unauthorized to manage swaps in this department");
+    throw new Error("You don't have permission to manage swaps in this department.");
   } else if (profile.user_role !== "manager" && profile.user_role !== "org_admin") {
-    throw new Error("Unauthorized");
+    throw new Error("You don't have permission to approve or reject swap requests.");
   }
 
   const requester = swap.requester as any;
@@ -226,14 +227,14 @@ export async function managerSwapAction(
       })
       .eq("id", swapId);
 
-    if (swapError) throw new Error(swapError.message);
+    if (swapError) throw new Error(formatError(swapError.message));
 
     if (swap.covering_worker_id) {
       const { error: shiftError } = await admin
         .from("shifts")
         .update({ status: "swapped", assigned_to: swap.covering_worker_id })
         .eq("id", swap.shift_id);
-      if (shiftError) throw new Error(shiftError.message);
+      if (shiftError) throw new Error(formatError(shiftError.message));
     }
     await logAudit(swap.organization_id, "swap", swapId, "swap_approved", user.id, { shift_id: swap.shift_id });
     // Trigger notifications
@@ -258,7 +259,7 @@ export async function managerSwapAction(
       })
       .eq("id", swapId);
 
-    if (swapError) throw new Error(swapError.message);
+    if (swapError) throw new Error(formatError(swapError.message));
 
     const nextStatus = blockReswap ? "not_started" : "up_for_swap";
 
@@ -267,7 +268,7 @@ export async function managerSwapAction(
       .update({ status: nextStatus })
       .eq("id", swap.shift_id);
 
-    if (shiftError) throw new Error(shiftError.message);
+    if (shiftError) throw new Error(formatError(shiftError.message));
     
     await logAudit(swap.organization_id, "swap", swapId, "swap_rejected", user.id, { shift_id: swap.shift_id, block_reswap: blockReswap });
     // Trigger notifications
@@ -296,16 +297,16 @@ export async function cancelSwapRequest(swapId: string) {
     .eq("id", swapId)
     .single();
 
-  if (error || !swap) throw new Error("Swap request not found");
-  if (swap.requester_id !== user.id) throw new Error("Unauthorized");
-  if (swap.status !== "pending") throw new Error("This swap can no longer be cancelled. Someone has already claimed it.");
+  if (error || !swap) throw new Error("This swap request could not be found. It may have already been resolved.");
+  if (swap.requester_id !== user.id) throw new Error("You can only cancel your own swap requests.");
+  if (swap.status !== "pending") throw new Error("This swap can no longer be cancelled — it has already been accepted by another team member.");
 
   const { error: swapError } = await supabase
     .from("swap_requests")
     .update({ status: "cancelled" })
     .eq("id", swapId);
 
-  if (swapError) throw new Error(swapError.message);
+  if (swapError) throw new Error(formatError(swapError.message));
 
   const admin = createAdminClient();
   const { error: shiftError } = await admin
@@ -313,7 +314,7 @@ export async function cancelSwapRequest(swapId: string) {
     .update({ status: "not_started" })
     .eq("id", swap.shift_id);
 
-  if (shiftError) throw new Error(shiftError.message);
+  if (shiftError) throw new Error(formatError(shiftError.message));
 
   await logAudit(swap.organization_id, "swap", swapId, "swap_cancelled_by_worker", user.id, { shift_id: swap.shift_id });
 

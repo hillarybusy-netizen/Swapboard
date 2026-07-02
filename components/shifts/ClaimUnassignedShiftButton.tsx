@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { claimUnassignedShift } from "@/lib/actions/shifts";
 import { Briefcase, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { catchError } from "@/lib/errors";
 
 export function ClaimUnassignedShiftButton({ shiftId, shiftTitle }: { shiftId: string; shiftTitle: string }) {
   const [isPending, startTransition] = useTransition();
@@ -20,8 +21,8 @@ export function ClaimUnassignedShiftButton({ shiftId, shiftTitle }: { shiftId: s
       } catch (error: any) {
         toast({
           variant: "destructive",
-          title: "Action failed",
-          description: error.message,
+          title: "Action Failed",
+          description: catchError(error),
         });
       }
     });

@@ -6,6 +6,7 @@ import { Calendar, Clock, Timer, ArrowLeftRight, CheckCircle2, AlertTriangle } f
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { MarkDoneButton } from "@/components/shifts/MarkDoneButton";
+import { StartShiftButton } from "@/components/shifts/StartShiftButton";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +69,7 @@ export default async function MyShiftsPage({
 
   const [
     { data: allShiftsData },
+    { data: swappedAwayData },
     { data: departmentData },
   ] = await Promise.all([
     supabase
@@ -76,6 +78,11 @@ export default async function MyShiftsPage({
       .eq("assigned_to", user.id)
       .is("deleted_at", null)
       .order("start_time", { ascending: false }),
+    supabase
+      .from("swap_requests")
+      .select("*, shift:shifts(*, department:departments(*))")
+      .eq("requester_id", user.id)
+      .eq("status", "manager_approved"),
     profile?.department_id
       ? supabase
           .from("departments")
@@ -85,7 +92,18 @@ export default async function MyShiftsPage({
       : Promise.resolve({ data: null }),
   ]);
 
-  const allShifts = (allShiftsData ?? []) as any[];
+  // Extract the shifts from approved swap requests where the user was the requester
+  const swappedShifts = (swappedAwayData ?? [])
+    .map((sr: any) => sr.shift)
+    .filter(Boolean)
+    .map((s: any) => ({ ...s, status: "swapped" }));
+
+  // Combine currently assigned shifts with successfully swapped away shifts
+  const allShifts = [
+    ...(allShiftsData ?? []),
+    ...swappedShifts,
+  ].sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
+
   const displayShifts = filterShifts(allShifts, currentTab);
   const department = departmentData as any;
 
@@ -163,6 +181,7 @@ export default async function MyShiftsPage({
         ) : (
           displayShifts.map((shift) => {
             const badge = statusBadge(shift.status);
+            const canStartShift = shift.status === "not_started";
             const canMarkDone = shift.status === "started" || shift.status === "overdue_not_done";
             const canPostSwap = shift.status === "not_started" || shift.status === "started";
             const isOverdue = shift.status === "overdue_not_done";
@@ -235,8 +254,13 @@ export default async function MyShiftsPage({
                 )}
 
                 {/* Action Buttons */}
-                {(canMarkDone || canPostSwap) && (
+                {(canStartShift || canMarkDone || canPostSwap) && (
                   <div className="flex gap-2 mt-1">
+                    {canStartShift && (
+                      <div className="flex-1">
+                        <StartShiftButton shiftId={shift.id} shiftTitle={shift.title} />
+                      </div>
+                    )}
                     {canMarkDone && (
                       <div className="flex-1">
                         <MarkDoneButton shiftId={shift.id} shiftTitle={shift.title} />

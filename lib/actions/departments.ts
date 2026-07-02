@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireManager } from "@/lib/auth-helpers";
 import { checkPlanLimit } from "@/lib/plans";
 import { revalidatePath } from "next/cache";
+import { formatError } from "@/lib/errors";
 
 export async function addDepartment(orgId: string, name: string, sortOrder: number) {
   const { supabase, user, profile } = await requireManager(orgId);
@@ -39,7 +40,7 @@ export async function addDepartment(orgId: string, name: string, sortOrder: numb
     });
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: formatError(error.message) };
   }
 
   revalidatePath("/settings");

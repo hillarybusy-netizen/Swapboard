@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { offerToCoverSwap } from "@/lib/actions/swaps";
 import { ArrowLeftRight, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { catchError } from "@/lib/errors";
 
 export function ClaimSwapShiftButton({ swapId, swapTitle }: { swapId: string; swapTitle: string }) {
   const [isPending, startTransition] = useTransition();
@@ -20,8 +21,8 @@ export function ClaimSwapShiftButton({ swapId, swapTitle }: { swapId: string; sw
       } catch (error: any) {
         toast({
           variant: "destructive",
-          title: "Action failed",
-          description: error.message,
+          title: "Action Failed",
+          description: catchError(error),
         });
       }
     });

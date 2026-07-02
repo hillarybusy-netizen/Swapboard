@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,7 +65,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
     setLoading("checkout");
     completeCheckout(sessionId).catch((err: Error) => {
       setLoading(null);
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     });
   }, [searchParams]);
 

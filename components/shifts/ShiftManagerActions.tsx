@@ -1,4 +1,5 @@
 "use client";
+import { catchError } from "@/lib/errors";
 
 import { useState } from "react";
 import { AlertTriangle, XCircle, Loader2 } from "lucide-react";
@@ -30,7 +31,7 @@ export function ShiftManagerActions({ shiftId, shiftTitle, currentStatus }: Prop
       });
       router.refresh();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
     } finally {
       setLoadingNoShow(false);
     }
@@ -47,7 +48,7 @@ export function ShiftManagerActions({ shiftId, shiftTitle, currentStatus }: Prop
       });
       router.push("/shifts");
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: catchError(err), variant: "destructive" });
       setLoadingDelete(false);
     }
   }
