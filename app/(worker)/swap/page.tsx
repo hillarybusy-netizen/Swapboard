@@ -1,6 +1,7 @@
 import { getCachedSession } from "@/lib/supabase/cached";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { formatShiftDate, formatShiftTime, timeAgo } from "@/lib/utils";
 import {
   ArrowLeftRight,
@@ -12,6 +13,7 @@ import {
   UserCheck,
   PlusCircle,
   Inbox,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CancelSwapButton } from "@/components/swaps/CancelSwapButton";
@@ -60,7 +62,7 @@ export default async function SwapPage({
     }
   }
 
-  // Section A: My swap requests
+  // Section A: My swap requests — split into active and history
   const { data: mySwapsData } = await supabase
     .from("swap_requests")
     .select(
@@ -70,7 +72,15 @@ export default async function SwapPage({
     .not("status", "eq", "cancelled")
     .order("requested_at", { ascending: false });
 
-  const mySwaps = (mySwapsData ?? []) as any[];
+  const allMySwaps = (mySwapsData ?? []) as any[];
+  // Active = still in flight (pending cover or awaiting manager)
+  const mySwaps = allMySwaps.filter((s) =>
+    s.status === "pending" || s.status === "worker_accepted"
+  );
+  // History = resolved (approved or rejected)
+  const swapHistory = allMySwaps.filter((s) =>
+    s.status === "manager_approved" || s.status === "rejected"
+  );
 
   // Section B: Available swaps in same org (filtered to same dept if deptId exists)
   let availableQuery = supabase
@@ -97,13 +107,26 @@ export default async function SwapPage({
   return (
     <div className="space-y-8 animate-in fade-in duration-700 pb-10">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-black tracking-tight text-white mb-1">
-          Swap Board
-        </h1>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
-          Post shifts · Claim cover · Manage exchanges
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-white mb-1">
+            Swap Board
+          </h1>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+            Post shifts · Claim cover · Manage exchanges
+          </p>
+        </div>
+        <Link
+          href="/swap/history"
+          className="relative flex items-center justify-center w-11 h-11 rounded-2xl glass border border-white/10 hover:border-gold/30 hover:bg-gold/5 transition-all duration-200 shrink-0 mt-1 group"
+        >
+          <ClipboardList className="w-5 h-5 text-white/40 group-hover:text-gold transition-colors" />
+          {swapHistory.length > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gold text-[#050505] text-[9px] font-black flex items-center justify-center">
+              {swapHistory.length > 9 ? "9+" : swapHistory.length}
+            </span>
+          )}
+        </Link>
       </div>
 
       {/* Post for Swap — pre-filled if ?post= is set */}
@@ -131,7 +154,7 @@ export default async function SwapPage({
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2">
-            <RefreshCw className="w-3.5 h-3.5" /> My Posted Swaps
+            <RefreshCw className="w-3.5 h-3.5" /> Active Swaps
           </h2>
           <span className="text-[10px] font-bold text-white/20 bg-white/5 px-2.5 py-1 rounded-full">
             {mySwaps.length}
@@ -203,11 +226,19 @@ export default async function SwapPage({
                     </p>
                   )}
 
-                  {swap.covering_worker && (
+                  {swap.covering_worker && swap.status === "worker_accepted" && (
                     <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-xl bg-blue-500/8 border border-blue-500/15">
                       <UserCheck className="w-3.5 h-3.5 text-blue-400" />
                       <p className="text-[11px] font-bold text-blue-300/80">
                         {swap.covering_worker.full_name} has offered to cover — awaiting manager
+                      </p>
+                    </div>
+                  )}
+                  {swap.covering_worker && swap.status === "manager_approved" && (
+                    <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-xl bg-emerald-500/8 border border-emerald-500/15">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <p className="text-[11px] font-bold text-emerald-300/80">
+                        Covered by {swap.covering_worker.full_name} — swap approved
                       </p>
                     </div>
                   )}
