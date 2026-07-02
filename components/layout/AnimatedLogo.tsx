@@ -8,11 +8,11 @@ interface AnimatedLogoProps {
 }
 
 const sizeMap = {
-  sm: { iconContainer: "w-8 h-8", text: "text-base" },
-  md: { iconContainer: "w-12 h-12", text: "text-xl" },
-  lg: { iconContainer: "w-16 h-16", text: "text-3xl" },
-  xl: { iconContainer: "w-24 h-24", text: "text-4xl" },
-  "2xl": { iconContainer: "w-32 h-32", text: "text-5xl" },
+  sm: { iconContainer: "w-12 h-12", text: "text-base" },
+  md: { iconContainer: "w-16 h-16", text: "text-xl" },
+  lg: { iconContainer: "w-24 h-24", text: "text-3xl" },
+  xl: { iconContainer: "w-32 h-32", text: "text-4xl" },
+  "2xl": { iconContainer: "w-48 h-48", text: "text-5xl" },
   full: { iconContainer: "w-full aspect-square", text: "text-4xl" },
 };
 
