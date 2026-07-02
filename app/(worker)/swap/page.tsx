@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { CancelSwapButton } from "@/components/swaps/CancelSwapButton";
 import { WorkerSwapActions } from "@/components/swaps/WorkerSwapActions";
 import { RequestSwapButton } from "@/components/shifts/RequestSwapButton";
+import { SwapHistoryBadge } from "@/components/swaps/SwapHistoryBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -121,11 +122,7 @@ export default async function SwapPage({
           className="relative flex items-center justify-center w-11 h-11 rounded-2xl glass border border-white/10 hover:border-gold/30 hover:bg-gold/5 transition-all duration-200 shrink-0 mt-1 group"
         >
           <ClipboardList className="w-5 h-5 text-white/40 group-hover:text-gold transition-colors" />
-          {swapHistory.length > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gold text-[#050505] text-[9px] font-black flex items-center justify-center">
-              {swapHistory.length > 9 ? "9+" : swapHistory.length}
-            </span>
-          )}
+          <SwapHistoryBadge historyItems={swapHistory} />
         </Link>
       </div>
 

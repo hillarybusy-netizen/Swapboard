@@ -13,6 +13,7 @@ import {
   Ban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SwapHistoryTracker } from "@/components/swaps/SwapHistoryTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,7 @@ export default async function SwapHistoryPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
+      <SwapHistoryTracker />
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link
