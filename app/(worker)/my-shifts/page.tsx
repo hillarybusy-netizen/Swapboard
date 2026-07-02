@@ -5,8 +5,7 @@ import { formatShiftDate, formatShiftTime, formatShiftDuration } from "@/lib/uti
 import { Calendar, Clock, Timer, ArrowLeftRight, CheckCircle2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { MarkDoneButton } from "@/components/shifts/MarkDoneButton";
-import { StartShiftButton } from "@/components/shifts/StartShiftButton";
+import { ShiftActionButton } from "@/components/shifts/ShiftActionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +22,7 @@ function statusBadge(status: string) {
   const map: Record<string, { label: string; color: string }> = {
     not_started: { label: "Upcoming", color: "text-white/50 bg-white/10" },
     started: {
-      label: "In Progress",
+      label: "Ongoing",
       color: "text-blue-400 bg-blue-500/15 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)]",
     },
     up_for_swap: { label: "Up for Swap", color: "text-purple-400 bg-purple-500/15 border border-purple-500/20" },
@@ -256,14 +255,15 @@ export default async function MyShiftsPage({
                 {/* Action Buttons */}
                 {(canStartShift || canMarkDone || canPostSwap) && (
                   <div className="flex gap-2 mt-1">
-                    {canStartShift && (
+                    {(canStartShift || canMarkDone) && (
                       <div className="flex-1">
-                        <StartShiftButton shiftId={shift.id} shiftTitle={shift.title} />
-                      </div>
-                    )}
-                    {canMarkDone && (
-                      <div className="flex-1">
-                        <MarkDoneButton shiftId={shift.id} shiftTitle={shift.title} />
+                        <ShiftActionButton 
+                          shiftId={shift.id} 
+                          shiftTitle={shift.title} 
+                          status={shift.status} 
+                          startTime={shift.start_time} 
+                          endTime={shift.end_time} 
+                        />
                       </div>
                     )}
                     {canPostSwap && (

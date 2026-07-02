@@ -232,7 +232,7 @@ export async function managerSwapAction(
     if (swap.covering_worker_id) {
       const { error: shiftError } = await admin
         .from("shifts")
-        .update({ status: "swapped", assigned_to: swap.covering_worker_id })
+        .update({ status: "not_started", assigned_to: swap.covering_worker_id })
         .eq("id", swap.shift_id);
       if (shiftError) throw new Error(formatError(shiftError.message));
     }

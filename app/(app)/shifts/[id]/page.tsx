@@ -140,6 +140,42 @@ export default async function ShiftDetailPage(props: {
           </div>
         </div>
 
+        {/* Actual Time grid */}
+        {(shift.actual_start_time || shift.actual_end_time) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+            {shift.actual_start_time && (
+              <div className="p-5 rounded-[1.5rem] bg-white/[0.02] border border-blue-500/20 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-white">
+                    {formatShiftTime(shift.actual_start_time, shift.actual_start_time)}
+                  </p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-blue-400/50">
+                    Actual Start
+                  </p>
+                </div>
+              </div>
+            )}
+            {shift.actual_end_time && (
+              <div className="p-5 rounded-[1.5rem] bg-white/[0.02] border border-emerald-500/20 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-white">
+                    {formatShiftTime(shift.actual_end_time, shift.actual_end_time)}
+                  </p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400/50">
+                    Actual End
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Assigned worker */}
         <div className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-white/[0.02] border border-white/5 mb-6">
           <Avatar className="w-12 h-12 rounded-full border-2 border-white/10 ring-4 ring-white/[0.02]">

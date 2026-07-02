@@ -57,10 +57,6 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
   // Elements spacing: compress as it becomes a pill
   const linkGap = useTransform(scrollProgress, [0, 1], ["2.5rem", "1.5rem"]);
 
-  // Logo text fade out on mobile/tablet when scrolled
-  const logoTextOpacity = useTransform(scrollProgress, [0.1, 0.8], [1, 0]);
-  const logoTextWidth = useTransform(scrollProgress, [0.1, 0.8], ["120px", "0px"]);
-
   if (!mounted) {
     return (
       <nav
@@ -123,17 +119,6 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
         {/* Left: Logo */}
         <div className="flex justify-start items-center z-10 shrink-0">
           <AnimatedLogo size="md" showText={false} />
-          <motion.div
-            className="hidden sm:block overflow-hidden whitespace-nowrap ml-3"
-            style={{
-              opacity: logoTextOpacity,
-              width: logoTextWidth,
-            }}
-          >
-            <span className="font-bold tracking-tighter text-white text-base">
-              Swap<span className="text-gold">Board</span>
-            </span>
-          </motion.div>
         </div>
 
         {/* Center: Nav links */}

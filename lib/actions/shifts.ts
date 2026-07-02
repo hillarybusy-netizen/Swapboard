@@ -179,7 +179,23 @@ export async function claimUnassignedShift(shiftId: string) {
   if (fetchError || !shift) throw new Error("The requested shift could not be found. It may have been deleted.");
   if (shift.assigned_to) throw new Error("This shift has already been claimed by another team member.");
   if (shift.status !== "not_started") throw new Error("This shift is no longer available to claim.");
-  if (profile.department_id !== shift.department_id) throw new Error("You can only claim shifts within your assigned department.");
+
+  // Allow claiming if the shift is in the worker's own department OR the General department
+  const workerDeptId = profile.department_id;
+  if (workerDeptId && workerDeptId !== shift.department_id) {
+    // Check if the shift belongs to the General department
+    const { data: generalDept } = await supabase
+      .from("departments")
+      .select("id")
+      .eq("organization_id", shift.organization_id)
+      .ilike("name", "general")
+      .single();
+
+    const isGeneralDept = generalDept?.id && shift.department_id === generalDept.id;
+    if (!isGeneralDept) {
+      throw new Error("You can only claim shifts within your assigned department.");
+    }
+  }
 
   // Overlap check
   const { data: overlappingShifts } = await supabase
@@ -252,7 +268,7 @@ export async function startShift(shiftId: string) {
 
   const { data: shift, error: fetchError } = await supabase
     .from("shifts")
-    .select("assigned_to, status, organization_id")
+    .select("assigned_to, status, organization_id, start_time")
     .eq("id", shiftId)
     .single();
 
@@ -261,10 +277,14 @@ export async function startShift(shiftId: string) {
   if (shift.status !== "not_started" && shift.status !== "overdue_not_done") {
     throw new Error("This shift cannot be started from its current state.");
   }
+  
+  if (new Date() < new Date(shift.start_time)) {
+    throw new Error("Shift can't start before its time.");
+  }
 
   const { error } = await supabase
     .from("shifts")
-    .update({ status: "started" })
+    .update({ status: "started", actual_start_time: new Date().toISOString() })
     .eq("id", shiftId);
 
   if (error) throw new Error(formatError(error.message));
@@ -295,7 +315,7 @@ export async function markShiftDone(shiftId: string) {
 
   const { error } = await supabase
     .from("shifts")
-    .update({ status: "done_pending_approval" })
+    .update({ status: "done_pending_approval", actual_end_time: new Date().toISOString() })
     .eq("id", shiftId);
 
   if (error) throw error;

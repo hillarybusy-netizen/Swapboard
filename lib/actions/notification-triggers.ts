@@ -11,6 +11,11 @@ import {
   sendSwapPostedEmail,
   sendSwapOfferEmail,
   sendShiftCompletedEmail,
+  sendShiftCreatedAdminEmail,
+  sendSwapPostedConfirmationEmail,
+  sendSwapPostedAdminEmail,
+  sendCoverOfferedConfirmationEmail,
+  sendSwapApprovedAdminEmail,
 } from "@/lib/email";
 
 interface NotificationTriggerOptions {
@@ -98,11 +103,31 @@ async function getWorkersInDepartment(departmentId: string) {
   
   const { data } = await admin
     .from('profiles')
-    .select('id, email, full_name')
+    .select('id, email, full_name, department_ids')
     .contains('department_ids', [departmentId])
     .eq('user_role', 'worker');
   
   return data || [];
+}
+
+/**
+ * Get all org admins + managers who manage a specific department
+ */
+async function getAdminsAndDepartmentManagers(organizationId: string, departmentId: string) {
+  const admin = createAdminClient();
+
+  const { data } = await admin
+    .from('profiles')
+    .select('id, email, full_name, department_ids, user_role')
+    .eq('organization_id', organizationId)
+    .in('user_role', ['org_admin', 'manager']);
+
+  if (!data) return [];
+
+  // Org admins see everything; managers must have the department in their list
+  return data.filter(
+    (u) => u.user_role === 'org_admin' || (u.department_ids || []).includes(departmentId),
+  );
 }
 
 /**
@@ -149,7 +174,7 @@ export async function triggerSwapPosted(
   // Fetch shift details
   const { data: shift } = await admin
     .from('shifts')
-    .select('title')
+    .select('title, start_time')
     .eq('id', shiftId)
     .single();
 
@@ -166,7 +191,22 @@ export async function triggerSwapPosted(
     relatedEntityId: swapId,
   });
 
-  // No email for this - it's internal
+  // Email the requester (Worker 1) confirming their shift is posted
+  const { data: requesterProfile } = await admin
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', requesterUserId)
+    .single();
+
+  if (requesterProfile?.email) {
+    const dateStr = new Date(shift?.start_time || '').toLocaleDateString();
+    await sendSwapPostedConfirmationEmail(
+      requesterProfile.email,
+      requesterProfile.full_name || 'Worker',
+      shift?.title || 'Shift',
+      dateStr,
+    );
+  }
 }
 
 /**
@@ -184,14 +224,20 @@ export async function triggerCoverOffered(
   // Fetch required data
   const { data: swap } = await admin
     .from('swap_requests')
-    .select('shift_id, reason')
+    .select('shift_id, reason, department_id')
     .eq('id', swapId)
     .single();
 
   const { data: shift } = await admin
     .from('shifts')
-    .select('title')
+    .select('title, start_time')
     .eq('id', swap?.shift_id)
+    .single();
+
+  const { data: requester } = await admin
+    .from('profiles')
+    .select('full_name, email')
+    .eq('id', requesterUserId)
     .single();
 
   const { data: coverWorker } = await admin
@@ -207,8 +253,9 @@ export async function triggerCoverOffered(
     .single();
 
   const shiftTitle = shift?.title || 'Shift';
+  const shiftDateStr = new Date(shift?.start_time || '').toLocaleDateString();
 
-  // Notify requester
+  // Notify requester (Worker 1) in-app
   await createNotification({
     userId: requesterUserId,
     organizationId,
@@ -219,24 +266,47 @@ export async function triggerCoverOffered(
     relatedEntityId: swapId,
   });
 
-  // Notify manager - awaiting approval
-  if (shouldSendNotification(managerId, 'email', 'swap_approval_pending')) {
+  // Email Worker 1 — someone wants to cover their shift
+  if (requester?.email) {
+    await sendSwapOfferEmail(
+      requester.email,
+      requester.full_name || 'Worker',
+      coverWorker?.full_name || 'A worker',
+      shiftTitle,
+    );
+  }
+
+  // Email Worker 2 (cover worker) — confirmation their offer was submitted
+  if (coverWorker?.email) {
+    await sendCoverOfferedConfirmationEmail(
+      coverWorker.email,
+      coverWorker.full_name || 'Worker',
+      requester?.full_name || 'A worker',
+      shiftTitle,
+      shiftDateStr,
+    );
+  }
+
+  // Notify all relevant admins & managers (department-scoped)
+  const departmentManagers = await getAdminsAndDepartmentManagers(organizationId, swap?.department_id || '');
+
+  for (const mgr of departmentManagers) {
     await createNotification({
-      userId: managerId,
+      userId: mgr.id,
       organizationId,
       type: 'swap_approval_pending',
       title: 'Swap Request Pending Approval',
-      message: `${coverWorker?.full_name || 'A worker'} has offered to cover "${shiftTitle}". This swap is pending your approval.`,
+      message: `${coverWorker?.full_name || 'A worker'} has offered to cover "${shiftTitle}" from ${requester?.full_name || 'a worker'}. This swap is pending your approval.`,
       relatedEntityType: 'swap_request',
       relatedEntityId: swapId,
     });
 
-    if (manager?.email) {
+    if (mgr.email) {
       await sendPendingApprovalEmail(
-        manager.email,
-        manager.full_name || 'Manager',
+        mgr.email,
+        mgr.full_name || 'Manager',
         coverWorker?.full_name || 'A worker',
-        coverWorker?.full_name || 'A worker',
+        requester?.full_name || 'A worker',
         shiftTitle,
         swap?.reason,
       );
@@ -257,11 +327,12 @@ export async function triggerSwapApproved(
 ) {
   const admin = createAdminClient();
 
-  // Fetch required data
+  // Fetch required data (include start_time for the date string)
+  const swapRecord = await admin.from('swap_requests').select('shift_id, department_id').eq('id', swapId).single();
   const { data: shift } = await admin
     .from('shifts')
-    .select('title')
-    .eq('id', (await admin.from('swap_requests').select('shift_id').eq('id', swapId).single()).data?.shift_id)
+    .select('title, start_time')
+    .eq('id', swapRecord.data?.shift_id)
     .single();
 
   const { data: requester } = await admin
@@ -283,16 +354,38 @@ export async function triggerSwapApproved(
     .single();
 
   const shiftTitle = shift?.title || 'Shift';
+  const shiftDateStr = new Date(shift?.start_time || '').toLocaleDateString();
 
-  // Notify all admins and other managers about the approved swap
-  await notifyAdminsAndManagers(
+  // Notify & email all department-scoped admins/managers about the approved swap
+  const departmentManagers = await getAdminsAndDepartmentManagers(
     organizationId,
-    'swap_approved',
-    'Swap Approved',
-    `${manager?.full_name || 'A manager'} approved swap: ${requester?.full_name || 'Worker'} ↔ ${coverWorker?.full_name || 'Worker'} for "${shiftTitle}".`,
-    'swap_request',
-    swapId,
+    swapRecord.data?.department_id || '',
   );
+
+  for (const mgr of departmentManagers) {
+    await createNotification({
+      userId: mgr.id,
+      organizationId,
+      type: 'swap_approved',
+      title: 'Swap Approved',
+      message: `${manager?.full_name || 'A manager'} approved swap: ${requester?.full_name || 'Worker'} ↔ ${coverWorker?.full_name || 'Worker'} for "${shiftTitle}".`,
+      relatedEntityType: 'swap_request',
+      relatedEntityId: swapId,
+    });
+
+    if (mgr.email) {
+      await sendSwapApprovedAdminEmail(
+        mgr.email,
+        mgr.full_name || 'Admin',
+        manager?.full_name || 'Manager',
+        requester?.full_name || 'Worker',
+        coverWorker?.full_name || 'Worker',
+        shiftTitle,
+        shiftDateStr,
+        managerNotes,
+      );
+    }
+  }
 
   // Notify requester
   if (shouldSendNotification(requesterUserId, 'email', 'swap_approved')) {
@@ -424,7 +517,7 @@ export async function triggerShiftAssigned(
 
   const { data: shift } = await admin
     .from('shifts')
-    .select('title, start_time, end_time, notes, department_id')
+    .select('title, start_time, end_time, notes, department_id, created_by')
     .eq('id', shiftId)
     .single();
 
@@ -468,6 +561,33 @@ export async function triggerShiftAssigned(
         dept?.name,
         shift.notes,
       );
+    }
+  }
+
+  // Notify admins and managers
+  const { data: creator } = await admin
+    .from('profiles')
+    .select('full_name')
+    .eq('id', shift?.created_by)
+    .single();
+  const creatorName = creator?.full_name || 'System';
+
+  const adminsAndManagers = await getAdminsAndManagers(organizationId);
+  for (const am of adminsAndManagers) {
+    if (shouldSendNotification(am.id, 'email', 'shift_assigned')) {
+      if (am.email) {
+        await sendShiftCreatedAdminEmail(
+          am.email,
+          am.full_name || 'Admin',
+          worker.full_name || 'Worker',
+          creatorName,
+          shift.title,
+          dateStr,
+          timeStr,
+          dept?.name,
+          shift.notes,
+        );
+      }
     }
   }
 }
@@ -724,21 +844,49 @@ export async function triggerSwapPostedNotification(
 
   const { data: requester } = await admin
     .from('profiles')
-    .select('full_name')
+    .select('full_name, email')
     .eq('id', requesterUserId)
     .single();
 
   if (!shift || !requester) return;
 
-  // Notify all admins and managers
-  await notifyAdminsAndManagers(
-    organizationId,
-    'swap_posted',
-    'Swap Posted - Department',
-    `${requester.full_name} posted "${shift.title}" for swap. Check details to approve or manage.`,
-    'swap_request',
-    swapId,
-  );
+  const startDate = new Date(shift.start_time);
+  const dateStr = startDate.toLocaleDateString();
+
+  // Email Worker 1 confirming their shift is posted for swap
+  if (requester.email) {
+    await sendSwapPostedConfirmationEmail(
+      requester.email,
+      requester.full_name || 'Worker',
+      shift.title,
+      dateStr,
+    );
+  }
+
+  // Notify & email department-scoped admins/managers
+  const deptAdmins = await getAdminsAndDepartmentManagers(organizationId, departmentId || shift.department_id);
+  for (const mgr of deptAdmins) {
+    await createNotification({
+      userId: mgr.id,
+      organizationId,
+      type: 'swap_posted',
+      title: 'Swap Posted — Department',
+      message: `${requester.full_name} posted "${shift.title}" for swap. Check details to approve or manage.`,
+      relatedEntityType: 'swap_request',
+      relatedEntityId: swapId,
+    });
+
+    if (mgr.email) {
+      await sendSwapPostedAdminEmail(
+        mgr.email,
+        mgr.full_name || 'Admin',
+        requester.full_name || 'Worker',
+        shift.title,
+        dateStr,
+        reason,
+      );
+    }
+  }
 
   // Get workers in the same department
   const { data: departmentWorkers } = await admin
@@ -749,8 +897,7 @@ export async function triggerSwapPostedNotification(
 
   if (!departmentWorkers || departmentWorkers.length === 0) return;
 
-  const startDate = new Date(shift.start_time);
-  const dateStr = startDate.toLocaleDateString();
+  // (dateStr already declared above — reuse it for worker notifications)
 
   // Notify only workers in the same department
   for (const worker of departmentWorkers) {

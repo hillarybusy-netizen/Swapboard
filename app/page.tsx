@@ -14,6 +14,7 @@ import { LandingCoverageVisual, LandingVerificationVisual, LandingAnalyticsVisua
 import { FeatureCardVisual } from "@/components/landing/FeatureCardVisual";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { FadeUpOnScroll, ScaleOnScroll, StaggerContainer, StaggerItem, ParallaxOnScroll } from "@/components/animations/ScrollAnimations";
+import { LandingPricing } from "@/components/landing/LandingPricing";
 
 import { createClient } from "@/lib/supabase/server";
 import { LandingNavbar } from "@/components/layout/LandingNavbar";
@@ -422,88 +423,7 @@ export default async function LandingPage() {
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">Simple, honest pricing</h2>
             <p className="text-white/50 text-lg">Start free. Scale as you grow. No hidden fees.</p>
           </div>
-          <StaggerContainer className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Starter",
-                price: "$79",
-                annualPrice: "$59",
-                desc: "Perfect for single-location businesses",
-                features: ["Up to 100 workers", "3 departments", "Basic analytics", "Email support"],
-                highlighted: false,
-              },
-              {
-                name: "Growth",
-                price: "$199",
-                annualPrice: "$149",
-                desc: "For growing multi-department teams",
-                features: ["Up to 200 workers", "Unlimited departments", "ROI analytics", "Priority support", "Custom roles"],
-                highlighted: true,
-              },
-              {
-                name: "Enterprise",
-                price: "$499",
-                annualPrice: "$374",
-                desc: "For large organisations",
-                features: ["Unlimited workers", "Multi-location", "Advanced analytics", "Dedicated support", "SSO & compliance"],
-                highlighted: false,
-              },
-            ].map((plan) => (
-              <StaggerItem key={plan.name}>
-                <ScaleOnScroll>
-                  <div
-                    className={`relative rounded-[2.5rem] p-10 flex flex-col ${plan.highlighted
-                      ? "glass shadow-2xl shadow-gold/10 border-gold/40 scale-105 z-10"
-                      : "card-premium opacity-80"
-                      }`}
-                  >
-                    {plan.highlighted && (
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 rounded-full bg-gold text-[#050505] text-[10px] font-black uppercase tracking-widest">
-                        Most popular
-                      </div>
-                    )}
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-bold text-2xl">{plan.name}</h3>
-                      <div className="bg-gold/10 text-gold text-xs font-bold px-2 py-1 rounded-md border border-gold/20">
-                        Save 25%
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1 mb-6">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-white/30 line-through decoration-white/30">{plan.price}</span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-5xl font-black text-gold">{plan.annualPrice}</span>
-                          <span className="text-white/30 font-medium">/mo</span>
-                        </div>
-                      </div>
-                      <span className="text-[11px] text-white/40 font-medium tracking-wide">Billed annually</span>
-                    </div>
-                    <p className="text-sm text-white/50 mb-10 font-medium min-h-[40px]">{plan.desc}</p>
-                    <div className="h-[2px] w-full bg-white/5 mb-10" />
-                    <ul className="space-y-4 mb-12 flex-grow">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-center gap-3 text-sm font-medium text-white/60">
-                          <div className="w-5 h-5 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
-                            <CheckCircle className="w-3 h-3 text-gold" />
-                          </div>
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link
-                      href="/register"
-                      className={`block text-center py-4 rounded-full text-base font-bold transition-all ${plan.highlighted
-                        ? "btn-gold"
-                        : "glass hover:bg-white/5 text-white/80"
-                        }`}
-                    >
-                      Start your trial
-                    </Link>
-                  </div>
-                </ScaleOnScroll>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+          <LandingPricing />
         </FadeUpOnScroll>
       </section>
 

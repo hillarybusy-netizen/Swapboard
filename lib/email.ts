@@ -9,6 +9,11 @@ import { GeneralShiftAvailableEmail } from './email-templates/GeneralShiftAvaila
 import { SwapPostedEmail } from './email-templates/SwapPostedEmail';
 import { ShiftCompletedEmail } from './email-templates/ShiftCompletedEmail';
 import { SwapOfferEmail } from './email-templates/SwapOfferEmail';
+import { ShiftCreatedAdminEmail } from './email-templates/ShiftCreatedAdminEmail';
+import { SwapPostedConfirmationEmail } from './email-templates/SwapPostedConfirmationEmail';
+import { SwapPostedAdminEmail } from './email-templates/SwapPostedAdminEmail';
+import { CoverOfferedConfirmationEmail } from './email-templates/CoverOfferedConfirmationEmail';
+import { SwapApprovedAdminEmail } from './email-templates/SwapApprovedAdminEmail';
 
 const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'noreply@swapboard.ca';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.swapboard.ca';
@@ -153,6 +158,36 @@ export async function sendShiftDoneReminderEmail(
       shiftDate: 'Today',
       shiftTime: 'Recently ended',
       notes: 'Please mark this shift as done in SwapBoard so your manager can approve your completion.',
+      dashboardUrl,
+    }),
+  );
+}
+
+export async function sendShiftCreatedAdminEmail(
+  to: string,
+  adminName: string,
+  workerName: string,
+  creatorName: string,
+  shiftTitle: string,
+  shiftDate: string,
+  shiftTime: string,
+  departmentName?: string,
+  notes?: string,
+) {
+  const dashboardUrl = `${APP_URL}/dashboard`;
+
+  return sendEmail(
+    to,
+    '📋 New Shift Created',
+    React.createElement(ShiftCreatedAdminEmail, {
+      adminName,
+      workerName,
+      creatorName,
+      shiftTitle,
+      shiftDate,
+      shiftTime,
+      departmentName,
+      notes,
       dashboardUrl,
     }),
   );
@@ -324,6 +359,112 @@ export async function sendTestEmail(to: string, userName: string) {
       departmentName: 'Test Department',
       notes: 'This is a test notification from SwapBoard. If you received this, email delivery is working correctly!',
       dashboardUrl: `${APP_URL}/my-shifts`,
+    }),
+  );
+}
+
+// ============================================================================
+// SWAP LIFECYCLE EMAILS
+// ============================================================================
+
+/**
+ * Confirm to Worker 1 that their shift has been posted for swap
+ */
+export async function sendSwapPostedConfirmationEmail(
+  to: string,
+  workerName: string,
+  shiftTitle: string,
+  shiftDate: string,
+) {
+  const dashboardUrl = `${APP_URL}/swap`;
+  return sendEmail(
+    to,
+    '🔄 Your Shift Has Been Posted for Swap',
+    React.createElement(SwapPostedConfirmationEmail, {
+      workerName,
+      shiftTitle,
+      shiftDate,
+      dashboardUrl,
+    }),
+  );
+}
+
+/**
+ * Notify an admin/manager that a shift has been posted for swap
+ */
+export async function sendSwapPostedAdminEmail(
+  to: string,
+  adminName: string,
+  workerName: string,
+  shiftTitle: string,
+  shiftDate: string,
+  reason?: string,
+) {
+  const dashboardUrl = `${APP_URL}/dashboard`;
+  return sendEmail(
+    to,
+    `🔄 Shift Posted for Swap — ${shiftTitle}`,
+    React.createElement(SwapPostedAdminEmail, {
+      adminName,
+      workerName,
+      shiftTitle,
+      shiftDate,
+      reason,
+      dashboardUrl,
+    }),
+  );
+}
+
+/**
+ * Confirm to Worker 2 that their cover offer has been submitted for approval
+ */
+export async function sendCoverOfferedConfirmationEmail(
+  to: string,
+  coverWorkerName: string,
+  originalWorkerName: string,
+  shiftTitle: string,
+  shiftDate: string,
+) {
+  const dashboardUrl = `${APP_URL}/swap`;
+  return sendEmail(
+    to,
+    `✅ Cover Offer Submitted — ${shiftTitle}`,
+    React.createElement(CoverOfferedConfirmationEmail, {
+      coverWorkerName,
+      originalWorkerName,
+      shiftTitle,
+      shiftDate,
+      dashboardUrl,
+    }),
+  );
+}
+
+/**
+ * Notify an admin/manager that a swap has been approved
+ */
+export async function sendSwapApprovedAdminEmail(
+  to: string,
+  adminName: string,
+  managerName: string,
+  originalWorkerName: string,
+  coverWorkerName: string,
+  shiftTitle: string,
+  shiftDate: string,
+  managerNotes?: string,
+) {
+  const dashboardUrl = `${APP_URL}/dashboard`;
+  return sendEmail(
+    to,
+    `✅ Swap Approved — ${shiftTitle}`,
+    React.createElement(SwapApprovedAdminEmail, {
+      adminName,
+      managerName,
+      originalWorkerName,
+      coverWorkerName,
+      shiftTitle,
+      shiftDate,
+      managerNotes,
+      dashboardUrl,
     }),
   );
 }
