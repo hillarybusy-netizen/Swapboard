@@ -60,7 +60,7 @@ async function shouldSendNotification(
     if (emailPref === false) return false; // explicitly disabled
     if (emailPref === true || emailPref == null) {
       // old flat format or missing → treat as enabled
-    } else if (typeof emailPref === 'object' && !emailPref.immediate) {
+    } else if (typeof emailPref === 'object' && emailPref.immediate === false) {
       return false; // new nested format with immediate: false
     }
   }
