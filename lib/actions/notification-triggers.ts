@@ -50,8 +50,20 @@ async function shouldSendNotification(
 
   const prefs = profile.notification_preferences || {};
 
-  // Check if channel is enabled globally
-  if (channel === 'email' && !prefs.email?.immediate) return false;
+  // Check if channel is enabled globally.
+  // Support both the old flat format { email: true } and the new nested format
+  // { email: { immediate: true } } — users created before migration 020 may
+  // still have the old format, which would make `prefs.email?.immediate`
+  // evaluate to `undefined` (falsy) and silently block all emails.
+  if (channel === 'email') {
+    const emailPref = prefs.email;
+    if (emailPref === false) return false; // explicitly disabled
+    if (emailPref === true || emailPref == null) {
+      // old flat format or missing → treat as enabled
+    } else if (typeof emailPref === 'object' && !emailPref.immediate) {
+      return false; // new nested format with immediate: false
+    }
+  }
   if (channel === 'in_app' && !prefs.in_app) return false;
 
   // Check if notification type is muted
@@ -388,7 +400,7 @@ export async function triggerSwapApproved(
   }
 
   // Notify requester
-  if (shouldSendNotification(requesterUserId, 'email', 'swap_approved')) {
+  if (await shouldSendNotification(requesterUserId, 'email', 'swap_approved')) {
     await createNotification({
       userId: requesterUserId,
       organizationId,
@@ -412,7 +424,7 @@ export async function triggerSwapApproved(
   }
 
   // Notify covering worker
-  if (shouldSendNotification(coverWorkerId, 'email', 'swap_approved')) {
+  if (await shouldSendNotification(coverWorkerId, 'email', 'swap_approved')) {
     await createNotification({
       userId: coverWorkerId,
       organizationId,
@@ -475,7 +487,7 @@ export async function triggerSwapRejected(
 
   const shiftTitle = shift?.title || 'Shift';
 
-  if (shouldSendNotification(requesterUserId, 'email', 'swap_rejected')) {
+  if (await shouldSendNotification(requesterUserId, 'email', 'swap_rejected')) {
     await createNotification({
       userId: requesterUserId,
       organizationId,
@@ -540,7 +552,7 @@ export async function triggerShiftAssigned(
   const dateStr = startDate.toLocaleDateString();
   const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
-  if (shouldSendNotification(workerId, 'email', 'shift_assigned')) {
+  if (await shouldSendNotification(workerId, 'email', 'shift_assigned')) {
     await createNotification({
       userId: workerId,
       organizationId,
@@ -574,7 +586,7 @@ export async function triggerShiftAssigned(
 
   const adminsAndManagers = await getAdminsAndManagers(organizationId);
   for (const am of adminsAndManagers) {
-    if (shouldSendNotification(am.id, 'email', 'shift_assigned')) {
+    if (await shouldSendNotification(am.id, 'email', 'shift_assigned')) {
       if (am.email) {
         await sendShiftCreatedAdminEmail(
           am.email,
@@ -619,7 +631,7 @@ export async function triggerShiftStartingSoon(
   const startDate = new Date(shift.start_time);
   const timeStr = startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  if (shouldSendNotification(workerId, 'email', 'shift_starting_soon')) {
+  if (await shouldSendNotification(workerId, 'email', 'shift_starting_soon')) {
     await createNotification({
       userId: workerId,
       organizationId,
@@ -652,7 +664,7 @@ export async function triggerShiftOverdue(
   if (!shift) return;
 
   // Notify worker
-  if (shouldSendNotification(assignedToId, 'in_app', 'shift_overdue')) {
+  if (await shouldSendNotification(assignedToId, 'in_app', 'shift_overdue')) {
     await createNotification({
       userId: assignedToId,
       organizationId,
@@ -665,7 +677,7 @@ export async function triggerShiftOverdue(
   }
 
   // Notify manager
-  if (shouldSendNotification(managerId, 'in_app', 'shift_overdue')) {
+  if (await shouldSendNotification(managerId, 'in_app', 'shift_overdue')) {
     await createNotification({
       userId: managerId,
       organizationId,
@@ -704,7 +716,7 @@ export async function triggerCompletionPending(
     .eq('id', shift?.assigned_to)
     .single();
 
-  if (shouldSendNotification(managerId, 'in_app', 'shift_completion_pending')) {
+  if (await shouldSendNotification(managerId, 'in_app', 'shift_completion_pending')) {
     await createNotification({
       userId: managerId,
       organizationId,
@@ -733,7 +745,7 @@ export async function triggerCompletionApproved(
     .eq('id', shiftId)
     .single();
 
-  if (shouldSendNotification(workerId, 'in_app', 'completion_approved')) {
+  if (await shouldSendNotification(workerId, 'in_app', 'completion_approved')) {
     await createNotification({
       userId: workerId,
       organizationId,
@@ -806,7 +818,7 @@ export async function triggerGeneralShiftPosted(
     });
 
     // Send email if notifications enabled
-    if (shouldSendNotification(worker.id, 'email', 'shift_assigned')) {
+    if (await shouldSendNotification(worker.id, 'email', 'shift_assigned')) {
       if (worker.email) {
         await sendGeneralShiftAvailableEmail(
           worker.email,
@@ -918,7 +930,7 @@ export async function triggerSwapPostedNotification(
     });
 
     // Send email if notifications enabled
-    if (shouldSendNotification(worker.id, 'email', 'swap_posted')) {
+    if (await shouldSendNotification(worker.id, 'email', 'swap_posted')) {
       if (worker.email) {
         await sendSwapPostedEmail(
           worker.email,
@@ -996,7 +1008,7 @@ export async function triggerShiftCompletedNotification(
     });
 
     // Send email if notifications enabled
-    if (shouldSendNotification(recipient.id, 'email', 'shift_completion_pending')) {
+    if (await shouldSendNotification(recipient.id, 'email', 'shift_completion_pending')) {
       if (recipient.email) {
         await sendShiftCompletedEmail(
           recipient.email,
@@ -1040,7 +1052,7 @@ export async function triggerShiftApprovedNotification(
   const dateStr = startDate.toLocaleDateString();
   const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
-  if (shouldSendNotification(workerId, 'email', 'shift_claim_approved')) {
+  if (await shouldSendNotification(workerId, 'email', 'shift_claim_approved')) {
     await createNotification({
       userId: workerId,
       organizationId,

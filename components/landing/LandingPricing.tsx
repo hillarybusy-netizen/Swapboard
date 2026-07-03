@@ -58,9 +58,9 @@ export function LandingPricing() {
             )}
           >
             Annually
-            <span
+             <span
               className={cn(
-                "px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider",
+                "px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider",
                 isAnnual ? "bg-[#050505]/20 text-[#050505]" : "bg-gold/20 text-gold"
               )}
             >
@@ -98,7 +98,7 @@ export function LandingPricing() {
                 <div className="flex justify-between items-start mb-2 h-8">
                   <h3 className="font-bold text-2xl">{plan.name}</h3>
                   {isAnnual && (
-                    <div className="bg-gold/10 text-gold text-xs font-bold px-2 py-1 rounded-md border border-gold/20">
+                    <div className="bg-gold/10 text-gold text-[9px] font-bold px-1.5 py-0.5 rounded border border-gold/20">
                       Save 25%
                     </div>
                   )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, InfoBox, WarningBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface ShiftCreatedAdminProps {
   adminName: string;
@@ -26,44 +26,47 @@ export function ShiftCreatedAdminEmail({
 }: ShiftCreatedAdminProps) {
   return (
     <EmailLayout
-      title="New Shift Assigned"
+      title="Shift Created — Admin Summary"
+      previewText={`${creatorName} assigned ${shiftTitle} to ${workerName}.`}
       actionUrl={dashboardUrl}
       actionText="View Dashboard"
     >
-      <p>Hi {adminName},</p>
-
-      <p>
-        A new shift has been created and assigned to <strong>{workerName}</strong> by <strong>{creatorName}</strong>. Here are the details:
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{adminName}</strong>,
       </p>
 
-      <div className="info-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Date & Time:</strong> {shiftDate} at {shiftTime}
-        </p>
-        {departmentName && (
-          <p style={{ margin: '10px 0 0 0' }}>
-            <strong>Department:</strong> {departmentName}
-          </p>
-        )}
-      </div>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        A new shift has been created and assigned to <strong>{workerName}</strong> by{' '}
+        <strong>{creatorName}</strong>.
+      </p>
+
+      <InfoBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Date" value={shiftDate} />
+          <DetailRow label="Time" value={shiftTime} />
+          {departmentName ? <DetailRow label="Department" value={departmentName} /> : <></>}
+          <DetailRow label="Assigned to" value={workerName} />
+          <DetailRow label="Created by" value={creatorName} />
+        </DetailTable>
+      </InfoBox>
 
       {notes && (
         <>
-          <p>
-            <strong>Notes:</strong>
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Shift notes
           </p>
-          <div className="warning-box">
+          <WarningBox>
             <p style={{ margin: 0 }}>{notes}</p>
-          </div>
+          </WarningBox>
         </>
       )}
 
-      <p>
-        <span className="meta">SwapBoard Notification System</span>
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        {workerName} has been notified. You can manage all shifts from your admin dashboard.
       </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

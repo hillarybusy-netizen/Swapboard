@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, SuccessBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface CoverOfferedConfirmationProps {
   coverWorkerName: string;
@@ -18,35 +18,36 @@ export function CoverOfferedConfirmationEmail({
 }: CoverOfferedConfirmationProps) {
   return (
     <EmailLayout
-      title="Cover Offer Submitted"
+      title="Cover Offer Submitted ✅"
+      previewText={`Your offer to cover ${shiftTitle} has been sent for manager approval.`}
+      accentColor="#22C55E"
       actionUrl={dashboardUrl}
-      actionText="View Your Shifts"
+      actionText="View My Shifts"
     >
-      <p>Hi {coverWorkerName},</p>
-
-      <p>You have successfully offered to cover the shift from <strong>{originalWorkerName}</strong>. Your request is now pending manager approval.</p>
-
-      <div className="info-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Date:</strong> {shiftDate}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Original Worker:</strong> {originalWorkerName}
-        </p>
-      </div>
-
-      <p>
-        Your manager will review this swap and notify you once a decision has been made. Please do not assume the shift is yours until you receive a confirmation email.
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{coverWorkerName}</strong>,
       </p>
 
-      <p>
-        Thanks for stepping up!
-        <br />
-        <span className="meta">SwapBoard Team</span>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        Your offer to cover the shift from <strong>{originalWorkerName}</strong> has been
+        submitted and is now pending manager approval.
       </p>
+
+      <SuccessBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Date" value={shiftDate} />
+          <DetailRow label="Original worker" value={originalWorkerName} />
+          <DetailRow label="Status" value="Pending manager approval" />
+        </DetailTable>
+      </SuccessBox>
+
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        <strong>Important:</strong> Do not assume this shift is yours until you receive a
+        confirmation email. You'll be notified as soon as your manager makes a decision.
+      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

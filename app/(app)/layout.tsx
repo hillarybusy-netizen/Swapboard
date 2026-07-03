@@ -17,7 +17,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/login");
 
   if (profile?.user_role === "worker") {
-    redirect("/my-shifts");
+    redirect("/home");
   }
 
   // org_admin can access shared pages (shifts, swaps, analytics, team)

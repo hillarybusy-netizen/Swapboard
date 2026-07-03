@@ -27,12 +27,26 @@ export default async function AvailableShiftsPage() {
     .eq("organization_id", orgId)
     .order("start_time", { ascending: true });
 
-  // Filter for worker's department OR General department (department_id IS NULL)
+  // Get General department ID if it exists
+  const { data: generalDept } = await supabase
+    .from("departments")
+    .select("id")
+    .eq("organization_id", orgId)
+    .ilike("name", "general")
+    .maybeSingle();
+
+  const generalDeptId = generalDept?.id;
+
+  // Filter for worker's department OR General department
   if (deptId) {
-    unassignedQuery = unassignedQuery.or(`department_id.eq.${deptId},department_id.is.null`);
+    let orQuery = `department_id.eq.${deptId},department_id.is.null`;
+    if (generalDeptId) orQuery += `,department_id.eq.${generalDeptId}`;
+    unassignedQuery = unassignedQuery.or(orQuery);
   } else {
     // If worker has no department, they can only see general shifts
-    unassignedQuery = unassignedQuery.is("department_id", null);
+    let orQuery = `department_id.is.null`;
+    if (generalDeptId) orQuery += `,department_id.eq.${generalDeptId}`;
+    unassignedQuery = unassignedQuery.or(orQuery);
   }
 
   // Fetch swaps available for this worker (up_for_swap status)
@@ -62,6 +76,7 @@ export default async function AvailableShiftsPage() {
   const availableSwaps = (swapsRaw ?? [])
     .filter((swap) => {
       if (!deptId || !swap.shift?.department_id) return true; // General shifts have no department
+      if (generalDeptId && swap.shift.department_id === generalDeptId) return true; // Explicit General department
       const isInUserDept = swap.shift.department_id === deptId;
       return isInUserDept;
     })

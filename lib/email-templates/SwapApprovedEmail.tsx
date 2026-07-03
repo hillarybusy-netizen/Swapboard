@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, SuccessBox, InfoBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface SwapApprovedProps {
   workerName: string;
@@ -21,42 +21,45 @@ export function SwapApprovedEmail({
   return (
     <EmailLayout
       title="Swap Approved ✅"
+      previewText={`Great news! Your shift swap for ${shiftTitle} has been approved.`}
+      accentColor="#22C55E"
       actionUrl={dashboardUrl}
-      actionText="View in SwapBoard"
+      actionText="View My Shifts"
     >
-      <p>Hi {workerName},</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{workerName}</strong>,
+      </p>
 
-      <p>Great news! Your manager <strong>{managerName}</strong> has approved the shift swap.</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        Great news — <strong>{managerName}</strong> has approved your shift swap. The shift has
+        been officially transferred.
+      </p>
 
-      <div className="success-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Swapping with:</strong> {requesterName}
-        </p>
-      </div>
+      <SuccessBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Swapping with" value={requesterName} />
+          <DetailRow label="Approved by" value={managerName} />
+        </DetailTable>
+      </SuccessBox>
 
       {managerNotes && (
         <>
-          <p>
-            <strong>Manager's Note:</strong>
+          <Divider />
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Manager's note
           </p>
-          <div className="info-box">
-            <p style={{ margin: 0, fontStyle: 'italic' }}>{managerNotes}</p>
-          </div>
+          <InfoBox>
+            <p style={{ margin: 0, fontStyle: 'italic', color: '#1E40AF' }}>{managerNotes}</p>
+          </InfoBox>
         </>
       )}
 
-      <p>
-        The shift has been transferred to your account. You can view all your shifts in the SwapBoard dashboard.
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        Your shift schedule has been updated. You can view all your upcoming shifts in your dashboard.
       </p>
-
-      <p>
-        Thank you for using SwapBoard!
-        <br />
-        <span className="meta">Questions? Contact your manager</span>
-      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

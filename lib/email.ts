@@ -15,7 +15,7 @@ import { SwapPostedAdminEmail } from './email-templates/SwapPostedAdminEmail';
 import { CoverOfferedConfirmationEmail } from './email-templates/CoverOfferedConfirmationEmail';
 import { SwapApprovedAdminEmail } from './email-templates/SwapApprovedAdminEmail';
 
-const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'noreply@swapboard.ca';
+const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'SwapBoard <no-reply@swapboard.ca>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.swapboard.ca';
 
 // Lazy-load Resend client

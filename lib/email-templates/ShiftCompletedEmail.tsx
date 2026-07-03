@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, WarningBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface ShiftCompletedProps {
   recipientName: string;
@@ -16,39 +16,40 @@ export function ShiftCompletedEmail({
   recipientRole,
   dashboardUrl,
 }: ShiftCompletedProps) {
-  const roleLabel = recipientRole === 'org_admin' ? 'Administrator' : 'Manager';
-
   return (
     <EmailLayout
-      title="Shift Completion Notification"
+      title="Shift Completion Needs Review"
+      previewText={`${workerName} marked ${shiftTitle} as complete — your review is needed.`}
+      accentColor="#F59E0B"
       actionUrl={dashboardUrl}
-      actionText={`Review Shift Completion`}
+      actionText="Review Completion"
     >
-      <p>Hi {recipientName},</p>
-
-      <p>{workerName} has marked the following shift as complete and is awaiting {recipientRole === 'org_admin' ? 'org_admin' : 'manager'} review:</p>
-
-      <div className="success-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Completed By:</strong> {workerName}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Status:</strong> Pending your approval
-        </p>
-      </div>
-
-      <p>
-        Please review the shift completion in your SwapBoard dashboard. You can approve, reject, or mark it as no-show based on your records.
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{recipientName}</strong>,
       </p>
 
-      <p>
-        Thank you for keeping SwapBoard up to date!
-        <br />
-        <span className="meta">SwapBoard Team</span>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        <strong>{workerName}</strong> has marked a shift as complete and is awaiting your review.
+        Please approve, reject, or flag it as a no-show.
       </p>
+
+      <WarningBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Completed by" value={workerName} />
+          <DetailRow label="Status" value="Pending your approval" />
+          <DetailRow
+            label="Your role"
+            value={recipientRole === 'org_admin' ? 'Administrator' : 'Manager'}
+          />
+        </DetailTable>
+      </WarningBox>
+
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        Please review this completion promptly so the worker's record stays up to date.
+      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

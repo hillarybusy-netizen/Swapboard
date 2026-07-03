@@ -162,7 +162,7 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
                   <SelectItem value="general" className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
                     <span className="uppercase tracking-widest">General</span>
                   </SelectItem>
-                  {departments.map((d) => (
+                  {departments.filter(d => d.name.toLowerCase() !== 'general').map((d) => (
                     <SelectItem key={d.id} value={d.id} className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
                       <div className="flex items-center gap-2 uppercase tracking-widest scale-90 origin-left">
                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: d.color }} />

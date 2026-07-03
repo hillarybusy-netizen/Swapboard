@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, InfoBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface SwapPostedProps {
   departmentWorkerName: string;
@@ -20,46 +20,44 @@ export function SwapPostedEmail({
 }: SwapPostedProps) {
   return (
     <EmailLayout
-      title="Shift Available for Swap"
+      title="Shift Available for Swap 🔄"
+      previewText={`${originalWorkerName} posted a shift you might be able to cover.`}
       actionUrl={dashboardUrl}
-      actionText="View Available Swaps"
+      actionText="Offer to Cover"
     >
-      <p>Hi {departmentWorkerName},</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{departmentWorkerName}</strong>,
+      </p>
 
-      <p>{originalWorkerName} has posted their shift for swap in your department. If you're interested in covering this shift, you can offer to take it!</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        A colleague in your department has posted a shift for swap. If you're available, you can
+        offer to cover it directly from your SwapBoard dashboard.
+      </p>
 
-      <div className="info-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Date:</strong> {shiftDate}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Original Worker:</strong> {originalWorkerName}
-        </p>
-      </div>
+      <InfoBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Date" value={shiftDate} />
+          <DetailRow label="Posted by" value={originalWorkerName} />
+        </DetailTable>
+      </InfoBox>
 
       {reason && (
         <>
-          <p>
-            <strong>Reason for Swap:</strong>
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Reason for swap
           </p>
-          <div className="warning-box">
-            <p style={{ margin: 0 }}>{reason}</p>
-          </div>
+          <p style={{ margin: '0 0 20px', fontSize: 14, color: '#374151', fontStyle: 'italic' }}>
+            "{reason}"
+          </p>
         </>
       )}
 
-      <p>
-        If you'd like to cover this shift, log in to SwapBoard and click "Offer to Cover". Your manager will review your offer and let you know if it's approved.
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        Tap the button above to view the shift details and offer to cover. First come, first served.
       </p>
-
-      <p>
-        Hope this helps out your team!
-        <br />
-        <span className="meta">SwapBoard Team</span>
-      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

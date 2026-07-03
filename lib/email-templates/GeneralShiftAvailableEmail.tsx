@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, InfoBox, WarningBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface GeneralShiftAvailableProps {
   workerName: string;
@@ -22,48 +22,45 @@ export function GeneralShiftAvailableEmail({
 }: GeneralShiftAvailableProps) {
   return (
     <EmailLayout
-      title="General Shift Available"
+      title="General Shift Available 📢"
+      previewText={`A new unassigned shift is available: ${shiftTitle} on ${shiftDate}.`}
       actionUrl={dashboardUrl}
-      actionText="View Available Shifts"
+      actionText="Claim This Shift"
     >
-      <p>Hi {workerName},</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{workerName}</strong>,
+      </p>
 
-      <p>A new shift has been posted and is available for claiming in SwapBoard!</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        A new unassigned shift is available for claiming. If you're free and interested, grab
+        it before someone else does — it's first come, first served.
+      </p>
 
-      <div className="info-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Date & Time:</strong> {shiftDate} at {shiftTime}
-        </p>
-        {departmentName && (
-          <p style={{ margin: '10px 0 0 0' }}>
-            <strong>Department:</strong> {departmentName}
-          </p>
-        )}
-      </div>
+      <InfoBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Date" value={shiftDate} />
+          <DetailRow label="Time" value={shiftTime} />
+          {departmentName ? <DetailRow label="Department" value={departmentName} /> : <></>}
+        </DetailTable>
+      </InfoBox>
 
       {notes && (
         <>
-          <p>
-            <strong>Shift Details:</strong>
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Shift notes
           </p>
-          <div className="warning-box">
+          <WarningBox>
             <p style={{ margin: 0 }}>{notes}</p>
-          </div>
+          </WarningBox>
         </>
       )}
 
-      <p>
-        If you're interested in this shift, head to your SwapBoard dashboard to claim it. First come, first served!
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        Tap the button above to view the full details and claim the shift in SwapBoard.
       </p>
-
-      <p>
-        Good luck!
-        <br />
-        <span className="meta">SwapBoard Team</span>
-      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

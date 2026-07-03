@@ -101,13 +101,60 @@ export default async function HomePage() {
 
   const pendingSwaps = (mySwapData ?? []) as any[];
 
-  // Count available swaps in org (for quick stat)
-  const { count: availCount } = await supabase
+  // Fetch unassigned shifts in user's department + General department
+  const deptId = profile?.department_id;
+  const orgId = profile?.organization_id;
+
+  let unassignedQuery = supabase
+    .from("shifts")
+    .select("id, department_id")
+    .is("assigned_to", null)
+    .eq("status", "not_started")
+    .is("deleted_at", null)
+    .eq("organization_id", orgId);
+
+  // Get General department ID if it exists
+  const { data: generalDept } = await supabase
+    .from("departments")
+    .select("id")
+    .eq("organization_id", orgId)
+    .ilike("name", "general")
+    .maybeSingle();
+
+  const generalDeptId = generalDept?.id;
+
+  if (deptId) {
+    let orQuery = `department_id.eq.${deptId},department_id.is.null`;
+    if (generalDeptId) orQuery += `,department_id.eq.${generalDeptId}`;
+    unassignedQuery = unassignedQuery.or(orQuery);
+  } else {
+    let orQuery = `department_id.is.null`;
+    if (generalDeptId) orQuery += `,department_id.eq.${generalDeptId}`;
+    unassignedQuery = unassignedQuery.or(orQuery);
+  }
+
+  // Fetch swaps available for this worker (status: pending, covering_worker_id: null, not requester)
+  let swapQuery = supabase
     .from("swap_requests")
-    .select("id", { count: "exact", head: true })
-    .eq("organization_id", profile?.organization_id ?? "")
+    .select("id, shift:shifts(department_id)")
     .eq("status", "pending")
+    .is("covering_worker_id", null)
     .neq("requester_id", user.id);
+
+  const [{ data: unassignedRaw }, { data: swapsRaw }] = await Promise.all([
+    unassignedQuery,
+    swapQuery,
+  ]);
+
+  const unassignedCount = unassignedRaw?.length ?? 0;
+  const availableSwapsCount = ((swapsRaw ?? []) as any[])
+    .filter((swap: any) => {
+      if (!deptId || !swap.shift?.department_id) return true;
+      if (generalDeptId && swap.shift.department_id === generalDeptId) return true;
+      return swap.shift.department_id === deptId;
+    }).length;
+
+  const totalAvailableShifts = unassignedCount + availableSwapsCount;
 
   const hour = new Date().getHours();
   const greeting =
@@ -191,11 +238,16 @@ export default async function HomePage() {
           href="/available-shifts"
           className="
             glass rounded-2xl p-5 flex flex-col items-center justify-center gap-3
-            border border-white/10 text-center group
+            border border-white/10 text-center group relative
             hover:bg-white/5 hover:border-gold/30 hover:scale-[1.02] active:scale-[0.98]
             transition-all duration-200
           "
         >
+          {totalAvailableShifts > 0 && (
+            <span className="absolute top-3 right-3 flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[10px] font-black shadow-lg shadow-gold/20">
+              {totalAvailableShifts}
+            </span>
+          )}
           <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Zap className="w-5 h-5 text-gold" strokeWidth={2} />
           </div>

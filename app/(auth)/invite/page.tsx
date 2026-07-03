@@ -73,22 +73,22 @@ function InviteForm() {
     }
   }
 
-  if (fetching) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" /></div>;
+  if (fetching) return <div className="flex justify-center items-center py-12"><Loader2 className="w-6 h-6 animate-spin text-gold" /></div>;
   if (!invite) return (
-    <Card className="glass border-white/5">
-      <CardContent className="py-16 text-center">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
-          <Loader2 className="w-8 h-8 text-red-500/40" />
+    <Card className="glass border-white/5 flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+      <CardContent className="p-6 md:p-8 text-center">
+        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4 md:mb-6 shrink-0">
+          <Loader2 className="w-6 h-6 md:w-8 md:h-8 text-red-500/40" />
         </div>
-        <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">
+        <h2 className="text-lg md:text-xl font-black text-white mb-1.5 md:mb-2 uppercase tracking-tight">
           {loadError === "missing_token" ? "Invalid Link" : "Expired or Invalid"}
         </h2>
-        <p className="text-sm text-white/40 font-medium max-w-xs mx-auto">
+        <p className="text-xs md:text-sm text-white/40 font-medium max-w-xs mx-auto">
           {loadError === "missing_token"
             ? "This invitation link is missing a token. Please use the full link from your email or manager."
             : "This invitation link has expired or has already been used. Please ask your manager for a new link."}
         </p>
-        <Button className="mt-8 btn-gold rounded-full px-8" asChild>
+        <Button className="mt-6 md:mt-8 h-10 md:h-11 btn-gold rounded-full px-6 md:px-8 text-xs md:text-sm" asChild>
           <Link href="/login">Back to Login</Link>
         </Button>
       </CardContent>
@@ -97,37 +97,37 @@ function InviteForm() {
 
   if (successId !== null) {
     return (
-      <Card className="glass border-white/5 relative overflow-hidden">
+      <Card className="glass border-white/5 relative overflow-hidden flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
-        <CardHeader className="text-center">
-          <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-8 h-8 text-gold" />
+        <CardHeader className="p-5 md:p-6 text-center">
+          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-3 md:mb-4 shrink-0">
+            <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-gold" />
           </div>
-          <CardTitle className="text-2xl font-black uppercase tracking-tight text-white italic">Welcome to the Team!</CardTitle>
-          <CardDescription className="text-white/40 text-xs font-medium">
+          <CardTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-white italic">Welcome to the Team!</CardTitle>
+          <CardDescription className="text-white/40 text-[11px] md:text-xs font-medium">
             Your account has been created successfully.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6 text-center pb-8">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Your Member ID</p>
-            <p className="text-3xl font-black text-gold tracking-widest">{successId || "Generating..."}</p>
-            <p className="text-[11px] text-white/40 font-medium">
+        <CardContent className="p-5 md:p-6 pt-0 md:pt-0 pb-5 md:pb-6 space-y-4 md:space-y-6 text-center">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 space-y-1.5 md:space-y-2">
+            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30">Your Member ID</p>
+            <p className="text-2xl md:text-3xl font-black text-gold tracking-widest">{successId || "Generating..."}</p>
+            <p className="text-[10px] md:text-[11px] text-white/40 font-medium">
               Please save this ID. You can use it along with your password to log in in the future.
             </p>
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="p-5 md:p-6 pt-0 md:pt-0">
           <Button 
             onClick={() => {
               if (invite.user_role === "worker") {
-                router.push("/my-shifts");
+                router.push("/home");
               } else {
                 router.push("/dashboard");
               }
               router.refresh();
             }} 
-            className="w-full btn-gold rounded-full h-12 uppercase font-black text-xs tracking-widest"
+            className="w-full btn-gold rounded-full h-10 md:h-12 uppercase font-black text-xs tracking-widest"
           >
             Go to My Dashboard
           </Button>
@@ -137,53 +137,53 @@ function InviteForm() {
   }
 
   return (
-    <Card className="glass border-white/5 relative overflow-hidden">
+    <Card className="glass border-white/5 relative overflow-hidden flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
       <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase tracking-tight text-white italic">Join the Team</CardTitle>
-        <CardDescription className="text-white/40 text-xs font-medium">
+      <CardHeader className="p-5 md:p-6">
+        <CardTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-white italic">Join the Team</CardTitle>
+        <CardDescription className="text-white/40 text-[11px] md:text-xs font-medium">
           You&apos;ve been invited to join <strong>{(invite.organization as any)?.name}</strong> as a {invite.user_role}.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleAccept}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Email Address</Label>
+        <CardContent className="p-5 md:p-6 pt-0 md:pt-0 space-y-3 md:space-y-4">
+          <div className="space-y-1.5">
+            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30">Email Address</Label>
             <Input 
               type="email"
               value={email} 
               onChange={(e) => setEmail(e.target.value)}
               disabled={!!invite.email} 
               placeholder="you@example.com"
-              className="bg-white/5 border-white/10 rounded-xl h-11"
+              className="bg-white/5 border-white/10 rounded-xl h-10 md:h-11 text-sm"
               required
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Your Full Name</Label>
+          <div className="space-y-1.5">
+            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30">Your Full Name</Label>
             <Input 
               placeholder="Jane Smith" 
               value={fullName} 
               onChange={(e) => setFullName(e.target.value)} 
-              className="bg-white/5 border-white/10 rounded-xl h-11"
+              className="bg-white/5 border-white/10 rounded-xl h-10 md:h-11 text-sm"
               required 
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Create Password</Label>
+          <div className="space-y-1.5">
+            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30">Create Password</Label>
             <Input 
               type="password" 
               placeholder="Min. 8 characters" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
-              className="bg-white/5 border-white/10 rounded-xl h-11"
+              className="bg-white/5 border-white/10 rounded-xl h-10 md:h-11 text-sm"
               required 
               minLength={8} 
             />
           </div>
         </CardContent>
-        <CardFooter className="pt-4">
-          <Button type="submit" className="w-full btn-gold rounded-full h-12 uppercase font-black text-xs tracking-widest" disabled={loading}>
+        <CardFooter className="p-5 md:p-6 pt-2 md:pt-4">
+          <Button type="submit" className="w-full btn-gold rounded-full h-10 md:h-12 uppercase font-black text-xs tracking-widest" disabled={loading}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Complete Onboarding
           </Button>

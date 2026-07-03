@@ -60,6 +60,7 @@ export interface Profile {
   emergency_contact_phone: string | null;
   notification_preferences: Json;
   department_ids: string[];
+  timezone: string;
   created_at: string;
   updated_at: string;
 }

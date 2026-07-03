@@ -180,14 +180,22 @@ export async function claimUnassignedShift(shiftId: string) {
   if (shift.assigned_to) throw new Error("This shift has already been claimed by another team member.");
   if (shift.status !== "not_started") throw new Error("This shift is no longer available to claim.");
 
-  // Allow claiming if the shift is in the worker's own department OR the General department (department_id IS NULL)
+  // Fetch department to check if it's "general"
+  let isGeneralDept = shift.department_id === null;
+  if (shift.department_id) {
+    const { data: dept } = await supabase.from("departments").select("name").eq("id", shift.department_id).single();
+    if (dept?.name?.toLowerCase() === "general") {
+      isGeneralDept = true;
+    }
+  }
+
+  // Allow claiming if the shift is in the worker's own department OR the General department
   const workerDeptId = profile.department_id;
   if (workerDeptId && workerDeptId !== shift.department_id) {
-    const isGeneralDept = shift.department_id === null;
     if (!isGeneralDept) {
       throw new Error("You can only claim shifts within your assigned department.");
     }
-  } else if (!workerDeptId && shift.department_id !== null) {
+  } else if (!workerDeptId && !isGeneralDept) {
     throw new Error("You can only claim general shifts since you are not assigned to a department.");
   }
 
@@ -233,7 +241,7 @@ export async function managerApproveClaim(shiftId: string, approve: boolean) {
   if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
   if (shift.status !== "pending_approval_claim") throw new Error("This shift is not awaiting a claim approval.");
 
-  if (profile.user_role === "manager" && !profile.department_ids?.includes(shift.department_id)) {
+  if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, shift.department_id)) {
     throw new Error("Unauthorized to approve this department's claims");
   }
 

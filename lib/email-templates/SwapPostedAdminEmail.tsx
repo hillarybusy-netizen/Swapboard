@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, InfoBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface SwapPostedAdminProps {
   adminName: string;
@@ -20,46 +20,44 @@ export function SwapPostedAdminEmail({
 }: SwapPostedAdminProps) {
   return (
     <EmailLayout
-      title="Shift Posted for Swap"
+      title="Shift Posted for Swap — FYI"
+      previewText={`${workerName} posted ${shiftTitle} for swap.`}
       actionUrl={dashboardUrl}
-      actionText="View Admin Dashboard"
+      actionText="View in Dashboard"
     >
-      <p>Hi {adminName},</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{adminName}</strong>,
+      </p>
 
-      <p>{workerName} has posted their shift up for swap. Other workers in the department have been notified and can offer to cover it.</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        A worker in your organisation has posted a shift for swap. Department colleagues have
+        been notified. No action is required from you unless a cover offer needs approval.
+      </p>
 
-      <div className="info-box">
-        <p style={{ margin: 0 }}>
-          <strong>Worker:</strong> {workerName}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Date:</strong> {shiftDate}
-        </p>
-      </div>
+      <InfoBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Date" value={shiftDate} />
+          <DetailRow label="Posted by" value={workerName} />
+        </DetailTable>
+      </InfoBox>
 
       {reason && (
         <>
-          <p>
-            <strong>Reason for Swap:</strong>
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Reason for swap
           </p>
-          <div className="warning-box">
-            <p style={{ margin: 0 }}>{reason}</p>
-          </div>
+          <p style={{ margin: '0 0 20px', fontSize: 14, color: '#374151', fontStyle: 'italic' }}>
+            "{reason}"
+          </p>
         </>
       )}
 
-      <p>
-        No action is required from you at this time. Once another worker offers to cover the shift, the manager will be prompted to approve the swap.
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        You'll receive another notification when a worker offers to cover this shift and approval is needed.
       </p>
-
-      <p>
-        Thanks,
-        <br />
-        <span className="meta">SwapBoard Team</span>
-      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

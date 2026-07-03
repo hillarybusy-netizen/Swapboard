@@ -56,44 +56,44 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-8 border-white/5 shadow-2xl text-center animate-in fade-in zoom-in duration-500">
-        <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(212,175,55,0.1)]">
-          <CheckCircle2 className="w-8 h-8 text-gold" />
+      <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl text-center animate-in fade-in zoom-in duration-500 flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-[0_0_30px_rgba(212,175,55,0.1)] shrink-0">
+          <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-gold" />
         </div>
-        <h2 className="text-xl font-black tracking-tight text-white mb-2">Password updated!</h2>
-        <p className="text-white/50 text-sm font-medium">Redirecting you to sign in…</p>
+        <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-2">Password updated!</h2>
+        <p className="text-white/50 text-xs md:text-sm font-medium">Redirecting you to sign in…</p>
       </div>
     );
   }
 
   if (!ready) {
     return (
-      <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-8 border-white/5 shadow-2xl text-center">
-        <Loader2 className="w-8 h-8 animate-spin text-gold mx-auto mb-4" />
-        <p className="text-white/50 text-sm font-medium">Verifying reset link…</p>
+      <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl text-center flex flex-col justify-center items-center max-h-full overflow-y-auto no-scrollbar">
+        <Loader2 className="w-6 h-6 md:w-8 md:h-8 animate-spin text-gold mx-auto mb-3 md:mb-4 shrink-0" />
+        <p className="text-white/50 text-xs md:text-sm font-medium">Verifying reset link…</p>
       </div>
     );
   }
 
   return (
-    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border-white/5 shadow-2xl">
-      <div className="text-center mb-6">
-        <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4">
-          <KeyRound className="w-5 h-5 text-gold" />
+    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+      <div className="text-center mb-4 md:mb-5">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-3 md:mb-4 shrink-0">
+          <KeyRound className="w-4 h-4 md:w-5 md:h-5 text-gold" />
         </div>
-        <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-1">Set new password</h1>
-        <p className="text-white/50 text-[13px] md:text-sm font-medium">Choose a strong password for your account.</p>
+        <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-0.5">Set new password</h1>
+        <p className="text-white/50 text-[12px] md:text-sm font-medium">Choose a strong password for your account.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-sm font-semibold text-white/70 ml-1">New password</Label>
+      <form onSubmit={handleSubmit} className="space-y-3.5 md:space-y-4">
+        <div className="space-y-1 md:space-y-1.5">
+          <Label htmlFor="password" className="text-xs md:text-sm font-semibold text-white/70 ml-1">New password</Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 pr-12"
+              className="h-10 md:h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 pr-12"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -110,13 +110,13 @@ export default function ResetPasswordPage() {
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="confirm" className="text-sm font-semibold text-white/70 ml-1">Confirm password</Label>
+        <div className="space-y-1 md:space-y-1.5">
+          <Label htmlFor="confirm" className="text-xs md:text-sm font-semibold text-white/70 ml-1">Confirm password</Label>
           <Input
             id="confirm"
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
+            className="h-10 md:h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             required
@@ -124,10 +124,10 @@ export default function ResetPasswordPage() {
           />
         </div>
 
-        <div className="pt-2">
+        <div className="pt-1 md:pt-2">
           <Button
             type="submit"
-            className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20"
+            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg shadow-gold/20"
             disabled={loading}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}

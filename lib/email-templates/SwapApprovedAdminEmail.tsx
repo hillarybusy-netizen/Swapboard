@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, SuccessBox, InfoBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface SwapApprovedAdminProps {
   adminName: string;
@@ -24,52 +24,47 @@ export function SwapApprovedAdminEmail({
 }: SwapApprovedAdminProps) {
   return (
     <EmailLayout
-      title="Shift Swap Approved"
+      title="Swap Approved — Summary ✅"
+      previewText={`${managerName} approved a swap for ${shiftTitle}.`}
+      accentColor="#22C55E"
       actionUrl={dashboardUrl}
       actionText="View Admin Dashboard"
     >
-      <p>Hi {adminName},</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{adminName}</strong>,
+      </p>
 
-      <p><strong>{managerName}</strong> has approved a shift swap. The shift has been reassigned accordingly.</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        <strong>{managerName}</strong> has approved a shift swap. The schedule has been updated
+        automatically — no further action is required.
+      </p>
 
-      <div className="info-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Date:</strong> {shiftDate}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Originally Assigned To:</strong> {originalWorkerName}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Now Assigned To:</strong> {coverWorkerName}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Approved By:</strong> {managerName}
-        </p>
-      </div>
+      <SuccessBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Date" value={shiftDate} />
+          <DetailRow label="Originally assigned to" value={originalWorkerName} />
+          <DetailRow label="Now assigned to" value={coverWorkerName} />
+          <DetailRow label="Approved by" value={managerName} />
+        </DetailTable>
+      </SuccessBox>
 
       {managerNotes && (
         <>
-          <p>
-            <strong>Manager Notes:</strong>
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Manager's note
           </p>
-          <div className="warning-box">
-            <p style={{ margin: 0 }}>{managerNotes}</p>
-          </div>
+          <InfoBox>
+            <p style={{ margin: 0, fontStyle: 'italic' }}>{managerNotes}</p>
+          </InfoBox>
         </>
       )}
 
-      <p>
-        Both workers have been notified of this decision. No further action is required.
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        Both workers have been notified. You can view all swap activity in your admin dashboard.
       </p>
-
-      <p>
-        Thanks,
-        <br />
-        <span className="meta">SwapBoard Team</span>
-      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

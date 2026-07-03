@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, InfoBox, WarningBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface ShiftAssignedProps {
   workerName: string;
@@ -22,48 +22,45 @@ export function ShiftAssignedEmail({
 }: ShiftAssignedProps) {
   return (
     <EmailLayout
-      title="New Shift Assigned"
+      title="New Shift Assigned 📋"
+      previewText={`You have a new shift: ${shiftTitle} on ${shiftDate}.`}
       actionUrl={dashboardUrl}
       actionText="View Shift Details"
     >
-      <p>Hi {workerName},</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{workerName}</strong>,
+      </p>
 
-      <p>You have been assigned a new shift in SwapBoard. Here are the details:</p>
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        You've been assigned a new shift. Here are the details — please add it to your calendar
+        and mark your attendance when the shift begins.
+      </p>
 
-      <div className="info-box">
-        <p style={{ margin: 0 }}>
-          <strong>Shift:</strong> {shiftTitle}
-        </p>
-        <p style={{ margin: '10px 0 0 0' }}>
-          <strong>Date & Time:</strong> {shiftDate} at {shiftTime}
-        </p>
-        {departmentName && (
-          <p style={{ margin: '10px 0 0 0' }}>
-            <strong>Department:</strong> {departmentName}
-          </p>
-        )}
-      </div>
+      <InfoBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Date" value={shiftDate} />
+          <DetailRow label="Time" value={shiftTime} />
+          {departmentName ? <DetailRow label="Department" value={departmentName} /> : <></>}
+        </DetailTable>
+      </InfoBox>
 
       {notes && (
         <>
-          <p>
-            <strong>Special Instructions:</strong>
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Special instructions
           </p>
-          <div className="warning-box">
+          <WarningBox>
             <p style={{ margin: 0 }}>{notes}</p>
-          </div>
+          </WarningBox>
         </>
       )}
 
-      <p>
-        Please make sure to mark your attendance when the shift begins. If you need to swap this shift or have any questions, visit your SwapBoard dashboard.
+      <Divider />
+      <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
+        Need to swap this shift? You can post it for swap directly from your SwapBoard dashboard.
       </p>
-
-      <p>
-        See you soon!
-        <br />
-        <span className="meta">SwapBoard Team</span>
-      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

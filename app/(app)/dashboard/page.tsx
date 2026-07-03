@@ -35,7 +35,7 @@ export default async function DashboardPage() {
   if (!user) redirect("/login");
 
   if (profile?.user_role === "worker") {
-    redirect("/my-shifts");
+    redirect("/home");
   }
 
   if (profile?.user_role === "org_admin") {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmailLayout } from './EmailLayout';
+import { EmailLayout, DangerBox, InfoBox, WarningBox, DetailTable, DetailRow, Divider } from './EmailLayout';
 
 interface SwapRejectedProps {
   workerName: string;
@@ -21,45 +21,58 @@ export function SwapRejectedEmail({
   return (
     <EmailLayout
       title="Swap Request Declined"
+      previewText={`Your swap request for ${shiftTitle} was not approved.`}
+      accentColor="#EF4444"
       actionUrl={dashboardUrl}
-      actionText="View in SwapBoard"
+      actionText="View My Shifts"
     >
-      <p>Hi {workerName},</p>
-
-      <p>
-        Your manager <strong>{managerName}</strong> has declined your swap request for the shift <strong>{shiftTitle}</strong>.
+      <p style={{ margin: '0 0 20px', fontSize: 15 }}>
+        Hi <strong>{workerName}</strong>,
       </p>
+
+      <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
+        Unfortunately, <strong>{managerName}</strong> has declined your swap request for the
+        shift below.
+      </p>
+
+      <DangerBox>
+        <DetailTable>
+          <DetailRow label="Shift" value={shiftTitle} />
+          <DetailRow label="Declined by" value={managerName} />
+        </DetailTable>
+      </DangerBox>
 
       {managerNotes && (
         <>
-          <p>
-            <strong>Manager's Note:</strong>
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            Manager's note
           </p>
-          <div className="info-box">
+          <InfoBox>
             <p style={{ margin: 0, fontStyle: 'italic' }}>{managerNotes}</p>
-          </div>
+          </InfoBox>
         </>
       )}
 
+      <Divider />
+
       {canReswap ? (
-        <div className="warning-box">
-          <p style={{ margin: 0 }}>
-            You can try posting this shift for swap again. Log in to SwapBoard to repost it.
+        <WarningBox>
+          <p style={{ margin: 0, fontWeight: 600 }}>You can try again</p>
+          <p style={{ margin: '6px 0 0', fontSize: 13 }}>
+            This shift can be reposted for swap. Log in to SwapBoard to try again.
           </p>
-        </div>
+        </WarningBox>
       ) : (
-        <div className="warning-box">
-          <p style={{ margin: 0 }}>
-            This shift has been locked and cannot be posted for swap again. Please contact your manager for more information.
+        <DangerBox>
+          <p style={{ margin: 0, fontWeight: 600 }}>Shift locked for swapping</p>
+          <p style={{ margin: '6px 0 0', fontSize: 13 }}>
+            This shift cannot be posted for swap again. Please speak to your manager directly
+            if you need further assistance.
           </p>
-        </div>
+        </DangerBox>
       )}
 
-      <p>
-        If you have any questions about this decision, please reach out to your manager directly.
-        <br />
-        <span className="meta">Need help? Log in to SwapBoard</span>
-      </p>
+      <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>
   );
 }

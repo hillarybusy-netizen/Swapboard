@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireUser } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "@/lib/actions/audit";
-import { triggerShiftAssigned } from "@/lib/actions/notification-triggers";
+import { triggerShiftAssigned, triggerGeneralShiftPosted } from "@/lib/actions/notification-triggers";
 import { formatError } from "@/lib/errors";
 
 interface CreateShiftInput {
@@ -39,7 +39,7 @@ export async function createShift(input: CreateShiftInput) {
       status,
       created_by: user.id,
     })
-    .select()
+    .select("*, department:departments(name)")
     .single();
 
   if (error) {
@@ -64,6 +64,9 @@ export async function createShift(input: CreateShiftInput) {
     const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
     await triggerShiftAssigned(shift.id, input.assigned_to, input.organization_id);
+  } else if (!input.department_id || (shift.department as any)?.name?.toLowerCase() === 'general') {
+    // If it's unassigned and it's a general shift (department_id is null OR name is general), notify everyone
+    await triggerGeneralShiftPosted(shift.id, input.organization_id);
   }
 
   revalidatePath("/shifts");

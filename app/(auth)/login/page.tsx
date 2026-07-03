@@ -56,7 +56,7 @@ export default function LoginPage() {
       }
 
       if (res.userRole === "worker") {
-        router.push("/my-shifts");
+        router.push("/home");
       } else if (res.userRole === "org_admin") {
         router.push("/admin");
       } else if (res.userRole === "super_admin") {
@@ -73,20 +73,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border-white/5 shadow-2xl">
-      <div className="text-center mb-6">
-        <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
-        <p className="text-white/50 text-[13px] md:text-sm font-medium">Sign in to your SwapBoard account</p>
+    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+      <div className="text-center mb-4 md:mb-5">
+        <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-0.5">Welcome back</h1>
+        <p className="text-white/50 text-[12px] md:text-sm font-medium">Sign in to your SwapBoard account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3.5 md:space-y-4">
         {/* Toggle Mode */}
-        <div className="flex bg-white/5 p-1 rounded-full border border-white/5 mb-6">
+        <div className="flex bg-white/5 p-1 rounded-full border border-white/5 mb-4 md:mb-5">
           <button
             type="button"
             onClick={() => setLoginMode("email")}
             className={cn(
-              "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
+              "flex-1 py-1.5 md:py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
               loginMode === "email" ? "bg-gold text-[#050505] shadow-lg shadow-gold/20" : "text-white/40 hover:text-white"
             )}
           >
@@ -96,7 +96,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => setLoginMode("member")}
             className={cn(
-              "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
+              "flex-1 py-1.5 md:py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
               loginMode === "member" ? "bg-gold text-[#050505] shadow-lg shadow-gold/20" : "text-white/40 hover:text-white"
             )}
           >
@@ -104,36 +104,36 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2.5 md:space-y-3">
           {loginMode === "email" ? (
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-sm font-semibold text-white/70 ml-1">Email</Label>
+            <div className="space-y-1 md:space-y-1.5">
+              <Label htmlFor="email" className="text-xs md:text-sm font-semibold text-white/70 ml-1">Email</Label>
               <Input
                 id="email" type="email" placeholder="you@company.com"
-                className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
+                className="h-10 md:h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4"
                 value={email} onChange={(e) => setEmail(e.target.value)} required={loginMode === "email"} autoComplete="email"
               />
             </div>
           ) : (
-            <div className="space-y-1.5">
-              <Label htmlFor="memberId" className="text-sm font-semibold text-white/70 ml-1">Member ID</Label>
+            <div className="space-y-1 md:space-y-1.5">
+              <Label htmlFor="memberId" className="text-xs md:text-sm font-semibold text-white/70 ml-1">Member ID</Label>
               <Input
                 id="memberId" type="text" placeholder="CO001"
-                className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 uppercase"
+                className="h-10 md:h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 uppercase"
                 value={memberId} onChange={(e) => setMemberId(e.target.value)} required={loginMode === "member"}
                 autoCapitalize="characters"
               />
             </div>
           )}
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-1.5">
             <div className="flex items-center justify-between ml-1">
-              <Label htmlFor="password" title="" className="text-sm font-semibold text-white/70">Password</Label>
+              <Label htmlFor="password" title="" className="text-xs md:text-sm font-semibold text-white/70">Password</Label>
               <Link href="/forgot-password" className="text-xs text-gold/60 hover:text-gold transition-colors font-medium">Forgot password?</Link>
             </div>
             <div className="relative">
               <Input
                 id="password" type={showPassword ? "text" : "password"} placeholder="••••••••"
-                className="h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 pr-12"
+                className="h-10 md:h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-gold/50 focus:border-gold/50 transition-all px-4 pr-12"
                 value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" maxLength={72}
               />
               <button
@@ -162,10 +162,10 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="space-y-4 pt-2">
+        <div className="space-y-3 md:space-y-4 pt-1 md:pt-2">
           <Button
             type="submit"
-            className="w-full h-11 btn-gold rounded-full text-sm font-bold shadow-lg shadow-gold/20"
+            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg shadow-gold/20"
             disabled={loading}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
@@ -173,20 +173,20 @@ export default function LoginPage() {
           </Button>
 
           {credentialError && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex gap-3">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-red-300 mb-2">{credentialError}</p>
+                <p className="text-xs md:text-sm font-semibold text-red-300">{credentialError}</p>
               </div>
             </div>
           )}
 
           {showNoAccount && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex gap-3">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-red-300 mb-2">No registered account found</p>
-                <p className="text-xs text-red-200/80 mb-3">We couldn&apos;t find an account with this email. Create a new account to get started.</p>
+                <p className="text-xs md:text-sm font-semibold text-red-300 mb-1">No registered account found</p>
+                <p className="text-[10px] md:text-xs text-red-200/80 mb-2">We couldn&apos;t find an account with this email. Create a new account to get started.</p>
                 <Link href="/register" className="text-xs font-bold text-red-300 hover:text-red-200 transition-colors underline">
                   Sign up now →
                 </Link>

@@ -185,6 +185,7 @@ export default async function MyShiftsPage({
             const canMarkDone = shift.status === "started" || shift.status === "overdue_not_done";
             const canPostSwap = shift.status === "not_started" || shift.status === "started";
             const isOverdue = shift.status === "overdue_not_done";
+            const isSwappedOrDone = shift.status === "done_manager_approved" || shift.status === "swapped" || shift.status === "cancelled";
 
             return (
               <div
@@ -195,7 +196,8 @@ export default async function MyShiftsPage({
                     ? "border-orange-500/20 bg-orange-500/3"
                     : shift.status === "done_manager_approved"
                     ? "border-emerald-500/15"
-                    : "border-white/5"
+                    : "border-white/5",
+                  isSwappedOrDone && "opacity-50 grayscale-[20%]"
                 )}
               >
                 {/* Overdue pulse */}
