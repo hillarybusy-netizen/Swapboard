@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   LogOut,
   Menu,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/actions";
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { href: "/notifications",   label: "Notifications", icon: Bell },
   { href: "/shifts",          label: "Shifts", icon: Calendar },
   { href: "/swaps",           label: "Swap Requests", icon: ArrowLeftRight },
+  { href: "/admin/claims",    label: "Shift Claims", icon: UserPlus },
   { href: "/analytics",       label: "Analytics", icon: BarChart3 },
   { href: "/team",            label: "Team", icon: Users },
   { href: "/admin/settings",  label: "Settings", icon: Settings },

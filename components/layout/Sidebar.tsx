@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, Bell, BarChart3,
+  LayoutDashboard, Calendar, ArrowLeftRight, Users, Settings, LogOut, Bell, BarChart3, UserPlus,
 } from "lucide-react";
 import { cn, INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/shifts", label: "Shifts", icon: Calendar },
   { href: "/swaps", label: "Swap Requests", icon: ArrowLeftRight },
+  { href: "/claims", label: "Shift Claims", icon: UserPlus },
   { href: "/analytics", label: "Analytics", icon: LayoutDashboard },
   { href: "/team", label: "Team", icon: Users },
   { href: "/settings", label: "Settings", icon: Settings },

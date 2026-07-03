@@ -516,16 +516,24 @@ export default async function AdminDashboardPage() {
           {/* Pending Shift Claims */}
           {pendingClaims.length > 0 && (
             <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                  <UserPlus className="w-4 h-4 text-blue-400" />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <UserPlus className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-black tracking-tight text-white">Shift Claims</h2>
+                    <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">
+                      Awaiting Your Approval
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-base font-black tracking-tight text-white">Shift Claims</h2>
-                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">
-                    Workers Picked Up Shifts
-                  </p>
-                </div>
+                <Link
+                  href="/admin/claims"
+                  className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold/20 hover:text-gold transition-all"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
               <div className="space-y-3">
                 {pendingClaims.map((shift: any) => (

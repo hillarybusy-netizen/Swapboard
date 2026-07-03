@@ -97,15 +97,32 @@ export default async function ShiftsPage(props: {
   const profiles = (profilesRes.data ?? []) as any[];
   const rawShifts = shiftsRes.data;
 
-  const now = new Date();
+  // Use status to determine active vs history — NOT end_time.
+  // Pending claims that have passed their time are still "active" until a manager resolves them.
+  const ACTIVE_STATUSES = new Set([
+    "not_started",
+    "started",
+    "pending_approval_claim",
+    "pending_approval_swap",
+    "up_for_swap",
+    "done_pending_approval",
+    "overdue_not_done",
+  ]);
+  const HISTORY_STATUSES = new Set([
+    "done_manager_approved",
+    "done_rejected",
+    "no_show",
+    "cancelled",
+  ]);
 
   const allShifts = ((rawShifts ?? []) as any[]).sort((a, b) => {
     return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
   });
 
-  // Separate active and ended shifts
-  const shifts = allShifts.filter(s => new Date(s.end_time) >= now);
-  const endedShifts = allShifts.filter(s => new Date(s.end_time) < now).reverse(); // Most recent first
+  const shifts = allShifts.filter(s => ACTIVE_STATUSES.has(s.status));
+  const endedShifts = allShifts
+    .filter(s => HISTORY_STATUSES.has(s.status))
+    .reverse(); // Most recent first
 
   const canAddShift = isAdmin || isManager;
 
@@ -178,7 +195,7 @@ export default async function ShiftsPage(props: {
         timezone={tz}
       />
 
-      {/* Ended Shifts History */}
+      {/* Shift History */}
       {endedShifts.length > 0 && (
         <div className="space-y-4 pt-8 border-t border-white/10">
           <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-3">
@@ -213,8 +230,11 @@ export default async function ShiftsPage(props: {
                     </div>
                   </div>
                 </div>
-                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 whitespace-nowrap ml-4">
-                  ✓ Ended
+                <Badge className={cn(
+                  "whitespace-nowrap ml-4 border-none",
+                  STATUS_BADGE[shift.status] ?? "bg-white/10 text-white/50"
+                )}>
+                  {SHIFT_STATUS_LABELS[shift.status] ?? shift.status}
                 </Badge>
               </div>
             ))}

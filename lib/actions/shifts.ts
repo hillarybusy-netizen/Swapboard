@@ -382,6 +382,36 @@ export async function rejectShiftClaim(shiftId: string) {
   return managerApproveClaim(shiftId, false);
 }
 
+export async function cancelShiftClaim(shiftId: string) {
+  const { supabase, user } = await requireUser();
+
+  const { data: shift, error: fetchError } = await supabase
+    .from("shifts")
+    .select("organization_id, department_id, status, assigned_to")
+    .eq("id", shiftId)
+    .single();
+
+  if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
+  if (shift.status !== "pending_approval_claim") throw new Error("This claim is no longer pending and cannot be cancelled.");
+  if (shift.assigned_to !== user.id) throw new Error("You can only cancel your own claim.");
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("shifts")
+    .update({ status: "not_started", assigned_to: null })
+    .eq("id", shiftId);
+
+  if (error) throw error;
+
+  await logAudit(shift.organization_id, "shift", shiftId, "claim_cancelled", user.id);
+
+  revalidatePath("/my-shifts");
+  revalidatePath("/available-shifts");
+  revalidatePath("/dashboard");
+
+  return { success: true };
+}
+
 export async function approveShiftCompletion(shiftId: string, notes?: string) {
   return reviewShiftCompletion(shiftId, "approve", notes);
 }

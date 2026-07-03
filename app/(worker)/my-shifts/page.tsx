@@ -2,10 +2,11 @@ import { getCachedSession } from "@/lib/supabase/cached";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { formatShiftDate, formatShiftTime, formatShiftDuration } from "@/lib/utils";
-import { Calendar, Clock, Timer, ArrowLeftRight, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Calendar, Clock, Timer, ArrowLeftRight, CheckCircle2, AlertTriangle, Clock3 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ShiftActionButton } from "@/components/shifts/ShiftActionButton";
+import { CancelClaimButton } from "@/components/shifts/CancelClaimButton";
 
 export const dynamic = "force-dynamic";
 
@@ -181,6 +182,7 @@ export default async function MyShiftsPage({
         ) : (
           displayShifts.map((shift) => {
             const badge = statusBadge(shift.status);
+            const isPendingClaim = shift.status === "pending_approval_claim";
             const canStartShift = shift.status === "not_started";
             const canMarkDone = shift.status === "started" || shift.status === "overdue_not_done";
             const canPostSwap = shift.status === "not_started" || shift.status === "started";
@@ -255,8 +257,21 @@ export default async function MyShiftsPage({
                   </div>
                 )}
 
-                {/* Action Buttons */}
-                {(canStartShift || canMarkDone || canPostSwap) && (
+                {/* Pending Claim Banner */}
+                {isPendingClaim && (
+                  <div className="flex items-center justify-between gap-3 mb-3 px-3 py-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Clock3 className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
+                      <p className="text-[11px] text-yellow-300/80 font-bold uppercase tracking-widest">
+                        Awaiting manager approval
+                      </p>
+                    </div>
+                    <CancelClaimButton shiftId={shift.id} shiftTitle={shift.title} />
+                  </div>
+                )}
+
+                {/* Action Buttons — hidden while claim is pending */}
+                {!isPendingClaim && (canStartShift || canMarkDone || canPostSwap) && (
                   <div className="flex gap-2 mt-1">
                     {(canStartShift || canMarkDone) && (
                       <div className="flex-1">

@@ -113,7 +113,7 @@ export function ShiftsListClient({ shifts, canAddShift, departments, profiles, o
           const isSelected = selectedIds.has(shift.id);
 
           return (
-            <Link key={shift.id} href={`/shifts/${shift.id}`} className={cn("group scroll-item relative", shift.isEnded && "opacity-60")}>
+            <Link key={shift.id} href={`/shifts/${shift.id}`} className={cn("group scroll-item relative")}>
               <div className={cn(
                 "glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 glass-item-transition relative overflow-hidden transition-all duration-300",
                 isSelected ? "border-gold/50 bg-gold/[0.05] ring-1 ring-gold/20" : "hover:border-gold/30 hover:bg-gold/[0.02]"

@@ -10,7 +10,7 @@ import { getStripe } from "@/lib/stripe";
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/login");
+  redirect("/");
 }
 
 async function verifyStripeCheckoutSession(
