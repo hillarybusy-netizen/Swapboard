@@ -31,20 +31,10 @@ export interface Department {
   created_at: string;
 }
 
-export interface Role {
-  id: string;
-  organization_id: string;
-  department_id: string;
-  name: string;
-  min_hours_notice: number;
-  created_at: string;
-}
-
 export interface Profile {
   id: string;
   organization_id: string | null;
   department_id: string | null;
-  role_id: string | null;
   full_name: string | null;
   phone: string | null;
   hourly_rate: number;
@@ -69,7 +59,6 @@ export interface Shift {
   id: string;
   organization_id: string;
   department_id: string | null;
-  role_id: string | null;
   assigned_to: string | null;
   title: string;
   start_time: string;
@@ -82,7 +71,6 @@ export interface Shift {
   updated_at: string;
   // Joined
   department?: Department;
-  role?: Role;
   profile?: Profile;
 }
 
@@ -157,7 +145,7 @@ export interface Database {
     Tables: {
       organizations: { Row: Organization; Insert: Partial<Organization>; Update: Partial<Organization> };
       departments: { Row: Department; Insert: Partial<Department>; Update: Partial<Department> };
-      roles: { Row: Role; Insert: Partial<Role>; Update: Partial<Role> };
+
       profiles: { Row: Profile; Insert: Partial<Profile>; Update: Partial<Profile> };
       shifts: { Row: Shift; Insert: Partial<Shift>; Update: Partial<Shift> };
       swap_requests: { Row: SwapRequest; Insert: Partial<SwapRequest>; Update: Partial<SwapRequest> };

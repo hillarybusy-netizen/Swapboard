@@ -39,7 +39,7 @@ export default async function TeamPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("*, department:departments(*), role:roles(*)")
+      .select("*, department:departments(*)")
       .eq("organization_id", orgId)
       .eq("is_active", true)
       .order("full_name"),
@@ -113,12 +113,7 @@ export default async function TeamPage() {
                           {member.department.name}
                         </span>
                       )}
-                      {member.role?.name && (
-                        <>
-                          <span className="hidden sm:inline">·</span>
-                          <span className="text-gold/40">{member.role.name}</span>
-                        </>
-                      )}
+
                       {member.member_id && (
                         <>
                           <span>·</span>

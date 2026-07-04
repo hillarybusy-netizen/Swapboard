@@ -44,7 +44,7 @@ export async function autoCloseExpiredShifts(orgId: string) {
 export async function createShift(formData: {
   organization_id: string;
   department_id: string;
-  role_id?: string;
+
   assigned_to?: string;
   title: string;
   start_time: string;

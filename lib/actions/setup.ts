@@ -5,7 +5,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 interface PendingDepartment {
   name: string;
   color: string;
-  roles: { name: string; minHoursNotice: number }[];
   requiresCertification?: boolean;
 }
 
@@ -76,17 +75,7 @@ export async function setupWorkspace(
     // Map department name → real DB id
     departmentMap[dept.name] = dbDept.id;
 
-    if (dept.roles && dept.roles.length > 0) {
-      const { error: rolesErr } = await supabase.from("roles").insert(
-        dept.roles.map((r) => ({
-          organization_id: org.id,
-          department_id: dbDept.id,
-          name: r.name,
-          min_hours_notice: r.minHoursNotice,
-        }))
-      );
-      if (rolesErr) throw new Error("Failed to create roles: " + rolesErr.message);
-    }
+    // Roles removed
   }
 
   // 4. Update Profile

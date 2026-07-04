@@ -39,7 +39,7 @@ export default function SetupPage() {
   }
 
   function addDept() {
-    setDepartments((d) => [...d, { name: "", color: "#d4af37", roles: [] }]);
+    setDepartments((d) => [...d, { name: "", color: "#d4af37" }]);
   }
 
   function updateDeptName(i: number, name: string) {
@@ -126,13 +126,7 @@ export default function SetupPage() {
                   placeholder="Department name"
                   className="bg-transparent border-none focus:ring-0 p-0 text-base font-semibold placeholder:text-white/10"
                 />
-                <div className="text-[10px] font-black uppercase tracking-widest text-white/20 shrink-0 px-3 py-1 bg-white/5 rounded-lg border border-white/5">
-                  {dept.roles.length > 0 ? (
-                    <><span className="text-gold">{dept.roles.length}</span> <span className="hidden sm:inline">Defined Roles</span></>
-                  ) : (
-                    <span className="opacity-50 italic">Configure Roles in Settings</span>
-                  )}
-                </div>
+
                 <button type="button" onClick={() => removeDept(i)} className="text-white/20 hover:text-red-500 transition-colors p-2">
                   <X className="w-4 h-4" />
                 </button>
@@ -140,7 +134,7 @@ export default function SetupPage() {
             ))}
           </div>
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest px-1">
-            Additional nodes and complex roles can be configured in Master Settings.
+            Additional departments can be configured in Master Settings.
           </p>
         </div>
 

@@ -44,7 +44,7 @@ export default async function ShiftDetailPage(props: {
     supabase
       .from("shifts")
       .select(
-        "*, department:departments(*), role:roles(*), profile:profiles!assigned_to(id, full_name, email, phone), creator:profiles!created_by(id, full_name)"
+        "*, department:departments(*), profile:profiles!assigned_to(id, full_name, email, phone), creator:profiles!created_by(id, full_name)"
       )
       .eq("id", params.id)
       .single(),
@@ -200,11 +200,7 @@ export default async function ShiftDetailPage(props: {
               Assigned Worker
             </p>
           </div>
-          {shift.role && (
-            <Badge className="bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest border-none rounded-full px-3 py-1">
-              {(shift.role as any).name}
-            </Badge>
-          )}
+
         </div>
 
         {/* Notes */}

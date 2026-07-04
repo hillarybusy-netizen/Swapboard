@@ -29,7 +29,7 @@ export default async function MyTeamPage() {
 
   let teamQuery = supabase
     .from("profiles")
-    .select("*, department:departments(name, color), role:roles(name)")
+    .select("*, department:departments(name, color)")
     .eq("organization_id", profile.organization_id)
     .eq("is_active", true);
 
@@ -106,12 +106,7 @@ export default async function MyTeamPage() {
                   </span>
                 </div>
               )}
-              {member.role?.name && (
-                <>
-                  <span className="text-white/15">·</span>
-                  <span className="text-[10px] font-bold text-white/25">{member.role.name}</span>
-                </>
-              )}
+
             </div>
           </div>
 
