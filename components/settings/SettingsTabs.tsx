@@ -23,7 +23,7 @@ const TABS = [
   { value: "org", label: "Organization" },
   { value: "departments", label: "Departments" },
   { value: "team", label: "Invite Team" },
-  { value: "billing", label: "Trial & Billing" },
+  { value: "billing", label: "Billing" },
 ] as const;
 
 export function SettingsTabs({

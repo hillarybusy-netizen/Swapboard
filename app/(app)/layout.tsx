@@ -1,16 +1,16 @@
 import { redirect } from "next/navigation";
 import { getCachedSession } from "@/lib/supabase/cached";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
-import { MobileNav } from "@/components/layout/MobileNav";
+import { ManagerSidebar } from "@/components/layout/ManagerSidebar";
 import { TrialBanner } from "@/components/layout/TrialBanner";
 import { needsSubscription } from "@/lib/trial";
 import { headers } from "next/headers";
-import Link from "next/link";
 import { signOut } from "@/app/actions";
-import { AlertTriangle, LogOut, ArrowRight } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { isPlatformAdmin } from "@/lib/admin-config";
 import { ProfileDropdown } from "@/components/layout/ProfileDropdown";
+import { BillingSettings } from "@/components/settings/BillingSettings";
+import { Suspense } from "react";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, profile } = await getCachedSession();
@@ -40,72 +40,53 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const isSettingsPage = pathname.includes("/settings");
 
   const expired = needsSubscription(org);
+  const wasOnTrial = org?.plan === "trial";
 
-  // If trial expired and not on settings page, render locked screen (not redirect)
+  // If expired and not on settings page, render locked pricing screen
   if (expired && !isSettingsPage) {
     return (
-      <div className="min-h-screen bg-[#050505] flex relative">
+      <div className="min-h-screen bg-[#050505] flex flex-col relative">
         <div className="absolute inset-0 bg-mesh opacity-10 -z-10 pointer-events-none" />
-        <div className="flex-1 flex flex-col min-w-0 items-center justify-center px-6 py-12">
-          <div className="max-w-lg w-full text-center space-y-8">
-            {/* Icon */}
-            <div className="flex items-center justify-center">
-              <div className="w-20 h-20 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                <AlertTriangle className="w-10 h-10 text-red-500" />
-              </div>
-            </div>
 
-            {/* Message */}
-            <div className="space-y-3">
-              <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-                Your free trial has expired
+        {/* Top bar with sign out */}
+        <header className="w-full flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5">
+          <div className="flex items-center gap-2">
+            <span className="text-[#FFD700] font-black text-xl tracking-tight">SwapBoard</span>
+          </div>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="flex items-center gap-2 text-white/40 hover:text-red-400 bg-white/5 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest border border-white/5"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Sign Out
+            </button>
+          </form>
+        </header>
+
+        {/* Pricing content */}
+        <div className="flex-1 flex flex-col items-center px-4 md:px-8 py-12 md:py-16">
+          <div className="w-full max-w-5xl space-y-10">
+            {/* Headline */}
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest">
+                Access Suspended
+              </div>
+              <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+                {wasOnTrial ? "Your free trial has expired" : "Your subscription has expired"}
               </h1>
-              <p className="text-white/50 text-base leading-relaxed">
-                Your 14-day trial for <span className="text-white font-bold">{org?.name}</span> has ended. Choose a plan to keep your data and continue using SwapBoard.
+              <p className="text-white/50 text-base leading-relaxed max-w-xl mx-auto">
+                {wasOnTrial
+                  ? <>Your 14-day trial for <span className="text-white font-bold">{org?.name}</span> has ended. Choose a plan below to restore access and keep your data.</>
+                  : <>Your subscription for <span className="text-white font-bold">{org?.name}</span> has lapsed. Reactivate a plan below to restore full access.</>
+                }
               </p>
             </div>
 
-            {/* CTA */}
-            <div className="flex flex-col gap-4">
-              <Link
-                href="/settings?tab=billing"
-                className="inline-flex items-center justify-center gap-2 bg-[#FFD700] text-[#050505] font-black text-sm uppercase tracking-widest px-8 py-4 rounded-full shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all duration-300"
-              >
-                Choose a Plan
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="w-full inline-flex items-center justify-center gap-2 text-white/30 hover:text-red-400 transition-colors text-sm font-bold"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign out instead
-                </button>
-              </form>
-            </div>
-
-            {/* Plan badges */}
-            <div className="grid grid-cols-3 gap-3 pt-4">
-              {[
-                { name: "Starter", price: "$79/mo" },
-                { name: "Growth", price: "$199/mo", highlight: true },
-                { name: "Enterprise", price: "$499/mo" },
-              ].map((plan) => (
-                <div
-                  key={plan.name}
-                  className={`rounded-2xl p-4 text-center border ${plan.highlight
-                    ? "border-[#FFD700]/40 bg-[#FFD700]/5"
-                    : "border-white/5 bg-white/[0.02]"
-                  }`}
-                >
-                  <p className={`text-xs font-black uppercase tracking-widest mb-1 ${plan.highlight ? "text-[#FFD700]" : "text-white/40"}`}>
-                    {plan.name}
-                  </p>
-                  <p className="text-white font-bold text-sm">{plan.price}</p>
-                </div>
-              ))}
-            </div>
+            {/* Pricing cards via BillingSettings */}
+            <Suspense fallback={null}>
+              <BillingSettings org={org} />
+            </Suspense>
           </div>
         </div>
       </div>
@@ -135,7 +116,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {isAdmin ? (
         <AdminSidebar org={org} profile={profile as any} />
       ) : (
-        <Sidebar org={org} profile={profile} />
+        <ManagerSidebar org={org} profile={profile as any} />
       )}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-20 bg-transparent">
@@ -148,7 +129,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
-      {!isAdmin && <MobileNav profile={profile} org={org} />}
     </div>
   );
 }

@@ -26,6 +26,7 @@ export default async function SettingsPage(props: {
 
   const org = (profile as any)?.organization;
   const expired = needsSubscription(org);
+  const wasOnTrial = org?.plan === "trial";
   const activeTab = expired ? "billing" : (searchParams.tab ?? "org");
 
   const supabase = await createClient();
@@ -69,9 +70,14 @@ export default async function SettingsPage(props: {
             <AlertTriangle className="w-7 h-7 text-red-500" />
           </div>
           <div className="flex-1 space-y-1">
-            <h3 className="text-white font-bold text-lg">Your Free Trial Has Expired</h3>
+            <h3 className="text-white font-bold text-lg">
+              {wasOnTrial ? "Your Free Trial Has Expired" : "Your Subscription Has Expired"}
+            </h3>
             <p className="text-white/60 text-sm leading-relaxed max-w-2xl">
-              Your 14-day trial has ended. Access to other settings and dashboard features is locked. Choose a subscription plan below to restore full access.
+              {wasOnTrial
+                ? "Your 14-day trial has ended. Access to other settings and dashboard features is locked. Choose a subscription plan below to restore full access."
+                : "Your subscription has lapsed. Access to other settings and dashboard features is locked. Reactivate a plan below to restore full access."
+              }
             </p>
           </div>
         </div>
