@@ -79,15 +79,15 @@ export function LandingPricing() {
         </div>
       </div>
 
-      <StaggerContainer className="grid md:grid-cols-3 gap-8">
+      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {plans.map((plan) => (
           <StaggerItem key={plan.name}>
             <ScaleOnScroll>
               <div
-                className={`relative rounded-[2.5rem] p-10 flex flex-col ${
+                className={`relative rounded-[2rem] sm:rounded-[2.5rem] p-8 sm:p-10 flex flex-col h-full ${
                   plan.highlighted
-                    ? "glass shadow-2xl shadow-gold/10 border-gold/40 scale-105 z-10"
-                    : "card-premium opacity-80"
+                    ? "glass shadow-2xl shadow-gold/10 border-gold/40 lg:scale-105 z-10"
+                    : "card-premium lg:opacity-80"
                 }`}
               >
                 {plan.highlighted && (
