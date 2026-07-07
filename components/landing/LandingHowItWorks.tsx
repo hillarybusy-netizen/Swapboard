@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { FadeUpOnScroll, StaggerContainer, StaggerItem } from "@/components/animations/ScrollAnimations";
+import { LANDING_IMAGES } from "@/lib/landing-images";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
@@ -11,19 +12,19 @@ const STEPS = [
     step: "01",
     title: "Set up your org",
     desc: "Choose your industry, add departments, and invite your team in minutes.",
-    image: "/landing/office-planning.jpg",
+    ...LANDING_IMAGES.steps.setup,
   },
   {
     step: "02",
     title: "Workers request swaps",
     desc: "Staff post swap requests from their phone. Qualified colleagues can accept instantly.",
-    image: "/landing/mobile-shift.jpg",
+    ...LANDING_IMAGES.steps.swap,
   },
   {
     step: "03",
     title: "Managers approve",
     desc: "One tap to approve. The schedule updates automatically for everyone in real-time.",
-    image: "/landing/manager-team.jpg",
+    ...LANDING_IMAGES.steps.approve,
   },
 ] as const;
 
@@ -44,7 +45,6 @@ export function LandingHowItWorks() {
           From signup to first swap in under 3 minutes. No training manuals required.
         </p>
 
-        {/* Interactive step tabs — mobile friendly */}
         <div className="flex justify-center gap-2 sm:gap-3 mb-10 sm:mb-16 flex-wrap">
           {STEPS.map((s, i) => (
             <button
@@ -86,8 +86,11 @@ export function LandingHowItWorks() {
                           : { boxShadow: "0 15px 30px rgba(0,0,0,0.4)" }
                       }
                     >
-                      <Image src={s.image} alt={s.title} fill className="object-cover" sizes="224px" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#070707]/70 via-transparent to-transparent" />
+                      <Image src={s.src} alt={s.alt} fill className="object-cover" sizes="224px" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#070707]/80 via-[#070707]/20 to-transparent" />
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#050505]/80 backdrop-blur-sm border border-gold/20">
+                        <p className="text-[7px] font-black uppercase tracking-widest text-gold">{s.label}</p>
+                      </div>
                     </motion.div>
                     <motion.div
                       className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-11 h-11 md:w-14 md:h-14 rounded-full glass flex items-center justify-center text-sm md:text-lg font-black text-gold shadow-xl shadow-gold/5 border border-gold/20"

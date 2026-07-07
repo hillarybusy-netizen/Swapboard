@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import {
   AreaChart, Area, ResponsiveContainer,
@@ -6,6 +7,7 @@ import {
 } from "recharts";
 import type { LucideIcon } from "lucide-react";
 import { RefreshCw, Clock, BarChart3, Users, Shield, TrendingUp } from "lucide-react";
+import { LANDING_IMAGES } from "@/lib/landing-images";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   RefreshCw, Clock, BarChart3, Users, Shield, TrendingUp,
@@ -24,18 +26,28 @@ const trialData = [
   { day: "D14", pct: 92 },
 ];
 
+function ImageLabel({ text }: { text: string }) {
+  return (
+    <div className="absolute top-2.5 left-2.5 z-10 px-2 py-1 rounded-lg bg-[#050505]/75 backdrop-blur-md border border-white/10">
+      <p className="text-[8px] font-black uppercase tracking-widest text-gold">{text}</p>
+    </div>
+  );
+}
+
 interface FeatureCardVisualProps {
   iconName: string;
 }
 
 export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
   const Icon = ICON_MAP[iconName] ?? RefreshCw;
+  const img = LANDING_IMAGES.features[iconName as keyof typeof LANDING_IMAGES.features];
 
-  if (iconName === "RefreshCw") {
+  if (iconName === "RefreshCw" && img) {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden relative mb-6 group-hover:border-white/10 transition-colors">
-        <Image src="/landing/mobile-shift.jpg" alt="Worker checking shift on phone" fill className="object-cover" sizes="400px" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 via-[#0a0a0a]/30 to-transparent" />
+        <Image src={img.src} alt={img.alt} fill className="object-cover" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 via-[#0a0a0a]/35 to-[#0a0a0a]/20" />
+        <ImageLabel text={img.label} />
         <div className="absolute bottom-3 left-3 right-3 space-y-1.5">
           {["Sarah requested Fri 6pm cover", "James accepted · pending approval"].map((msg) => (
             <div key={msg} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#050505]/80 backdrop-blur-md border border-white/10">
@@ -50,11 +62,12 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
     );
   }
 
-  if (iconName === "Clock") {
+  if (iconName === "Clock" && img) {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden relative mb-6">
-        <Image src="/landing/office-planning.jpg" alt="Manager reviewing schedule" fill className="object-cover" sizes="400px" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/85 via-[#0a0a0a]/40 to-transparent" />
+        <Image src={img.src} alt={img.alt} fill className="object-cover" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/90 via-[#0a0a0a]/50 to-[#0a0a0a]/25" />
+        <ImageLabel text={img.label} />
         <div className="absolute inset-0 p-4 flex flex-col justify-center gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gold/15 border border-gold/25 flex items-center justify-center">
@@ -78,11 +91,12 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
     );
   }
 
-  if (iconName === "BarChart3") {
+  if (iconName === "BarChart3" && img) {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-3 mb-6 relative overflow-hidden">
-        <Image src="/landing/manager-team.jpg" alt="Team reviewing savings" fill className="object-cover opacity-30" sizes="400px" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/40" />
+        <Image src={img.src} alt={img.alt} fill className="object-cover opacity-35" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/75 to-[#0a0a0a]/40" />
+        <ImageLabel text={img.label} />
         <div className="relative flex items-center justify-between mb-1 px-1">
           <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Weekly savings</p>
           <p className="text-sm font-black text-gold tabular-nums">$4,200</p>
@@ -106,29 +120,27 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
 
   if (iconName === "Users") {
     return (
-      <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden mb-6 grid grid-cols-3 gap-0.5 p-0.5">
-        {[
-          { src: "/landing/restaurant-team.jpg", label: "Restaurant" },
-          { src: "/landing/healthcare-team.jpg", label: "Healthcare" },
-          { src: "/landing/retail-floor.jpg", label: "Retail" },
-        ].map((ind) => (
-          <div key={ind.label} className="relative rounded-xl overflow-hidden h-full min-h-[8.5rem]">
-            <Image src={ind.src} alt={ind.label} fill className="object-cover" sizes="150px" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-            <p className="absolute bottom-2 left-2 text-[7px] font-black uppercase tracking-widest text-white/70">{ind.label}</p>
-          </div>
-        ))}
+      <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden mb-6 relative">
+        <Image src={LANDING_IMAGES.features.Users.src} alt={LANDING_IMAGES.features.Users.alt} fill className="object-cover" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/50 to-[#0a0a0a]/30" />
+        <ImageLabel text={LANDING_IMAGES.features.Users.label} />
+        <div className="absolute bottom-3 left-3 right-3 grid grid-cols-3 gap-1.5">
+          {["Restaurant", "Healthcare", "Retail"].map((dept) => (
+            <div key={dept} className="px-2 py-1.5 rounded-lg bg-[#050505]/70 backdrop-blur-md border border-white/10 text-center">
+              <p className="text-[7px] font-black uppercase tracking-widest text-white/70">{dept}</p>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (iconName === "Shield") {
+  if (iconName === "Shield" && img) {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-4 mb-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-28 h-full overflow-hidden">
-          <Image src="/landing/healthcare-team.jpg" alt="Healthcare compliance" fill className="object-cover opacity-50" sizes="112px" />
-          <div className="absolute inset-0 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
-        </div>
+        <Image src={img.src} alt={img.alt} fill className="object-cover opacity-40" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/95 via-[#0a0a0a]/80 to-[#0a0a0a]/60" />
+        <ImageLabel text={img.label} />
         <div className="relative space-y-2">
           {[
             { action: "Swap approved", user: "M. Chen → J. Park", time: "2m ago" },
@@ -148,11 +160,12 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
     );
   }
 
-  if (iconName === "TrendingUp") {
+  if (iconName === "TrendingUp" && img) {
     return (
       <div className="h-36 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-3 mb-6 relative overflow-hidden">
-        <Image src="/landing/retail-floor.jpg" alt="Retail team on the floor" fill className="object-cover opacity-30" sizes="400px" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/75 to-[#0a0a0a]/40" />
+        <Image src={img.src} alt={img.alt} fill className="object-cover opacity-35" sizes="400px" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-[#0a0a0a]/45" />
+        <ImageLabel text={img.label} />
         <div className="relative flex items-center justify-between mb-2 px-1">
           <p className="text-[8px] font-black uppercase tracking-widest text-white/30">14-day trial progress</p>
           <p className="text-[10px] font-black text-emerald-400">92%</p>

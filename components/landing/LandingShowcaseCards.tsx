@@ -1,9 +1,11 @@
 "use client";
+
 import Image from "next/image";
 import {
   BarChart, Bar, XAxis, ResponsiveContainer, Cell,
 } from "recharts";
 import { Check, RefreshCw, Send } from "lucide-react";
+import { LANDING_IMAGES } from "@/lib/landing-images";
 
 const fulfillmentData = [
   { month: "Jan", rate: 72 },
@@ -18,17 +20,21 @@ const coverageFeed = [
   { team: "ER Night", location: "North Wing", swaps: 12, active: true },
 ];
 
+function ImageLabel({ text }: { text: string }) {
+  return (
+    <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-lg bg-[#050505]/75 backdrop-blur-md border border-white/10">
+      <p className="text-[8px] font-black uppercase tracking-widest text-gold">{text}</p>
+    </div>
+  );
+}
+
 export function LandingCoverageVisual() {
+  const img = LANDING_IMAGES.showcase.coverage;
   return (
     <div className="h-44 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden relative shadow-inner">
-      <Image
-        src="/landing/manager-team.jpg"
-        alt="Operations team"
-        fill
-        className="object-cover"
-        sizes="400px"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/40 to-transparent" />
+      <Image src={img.src} alt={img.alt} fill className="object-cover" sizes="400px" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/50 to-[#0a0a0a]/25" />
+      <ImageLabel text={img.label} />
       <div className="absolute inset-0 p-3 flex flex-col justify-end gap-1.5">
         {coverageFeed.map((item) => (
           <div key={item.team} className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#050505]/70 backdrop-blur-md border border-white/10">
@@ -50,6 +56,7 @@ export function LandingCoverageVisual() {
 }
 
 export function LandingVerificationVisual() {
+  const img = LANDING_IMAGES.showcase.verification;
   const requests = [
     { icon: Send, label: "Send Request", active: true },
     { icon: RefreshCw, label: "Swap Shift", active: false },
@@ -58,12 +65,11 @@ export function LandingVerificationVisual() {
 
   return (
     <div className="h-44 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 overflow-hidden shadow-inner relative">
-      <div className="absolute top-0 right-0 w-36 h-36 overflow-hidden rounded-bl-3xl">
-        <Image src="/landing/mobile-shift.jpg" alt="Mobile shift management" fill className="object-cover" sizes="144px" />
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a]/90 via-[#0a0a0a]/70 to-transparent" />
+      <Image src={img.src} alt={img.alt} fill className="object-cover object-top" sizes="400px" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a]/92 via-[#0a0a0a]/75 to-[#0a0a0a]/55" />
+      <ImageLabel text={img.label} />
       <div className="relative h-full p-4 flex flex-col justify-between">
-        <div className="space-y-2">
+        <div className="space-y-2 mt-8">
           {requests.map(({ icon: Icon, label, active }) => (
             <div
               key={label}
@@ -92,13 +98,13 @@ export function LandingVerificationVisual() {
         </div>
         <div className="flex items-center gap-2 px-2">
           <div className="flex -space-x-2">
-            {["/landing/restaurant-team.jpg", "/landing/healthcare-team.jpg", "/landing/retail-floor.jpg"].map((src, i) => (
-              <div key={src} className="w-6 h-6 rounded-full border-2 border-[#0a0a0a] overflow-hidden relative" style={{ zIndex: 3 - i }}>
-                <Image src={src} alt="" fill className="object-cover" sizes="24px" />
+            {["RN", "LPN", "CNA"].map((role, i) => (
+              <div key={role} className="w-6 h-6 rounded-full border-2 border-[#0a0a0a] bg-gold/15 flex items-center justify-center text-[7px] font-black text-gold" style={{ zIndex: 3 - i }}>
+                {role}
               </div>
             ))}
           </div>
-          <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest">3 departments synced</span>
+          <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest">Roles verified before swap</span>
         </div>
       </div>
     </div>
@@ -106,16 +112,12 @@ export function LandingVerificationVisual() {
 }
 
 export function LandingAnalyticsVisual() {
+  const img = LANDING_IMAGES.showcase.analytics;
   return (
     <div className="h-44 w-full rounded-2xl bg-[#0a0a0a] border border-white/5 p-4 shadow-inner relative overflow-hidden">
-      <Image
-        src="/landing/office-planning.jpg"
-        alt="Team analytics review"
-        fill
-        className="object-cover opacity-25"
-        sizes="400px"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-[#0a0a0a]/50" />
+      <Image src={img.src} alt={img.alt} fill className="object-cover opacity-30" sizes="400px" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/85 to-[#0a0a0a]/55" />
+      <ImageLabel text={img.label} />
       <div className="relative flex items-start justify-between mb-2">
         <div>
           <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Fulfillment Ascend</p>
