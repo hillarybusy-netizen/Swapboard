@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { LandingWorkerDashboardMock } from "@/components/landing/LandingWorkerDashboardMock";
 
-const MOCK_WIDTH = 1080;
 
 export function LandingHeroPreview() {
   return (
@@ -17,13 +16,10 @@ export function LandingHeroPreview() {
 
       {/* Scaled frame — interior is full worker dashboard at 1080px */}
       <div
-        className="relative overflow-hidden rounded-[1.25rem] sm:rounded-[1.5rem] border border-white/10 shadow-2xl shadow-black/60 bg-[#050505]"
+        className="relative overflow-hidden rounded-[1.25rem] sm:rounded-[1.5rem] border border-white/10 shadow-2xl shadow-black/60 bg-[#050505] w-full"
         style={{ height: "clamp(380px, 52vw, 560px)" }}
       >
-        <div
-          className="origin-top-left scale-[0.42] sm:scale-[0.55] md:scale-[0.62] lg:scale-[0.68] xl:scale-[0.74]"
-          style={{ width: MOCK_WIDTH }}
-        >
+        <div className="w-full h-full">
           <LandingWorkerDashboardMock />
         </div>
 
