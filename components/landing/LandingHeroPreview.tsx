@@ -14,10 +14,9 @@ export function LandingHeroPreview() {
     >
       <div className="absolute -inset-4 sm:-inset-6 bg-gold/8 blur-3xl rounded-[2rem] -z-10" />
 
-      {/* Scaled frame — interior is full worker dashboard at 1080px */}
+      {/* Scaled frame — interior is responsive worker dashboard */}
       <div
-        className="relative overflow-hidden rounded-[1.25rem] sm:rounded-[1.5rem] border border-white/10 shadow-2xl shadow-black/60 bg-[#050505] w-full"
-        style={{ height: "clamp(380px, 52vw, 560px)" }}
+        className="relative overflow-hidden rounded-[1.25rem] sm:rounded-[1.5rem] border border-white/10 shadow-2xl shadow-black/60 bg-[#050505] w-full h-auto md:h-[560px]"
       >
         <div className="w-full h-full">
           <LandingWorkerDashboardMock />

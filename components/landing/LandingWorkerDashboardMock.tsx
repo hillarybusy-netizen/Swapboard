@@ -135,7 +135,7 @@ function MockBottomNav() {
 
 function MockSidebar() {
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-[#050505] border-r border-white/5 relative overflow-hidden shrink-0">
+    <aside className="hidden md:flex flex-col w-48 lg:w-56 bg-[#050505] border-r border-white/5 relative overflow-hidden shrink-0">
       <div className="absolute inset-0 bg-mesh opacity-20 -z-10 pointer-events-none" />
 
       <div className="mb-6 border-b border-white/5">

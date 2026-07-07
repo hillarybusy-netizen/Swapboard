@@ -55,7 +55,7 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
   const linkGap = useTransform(scrollProgress, [0, 1], ["2.5rem", "1.5rem"]);
 
   const AuthButtons = ({ mobile = false }: { mobile?: boolean }) =>
-    user && initials ? (
+    user?.id && initials ? (
       <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
         <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
       </div>
@@ -80,16 +80,26 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
 
   if (!mounted) {
     return (
-      <nav className="fixed top-0 inset-x-0 mx-auto z-50 flex items-center justify-center w-full max-w-[1280px] h-[4.5rem] px-4 sm:px-6">
+      <nav className="fixed top-0 inset-x-0 mx-auto z-50 flex items-center justify-center w-full max-w-[1280px] h-[4rem] sm:h-[4.5rem] px-4 sm:px-6">
         <div className="flex items-center w-full justify-between">
-          <AnimatedLogo size="md" showText={true} />
+          <div className="flex justify-start items-center shrink-0">
+            <AnimatedLogo size="md" showText={false} />
+          </div>
           <div className="hidden md:flex items-center gap-10">
             {NAV_LINKS.map((l) => (
               <a key={l.href} href={l.href} className="nav-link text-sm font-medium text-white/50 hover:text-gold transition-colors">{l.label}</a>
             ))}
           </div>
-          <div className="flex items-center gap-3">
-            <AuthButtons />
+          <div className="flex justify-end items-center gap-2 sm:gap-4 shrink-0">
+            <div className="hidden sm:flex">
+              <AuthButtons />
+            </div>
+            <button
+              className="md:hidden w-10 h-10 rounded-xl glass border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+              aria-label="Open menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </nav>

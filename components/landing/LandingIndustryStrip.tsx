@@ -34,25 +34,32 @@ export function LandingIndustryStrip() {
           Built for every industry
         </p>
 
-        {/* Mobile: horizontal scroll */}
-        <div className="md:hidden -mx-4 px-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-          <StaggerContainer className="flex gap-4 w-max pb-2">
-            {INDUSTRIES.map((photo) => (
-              <StaggerItem key={photo.src}>
-                <IndustryCard photo={photo} className="w-[260px] snap-center" />
-              </StaggerItem>
+        <div className="relative overflow-hidden w-full -mx-4 px-4 sm:mx-0 sm:px-0">
+          <motion.div
+            className="flex gap-4 md:gap-6 w-max"
+            animate={{
+              x: ["0%", "-50%"],
+            }}
+            transition={{
+              ease: "linear",
+              duration: 40,
+              repeat: Infinity,
+            }}
+          >
+            {/* Duplicate the array to ensure enough width for seamless 50% scroll.
+                12 items total -> 50% is 6 items -> perfectly loops back. */}
+            {[...INDUSTRIES, ...INDUSTRIES, ...INDUSTRIES, ...INDUSTRIES].map((photo, i) => (
+              <IndustryCard
+                key={`${photo.src}-${i}`}
+                photo={photo}
+                className="w-[260px] sm:w-[300px] md:w-[360px] shrink-0"
+              />
             ))}
-          </StaggerContainer>
+          </motion.div>
+          {/* Fading edges to make the endless loop look cleaner */}
+          <div className="absolute inset-y-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-[#0a0a0e] to-transparent pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-[#0a0a0e] to-transparent pointer-events-none" />
         </div>
-
-        {/* Desktop: grid */}
-        <StaggerContainer className="hidden md:grid md:grid-cols-3 gap-4 lg:gap-6">
-          {INDUSTRIES.map((photo) => (
-            <StaggerItem key={photo.src}>
-              <IndustryCard photo={photo} />
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
       </div>
     </section>
   );
