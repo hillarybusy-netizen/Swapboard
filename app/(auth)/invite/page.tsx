@@ -75,7 +75,7 @@ function InviteForm() {
 
   if (fetching) return <div className="flex justify-center items-center py-12"><Loader2 className="w-6 h-6 animate-spin text-gold" /></div>;
   if (!invite) return (
-    <Card className="glass border-white/5 flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+    <Card className="glass border-white/5 w-full">
       <CardContent className="p-6 md:p-8 text-center">
         <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4 md:mb-6 shrink-0">
           <Loader2 className="w-6 h-6 md:w-8 md:h-8 text-red-500/40" />
@@ -97,7 +97,7 @@ function InviteForm() {
 
   if (successId !== null) {
     return (
-      <Card className="glass border-white/5 relative overflow-hidden flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+      <Card className="glass border-white/5 relative overflow-hidden w-full">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
         <CardHeader className="p-5 md:p-6 text-center">
           <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-3 md:mb-4 shrink-0">
@@ -137,7 +137,7 @@ function InviteForm() {
   }
 
   return (
-    <Card className="glass border-white/5 relative overflow-hidden flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+    <Card className="glass border-white/5 relative overflow-hidden w-full">
       <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
       <CardHeader className="p-5 md:p-6">
         <CardTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-white italic">Join the Team</CardTitle>

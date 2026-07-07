@@ -134,7 +134,7 @@ export function LandingPricing() {
                   ))}
                 </ul>
                 <Link
-                  href="/register"
+                  href="/onboarding/industry"
                   className={`block text-center py-4 rounded-full text-base font-bold transition-all ${
                     plan.highlighted ? "btn-gold" : "glass hover:bg-white/5 text-white/80"
                   }`}

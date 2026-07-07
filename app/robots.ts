@@ -22,12 +22,12 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: "GPTBot",
-        allow: ["/", "/privacy", "/terms", "/register", "/llms.txt"],
+        allow: ["/", "/privacy", "/terms", "/onboarding/industry", "/llms.txt"],
         disallow: ["/dashboard", "/admin", "/settings", "/onboarding"],
       },
       {
         userAgent: "ChatGPT-User",
-        allow: ["/", "/privacy", "/terms", "/register", "/llms.txt"],
+        allow: ["/", "/privacy", "/terms", "/onboarding/industry", "/llms.txt"],
         disallow: ["/dashboard", "/admin", "/settings", "/onboarding"],
       },
       {
@@ -36,12 +36,12 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: "anthropic-ai",
-        allow: ["/", "/privacy", "/terms", "/register", "/llms.txt"],
+        allow: ["/", "/privacy", "/terms", "/onboarding/industry", "/llms.txt"],
         disallow: ["/dashboard", "/admin", "/settings", "/onboarding"],
       },
       {
         userAgent: "PerplexityBot",
-        allow: ["/", "/privacy", "/terms", "/register", "/llms.txt"],
+        allow: ["/", "/privacy", "/terms", "/onboarding/industry", "/llms.txt"],
         disallow: ["/dashboard", "/admin", "/settings", "/onboarding"],
       },
     ],

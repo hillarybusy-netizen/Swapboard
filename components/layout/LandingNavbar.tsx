@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 import { LandingProfileDropdown } from "@/components/layout/LandingProfileDropdown";
+import { signOut } from "@/app/actions";
 
 interface LandingNavbarProps {
   user: any;
@@ -70,7 +71,7 @@ export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavba
           Sign in
         </Link>
         <Link
-          href="/register"
+          href="/onboarding/industry"
           onClick={() => setMobileOpen(false)}
           className={`btn-gold font-bold whitespace-nowrap ${mobile ? "text-center py-3.5 rounded-2xl w-full" : "px-5 py-2 rounded-full text-sm"}`}
         >
@@ -192,22 +193,33 @@ export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavba
 
               <div className="pt-6 border-t border-white/10">
                 {user?.id && initials ? (
-                  /* Logged-in: profile card with avatar + org name */
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 glass rounded-2xl p-4 border border-white/10 hover:border-gold/30 hover:bg-white/5 transition-all group"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/20 flex items-center justify-center text-gold text-sm font-black shrink-0">
-                      {initials}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-white truncate">
-                        {orgName || "My account"}
-                      </p>
-                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Go to dashboard →</p>
-                    </div>
-                  </Link>
+                  <div className="flex flex-col gap-3">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 glass rounded-2xl p-4 border border-white/10 hover:border-gold/30 hover:bg-white/5 transition-all group"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/20 flex items-center justify-center text-gold text-sm font-black shrink-0">
+                        {initials}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white truncate">
+                          {orgName || "My account"}
+                        </p>
+                        <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Go to dashboard →</p>
+                      </div>
+                    </Link>
+                    <form action={signOut}>
+                      <button
+                        type="submit"
+                        onClick={() => setMobileOpen(false)}
+                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-red-400 hover:text-red-300 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 transition-all"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </button>
+                    </form>
+                  </div>
                 ) : (
                   /* Logged-out: Sign in + Try free */
                   <div className="flex flex-col w-full gap-3">
@@ -219,7 +231,7 @@ export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavba
                       Sign in
                     </Link>
                     <Link
-                      href="/register"
+                      href="/onboarding/industry"
                       onClick={() => setMobileOpen(false)}
                       className="btn-gold font-bold text-center py-3.5 rounded-2xl w-full"
                     >

@@ -28,7 +28,7 @@ export const SEO_KEYWORDS = [
 
 export const PUBLIC_ROUTES = [
   { path: "/", changeFrequency: "weekly" as const, priority: 1 },
-  { path: "/register", changeFrequency: "monthly" as const, priority: 0.9 },
+  { path: "/onboarding/industry", changeFrequency: "monthly" as const, priority: 0.9 },
   { path: "/login", changeFrequency: "monthly" as const, priority: 0.5 },
   { path: "/privacy", changeFrequency: "yearly" as const, priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly" as const, priority: 0.3 },

@@ -73,7 +73,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl flex flex-col justify-center max-h-full overflow-y-auto no-scrollbar">
+    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl w-full">
       <div className="text-center mb-4 md:mb-5">
         <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-0.5">Welcome back</h1>
         <p className="text-white/50 text-[12px] md:text-sm font-medium">Sign in to your SwapBoard account</p>
@@ -187,7 +187,7 @@ export default function LoginPage() {
               <div className="flex-1">
                 <p className="text-xs md:text-sm font-semibold text-red-300 mb-1">No registered account found</p>
                 <p className="text-[10px] md:text-xs text-red-200/80 mb-2">We couldn&apos;t find an account with this email. Create a new account to get started.</p>
-                <Link href="/register" className="text-xs font-bold text-red-300 hover:text-red-200 transition-colors underline">
+                <Link href="/onboarding/industry" className="text-xs font-bold text-red-300 hover:text-red-200 transition-colors underline">
                   Sign up now →
                 </Link>
               </div>
@@ -196,7 +196,7 @@ export default function LoginPage() {
 
           <p className="text-xs text-white/40 text-center font-medium">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-gold hover:text-gold-light transition-colors font-bold">
+            <Link href="/onboarding/industry" className="text-gold hover:text-gold-light transition-colors font-bold">
               Start free trial
             </Link>
           </p>

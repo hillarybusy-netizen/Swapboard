@@ -228,7 +228,7 @@ export default async function LandingPage() {
               Join 500+ managers who reclaimed 10+ hours a week and eliminated missed shifts completely.
             </p>
             <Link
-              href="/register"
+              href="/onboarding/industry"
               className="btn-gold btn-shine inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg relative z-10 group"
             >
               Start your free trial

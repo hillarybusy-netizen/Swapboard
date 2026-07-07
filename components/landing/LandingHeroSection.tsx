@@ -76,13 +76,13 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
               ) : (
                 <>
                   <Link
-                    href="/register"
+                    href="/onboarding/industry"
                     className="btn-gold btn-shine flex items-center justify-center gap-2 px-8 sm:px-12 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20"
                   >
                     Get started instantly
                   </Link>
                   <Link
-                    href="/register"
+                    href="/onboarding/industry"
                     className="flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors py-2"
                   >
                     <Gift className="w-4 h-4" />

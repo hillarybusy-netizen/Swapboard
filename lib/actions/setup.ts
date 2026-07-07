@@ -1,6 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { registerUser, signInUser } from "@/lib/actions/auth";
 
 interface PendingDepartment {
   name: string;
@@ -91,4 +92,75 @@ export async function setupWorkspace(
   if (profileErr) throw new Error("Failed to update profile: " + profileErr.message);
 
   return { orgId: org.id, departmentMap };
+}
+
+async function rollbackRegistration(userId: string, orgId?: string) {
+  const admin = createAdminClient();
+  try {
+    if (orgId) {
+      await admin.from("organizations").delete().eq("id", orgId);
+    }
+    await admin.auth.admin.deleteUser(userId);
+  } catch (err) {
+    console.error("[rollbackRegistration] cleanup failed:", err);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// registerAndSetupWorkspace
+// Used for the anonymous onboarding path — registers the user,
+// signs them in server-side, then provisions the whole workspace.
+// Rolls back the auth user (and any partial org) on setup failure.
+// ─────────────────────────────────────────────────────────────
+export async function registerAndSetupWorkspace({
+  fullName,
+  email,
+  password,
+  orgName,
+  industry,
+  departments,
+  honeypot,
+}: {
+  fullName: string;
+  email: string;
+  password: string;
+  orgName: string;
+  industry: string;
+  departments: PendingDepartment[];
+  honeypot?: string;
+}): Promise<{ success: boolean; error?: string; orgId?: string; departmentMap?: Record<string, string> }> {
+  if (!fullName.trim()) return { success: false, error: "Full name is required." };
+
+  const registerResult = await registerUser({ email, password, fullName, honeypot });
+  if (!registerResult.success) return { success: false, error: registerResult.error };
+
+  // Honeypot triggered — silently succeed without provisioning
+  if (registerResult.userId === "bot-trap") return { success: true };
+
+  const userId = registerResult.userId!;
+
+  // Brief wait for the profile trigger to complete
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const signInResult = await signInUser({ email: normalizedEmail, password, honeypot });
+  if (!signInResult.success) {
+    await rollbackRegistration(userId);
+    return { success: false, error: "Account created but sign-in failed. Please log in manually." };
+  }
+
+  let orgId: string | undefined;
+  try {
+    const { orgId: createdOrgId, departmentMap } = await setupWorkspace(userId, orgName, industry, departments);
+    orgId = createdOrgId;
+
+    const admin = createAdminClient();
+    await admin.from("profiles").update({ onboarding_complete: true }).eq("id", userId);
+
+    return { success: true, orgId, departmentMap };
+  } catch (err: unknown) {
+    await rollbackRegistration(userId, orgId);
+    const message = err instanceof Error ? err.message : "Workspace setup failed.";
+    return { success: false, error: message };
+  }
 }
