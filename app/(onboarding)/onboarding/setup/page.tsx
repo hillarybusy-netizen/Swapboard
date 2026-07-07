@@ -7,7 +7,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { ChevronRight, ChevronLeft, Plus, X } from "lucide-react";
+
+const DEPARTMENT_COLOR_PALETTE = [
+  "#f97316",
+  "#ef4444",
+  "#8b5cf6",
+  "#6366f1",
+  "#3b82f6",
+  "#10b981",
+  "#ec4899",
+  "#f59e0b",
+  "#64748b",
+  "#14b8a6",
+  "#a855f7",
+  "#f43f5e",
+];
+
+function getNextDepartmentColor(departments: DepartmentTemplate[]): string {
+  const used = new Set(departments.map((d) => d.color));
+  const available = DEPARTMENT_COLOR_PALETTE.find((color) => !used.has(color));
+  if (available) return available;
+  return DEPARTMENT_COLOR_PALETTE[departments.length % DEPARTMENT_COLOR_PALETTE.length];
+}
 
 export default function SetupPage() {
   const router = useRouter();
@@ -20,7 +43,6 @@ export default function SetupPage() {
     if (!stored) { router.push("/onboarding/industry"); return; }
     setIndustry(stored);
 
-    // Restore previously entered org name / departments if user went back
     const savedSetup = sessionStorage.getItem("onboarding_setup");
     if (savedSetup) {
       try {
@@ -39,7 +61,7 @@ export default function SetupPage() {
   }
 
   function addDept() {
-    setDepartments((d) => [...d, { name: "", color: "#d4af37" }]);
+    setDepartments((d) => [...d, { name: "", color: getNextDepartmentColor(d) }]);
   }
 
   function updateDeptName(i: number, name: string) {
@@ -54,7 +76,6 @@ export default function SetupPage() {
       return;
     }
 
-    // Save to sessionStorage only — nothing written to DB yet
     sessionStorage.setItem("onboarding_setup", JSON.stringify({
       orgName: orgName.trim(),
       departments: departments.filter((d) => d.name.trim()),
@@ -67,8 +88,8 @@ export default function SetupPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center gap-2 md:gap-3 mb-8 md:mb-12 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
-        <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-1.5 md:gap-2">
+      <div className="flex items-center gap-2 mb-4 md:mb-5 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+        <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-1.5">
           <ChevronLeft className="w-3 h-3" /> Back
         </button>
         <span className="opacity-50">/</span>
@@ -77,9 +98,9 @@ export default function SetupPage() {
         <span>Infrastructure Setup</span>
       </div>
 
-      <div className="mb-8 md:mb-12">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white mb-4 leading-tight">
-          Initialize <br />
+      <div className="mb-5 md:mb-6">
+        <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-white mb-2 leading-tight">
+          Initialize{" "}
           <span className="text-gold-gradient">Your Workspace</span>
         </h1>
         <p className="text-white/40 text-sm font-medium max-w-lg">
@@ -87,62 +108,97 @@ export default function SetupPage() {
         </p>
       </div>
 
-      <form onSubmit={handleNext} className="space-y-8">
+      <form onSubmit={handleNext} className="space-y-4 md:space-y-5">
         {/* Org name */}
-        <div className="glass rounded-[1.5rem] md:rounded-[2rem] border-white/5 p-6 md:p-8 space-y-4 md:space-y-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-1 md:w-1.5 h-5 md:h-6 bg-gold rounded-full" />
-            <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[10px] md:text-[11px]">Identity</h2>
+        <div className="glass rounded-[1.25rem] md:rounded-[1.5rem] border border-white/5 p-5 md:p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-5 bg-gold rounded-full" />
+            <h2 className="font-black text-white uppercase tracking-widest text-[10px] md:text-[11px]">Identity</h2>
           </div>
-          <div className="space-y-2 md:space-y-3">
-            <Label htmlFor="orgName" className="text-[11px] md:text-xs font-bold text-white/50 ml-1">Organization / business name</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="orgName" className="text-[11px] md:text-xs font-bold text-white/50 ml-1">
+              Organization / business name
+            </Label>
             <Input
-              id="orgName" placeholder="e.g. Downtown Bistro..."
-              value={orgName} onChange={(e) => setOrgName(e.target.value)} required
-              className="h-12 md:h-14 bg-white/5 border-white/10 rounded-xl md:rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-base px-4"
+              id="orgName"
+              placeholder="e.g. Downtown Bistro..."
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
+              required
+              className="h-11 md:h-12 bg-white/5 border-white/10 rounded-xl md:rounded-2xl focus:ring-gold/50 focus:border-gold/50 text-base px-4"
             />
           </div>
         </div>
 
         {/* Departments */}
-        <div className="glass rounded-[1.5rem] md:rounded-[2rem] border-white/5 p-6 md:p-8 space-y-4 md:space-y-6">
-          <div className="flex items-center justify-between mb-2">
+        <div className="glass rounded-[1.25rem] md:rounded-[1.5rem] border border-white/5 p-5 md:p-6 space-y-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-1 md:w-1.5 h-5 md:h-6 bg-gold rounded-full" />
-              <h2 className="font-black text-lg tracking-tight text-white uppercase tracking-widest text-[10px] md:text-[11px]">Operational Nodes</h2>
+              <div className="w-1 h-5 bg-gold rounded-full" />
+              <h2 className="font-black text-white uppercase tracking-widest text-[10px] md:text-[11px]">Departments</h2>
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={addDept} className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[9px] md:text-[10px] uppercase tracking-widest px-0 md:px-3">
-              <Plus className="w-3 h-3 mr-1.5 md:mr-2" /> <span className="hidden sm:inline">Add Department</span><span className="sm:hidden">Add</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={addDept}
+              className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[9px] md:text-[10px] uppercase tracking-widest px-2 md:px-3"
+            >
+              <Plus className="w-3 h-3 mr-1.5" />
+              <span className="hidden sm:inline">Add Department</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </div>
 
-          <div className="grid gap-3">
+          <div className="grid gap-2.5">
             {departments.map((dept, i) => (
-              <div key={i} className="flex items-center gap-4 bg-white/[0.02] border border-white/5 p-4 rounded-2xl group transition-all hover:bg-white/[0.04]">
-                <div className="w-4 h-4 rounded-full shrink-0 shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-white/10" style={{ backgroundColor: dept.color }} />
+              <div
+                key={`${dept.color}-${i}`}
+                className={cn(
+                  "flex items-center gap-3 border p-3.5 md:p-4 rounded-xl md:rounded-2xl transition-all duration-300 group",
+                  "bg-white/[0.02] border-white/5 hover:border-gold/30 hover:bg-gold/[0.04]"
+                )}
+              >
+                <div
+                  className="w-4 h-4 rounded-full shrink-0 border border-white/10 shadow-[0_0_10px_rgba(0,0,0,0.4)]"
+                  style={{ backgroundColor: dept.color }}
+                />
                 <Input
                   value={dept.name}
                   onChange={(e) => updateDeptName(i, e.target.value)}
                   placeholder="Department name"
-                  className="bg-transparent border-none focus:ring-0 p-0 text-base font-semibold placeholder:text-white/10"
+                  className="bg-transparent border-none focus:ring-0 p-0 text-sm md:text-base font-semibold placeholder:text-white/10 h-auto"
                 />
-
-                <button type="button" onClick={() => removeDept(i)} className="text-white/20 hover:text-red-500 transition-colors p-2">
+                <button
+                  type="button"
+                  onClick={() => removeDept(i)}
+                  className="text-white/20 hover:text-red-400 transition-colors p-1.5 shrink-0"
+                  aria-label="Remove department"
+                >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
           </div>
+
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest px-1">
-            Additional departments can be configured in Master Settings.
+            Additional departments can be configured in Settings later.
           </p>
         </div>
 
-        <div className="flex justify-between items-center pt-8 border-t border-white/5">
-          <Button type="button" variant="ghost" onClick={() => router.back()} className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest">
-             Previous Step
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between mt-2 md:mt-4 pt-5 border-t border-white/5 gap-4">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.back()}
+            className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest"
+          >
+            Previous Step
           </Button>
-          <Button type="submit" className="h-14 px-10 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20">
+          <Button
+            type="submit"
+            className="h-12 px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 active:scale-95 transition-all"
+          >
             Continue <ChevronRight className="w-4 h-4" />
           </Button>
         </div>

@@ -1,11 +1,12 @@
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
+import { DecorativeBackdrop } from "@/components/layout/DecorativeBackdrop";
 
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-[#050505] relative flex flex-col">
-      <div className="absolute inset-0 bg-mesh opacity-20 -z-10 pointer-events-none" />
+      <DecorativeBackdrop />
 
-      <header className="flex items-center px-4 py-4 sm:px-6 sm:py-5 md:px-8 relative z-50 shrink-0">
+      <header className="flex items-center px-4 py-4 sm:px-6 sm:py-5 md:px-8 relative z-10 shrink-0">
         <AnimatedLogo size="sm" showText={true} />
       </header>
 
