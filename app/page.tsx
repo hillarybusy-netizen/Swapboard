@@ -69,7 +69,7 @@ export default async function LandingPage() {
 
   let user = null;
   let org = null;
-  let initials = "U";
+  let initials = "";
 
   if (hasSession) {
     const supabase = await createClient();
@@ -89,8 +89,16 @@ export default async function LandingPage() {
       } else {
         user = authUser;
         org = (profile as any)?.organization;
-        if (org?.name) {
+        // Prefer full name initials, fall back to org name — never use "U"
+        if (profile?.full_name) {
+          const parts = profile.full_name.trim().split(/\s+/);
+          initials = parts.length >= 2
+            ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+            : parts[0].substring(0, 2).toUpperCase();
+        } else if (org?.name) {
           initials = org.name.substring(0, 2).toUpperCase();
+        } else {
+          initials = "";
         }
       }
     }
@@ -102,7 +110,7 @@ export default async function LandingPage() {
     <div className="min-h-screen bg-[#050505] text-white selection:bg-gold/30 overflow-x-hidden">
       <LandingStructuredData />
       <LandingSmoothScroll />
-      <LandingNavbar user={user} logoUrl={logoUrl} initials={user ? initials : ""} />
+      <LandingNavbar user={user} logoUrl={logoUrl} initials={user ? initials : ""} orgName={org?.name ?? null} />
 
       <LandingHeroSection user={user} orgName={org?.name} />
       <LandingAnimatedStats />

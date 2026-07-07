@@ -11,6 +11,7 @@ interface LandingNavbarProps {
   user: any;
   logoUrl?: string | null;
   initials: string;
+  orgName?: string | null;
 }
 
 const NAV_LINKS = [
@@ -20,7 +21,7 @@ const NAV_LINKS = [
   { href: "#faq", label: "FAQ" },
 ];
 
-export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
+export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavbarProps) {
   const { scrollY } = useScroll();
   const [mounted, setMounted] = useState(false);
   const [heroHeight, setHeroHeight] = useState(600);
@@ -189,8 +190,43 @@ export function LandingNavbar({ user, logoUrl, initials }: LandingNavbarProps) {
                 ))}
               </nav>
 
-              <div className="pt-6 border-t border-white/10 sm:hidden">
-                <AuthButtons mobile />
+              <div className="pt-6 border-t border-white/10">
+                {user?.id && initials ? (
+                  /* Logged-in: profile card with avatar + org name */
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 glass rounded-2xl p-4 border border-white/10 hover:border-gold/30 hover:bg-white/5 transition-all group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/20 flex items-center justify-center text-gold text-sm font-black shrink-0">
+                      {initials}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-white truncate">
+                        {orgName || "My account"}
+                      </p>
+                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Go to dashboard →</p>
+                    </div>
+                  </Link>
+                ) : (
+                  /* Logged-out: Sign in + Try free */
+                  <div className="flex flex-col w-full gap-3">
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="text-sm font-medium text-white/50 hover:text-white transition-colors text-center py-3 glass rounded-2xl"
+                    >
+                      Sign in
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className="btn-gold font-bold text-center py-3.5 rounded-2xl w-full"
+                    >
+                      Try free
+                    </Link>
+                  </div>
+                )}
               </div>
             </motion.div>
           </>
