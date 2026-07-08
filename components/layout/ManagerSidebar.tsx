@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu,
   UserPlus,
+  Users,
   Bell,
   BarChart3,
 } from "lucide-react";
