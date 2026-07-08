@@ -278,12 +278,6 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            href="/analytics"
-            className="px-4 py-2 rounded-lg bg-gold/10 hover:bg-gold/20 border border-gold/30 text-gold text-xs font-black uppercase tracking-widest transition-all"
-          >
-            Analytics Report
-          </Link>
           <ExportReportDropdown data={{ metrics, swaps, orgName: org?.name ?? "Organization" }} />
           <AddShiftDialog orgId={orgId} departments={departments} profiles={workerProfiles} />
         </div>

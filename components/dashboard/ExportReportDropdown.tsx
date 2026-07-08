@@ -124,7 +124,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-[min(22rem,calc(100vw-1.5rem))] sm:w-96 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
           {/* Tab Navigation */}
           <div className="flex border-b border-white/10">
             {[
