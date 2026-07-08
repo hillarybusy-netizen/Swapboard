@@ -6,7 +6,7 @@ const svgProps = {
   viewBox: "0 0 48 48",
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.75,
+  strokeWidth: 2.5,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
 };
@@ -19,7 +19,7 @@ export function IndustryIcon({
   className?: string;
 }) {
   return (
-    <svg {...svgProps} className={cn("w-10 h-10 md:w-11 md:h-11", className)} aria-hidden>
+    <svg {...svgProps} className={cn("w-11 h-11 md:w-12 md:h-12", className)} aria-hidden>
       {type === "restaurant" && (
         <>
           {/* Fork & knife */}

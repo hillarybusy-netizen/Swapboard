@@ -62,10 +62,8 @@ export default function IndustryPage() {
 
               <div
                 className={cn(
-                  "w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center mb-4 border transition-colors duration-300",
-                  isSelected
-                    ? "bg-gold/15 border-gold/30 text-gold"
-                    : "bg-gold/5 border-gold/15 text-gold/70 group-hover:bg-gold/10 group-hover:border-gold/30 group-hover:text-gold"
+                  "mb-4 transition-colors duration-300",
+                  isSelected ? "text-gold" : "text-gold/70 group-hover:text-gold"
                 )}
               >
                 <IndustryIcon type={key} />

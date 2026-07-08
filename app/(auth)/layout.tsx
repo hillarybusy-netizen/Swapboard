@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <DecorativeBackdrop />
 
       <div className="w-full max-w-lg relative z-10 flex flex-col items-center gap-5 sm:gap-6">
-        <AnimatedLogo size="lg" showText={false} className="shrink-0" />
+        <AnimatedLogo size="xl" showText={false} className="shrink-0" />
         <div className="w-full">{children}</div>
       </div>
     </div>

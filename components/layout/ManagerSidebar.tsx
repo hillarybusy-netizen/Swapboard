@@ -37,24 +37,23 @@ function NavContent({ org, profile }: ManagerSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Brand Logo */}
-      <div className="mb-4">
-        <AnimatedLogo size="lg" showText={false} className="border-b border-white/5" />
+    <div className="flex flex-col h-full min-h-0">
+      <div className="shrink-0">
+        <div className="mb-4">
+          <AnimatedLogo size="lg" showText={false} className="border-b border-white/5" />
+        </div>
+
+        {org && (
+          <div className="px-8 mb-4">
+            <div className="px-4 py-3 rounded-2xl glass border-white/5 shadow-inner">
+              <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Organization</p>
+              <p className="text-sm font-bold truncate text-white/90">{org.name}</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Org Badge */}
-      {org && (
-        <div className="px-8 mb-6">
-          <div className="px-4 py-3 rounded-2xl glass border-white/5 shadow-inner">
-            <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Organization</p>
-            <p className="text-sm font-bold truncate text-white/90">{org.name}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-2 mt-2">
+      <nav className="flex-1 min-h-0 overflow-y-auto px-4 space-y-2 py-2 no-scrollbar">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
@@ -76,7 +75,7 @@ function NavContent({ org, profile }: ManagerSidebarProps) {
       </nav>
 
       {/* User Session */}
-      <div className="p-4 mt-auto">
+      <div className="p-4 shrink-0 border-t border-white/5">
         <form action={signOut}>
           <button
             type="submit"
@@ -105,7 +104,7 @@ export function ManagerSidebar({ org, profile }: ManagerSidebarProps = {}) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-[#050505] h-screen sticky top-0 border-r border-white/5 relative overflow-hidden">
+      <aside className="hidden md:flex flex-col w-64 bg-[#050505] h-dvh sticky top-0 border-r border-white/5 relative">
         <div className="absolute inset-0 bg-mesh opacity-20 -z-10" />
         <NavContent org={org} profile={profile} />
       </aside>
@@ -117,7 +116,7 @@ export function ManagerSidebar({ org, profile }: ManagerSidebarProps = {}) {
             <Menu className="w-5 h-5" />
           </button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0 bg-[#050505] border-white/5">
+        <SheetContent side="left" className="w-64 p-0 bg-[#050505] border-white/5 h-full flex flex-col">
           <NavContent org={org} profile={profile} />
         </SheetContent>
       </Sheet>

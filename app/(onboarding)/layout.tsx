@@ -7,7 +7,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
       <DecorativeBackdrop />
 
       <header className="flex items-center px-4 py-4 sm:px-6 sm:py-5 md:px-8 relative z-10 shrink-0">
-        <AnimatedLogo size="sm" showText={true} />
+        <AnimatedLogo size="lg" showText={true} />
       </header>
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 pb-6 sm:px-6 sm:pb-8 md:px-8 relative z-10">
