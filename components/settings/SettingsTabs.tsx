@@ -5,8 +5,18 @@ import { OrgSettings } from "@/components/settings/OrgSettings";
 import { DepartmentEditor } from "@/components/settings/DepartmentEditor";
 import { BillingSettings } from "@/components/settings/BillingSettings";
 import { InviteTeam } from "@/components/settings/InviteTeam";
+import { AccountSettings } from "@/components/settings/AccountSettings";
+import { NotificationSettings } from "@/components/settings/NotificationSettings";
+import { PendingInvitesSettings } from "@/components/settings/PendingInvitesSettings";
 import { cn } from "@/lib/utils";
-import type { Organization } from "@/lib/database.types";
+import type { Organization, Profile, Json } from "@/lib/database.types";
+
+interface PendingInvite {
+  id: string;
+  email: string | null;
+  user_role: string;
+  created_at: string;
+}
 
 interface SettingsTabsProps {
   defaultTab: string;
@@ -14,17 +24,24 @@ interface SettingsTabsProps {
   org: Organization | null;
   userId: string;
   userEmail: string | undefined;
+  profile: Profile;
   departments: any[];
   orgId: string;
   profileCount: number;
+  pendingInvites: PendingInvite[];
 }
 
 const TABS = [
   { value: "org", label: "Organization" },
+  { value: "account", label: "Account" },
   { value: "departments", label: "Departments" },
   { value: "team", label: "Invite Team" },
+  { value: "invites", label: "Invitations" },
+  { value: "notifications", label: "Notifications" },
   { value: "billing", label: "Billing" },
 ] as const;
+
+const EXPIRED_DISABLED = new Set(["org", "departments", "team", "invites"]);
 
 export function SettingsTabs({
   defaultTab,
@@ -32,9 +49,11 @@ export function SettingsTabs({
   org,
   userId,
   userEmail,
+  profile,
   departments,
   orgId,
   profileCount,
+  pendingInvites,
 }: SettingsTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
 
@@ -42,7 +61,7 @@ export function SettingsTabs({
     <Tabs value={activeTab} onValueChange={setActiveTab} className="px-1 md:px-2">
       <TabsList className="bg-white/5 p-1 rounded-full border border-white/5 h-11 md:h-12 flex gap-1 w-full md:w-fit mb-8 md:mb-10 overflow-x-auto no-scrollbar">
         {TABS.map((tab) => {
-          const isDisabled = expired && tab.value !== "billing";
+          const isDisabled = expired && EXPIRED_DISABLED.has(tab.value);
           return (
             <TabsTrigger
               key={tab.value}
@@ -54,6 +73,11 @@ export function SettingsTabs({
               )}
             >
               {tab.label}
+              {tab.value === "invites" && pendingInvites.length > 0 && (
+                <span className="ml-1.5 w-4 h-4 rounded-full bg-gold/30 text-[8px] font-black text-gold inline-flex items-center justify-center">
+                  {pendingInvites.length}
+                </span>
+              )}
             </TabsTrigger>
           );
         })}
@@ -62,12 +86,28 @@ export function SettingsTabs({
       <div className="glass rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 border-white/5 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-3xl -z-10" />
 
-        {activeTab === "org" && <OrgSettings org={org} userId={userId} />}
+        {activeTab === "org" && (
+          <OrgSettings
+            org={org}
+            userId={userId}
+            profileCount={profileCount}
+            departmentCount={departments.length}
+          />
+        )}
+        {activeTab === "account" && (
+          <AccountSettings profile={profile} userEmail={userEmail} />
+        )}
         {activeTab === "departments" && (
           <DepartmentEditor departments={departments} orgId={orgId} org={org} />
         )}
         {activeTab === "team" && (
           <InviteTeam orgId={orgId} departments={departments} org={org} profileCount={profileCount} />
+        )}
+        {activeTab === "invites" && (
+          <PendingInvitesSettings invites={pendingInvites} />
+        )}
+        {activeTab === "notifications" && (
+          <NotificationSettings preferences={profile.notification_preferences as Json} />
         )}
         {activeTab === "billing" && (
           <Suspense fallback={null}>

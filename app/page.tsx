@@ -136,7 +136,7 @@ export default async function LandingPage() {
               <GlassTiltCard intensity={6}>
                 <div className="card-premium p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] flex flex-col group overflow-hidden h-full">
                   <FeatureCardVisual iconName={f.iconKey} />
-                  <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors">
+                  <div className="mb-4">
                     <f.icon className="w-5 h-5 text-gold" />
                   </div>
                   <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3">{f.title}</h3>

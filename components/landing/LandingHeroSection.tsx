@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Gift, Infinity as InfinityIcon } from "lucide-react";
+import { Gift } from "lucide-react";
 import { LandingHeroPreview } from "@/components/landing/LandingHeroPreview";
 import { FadeUpOnScroll } from "@/components/animations/ScrollAnimations";
 
@@ -18,7 +18,7 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
   return (
     <section
       data-hero-section
-      className="relative pt-28 sm:pt-36 md:pt-44 pb-16 sm:pb-20 md:pb-32 lg:min-h-screen lg:flex lg:items-center px-4 sm:px-6 overflow-hidden"
+      className="relative pt-20 sm:pt-24 md:pt-28 pb-16 sm:pb-20 md:pb-32 lg:min-h-screen lg:flex lg:items-center px-4 sm:px-6 overflow-hidden"
     >
       <div className="absolute inset-0 z-0">
         <Image
@@ -40,21 +40,23 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
 
       <div className="absolute inset-0 noise-overlay z-[2] pointer-events-none" />
 
-      <div className="relative z-[3] w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 pt-6 sm:pt-10">
+      <div className="relative z-[3] w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 pt-2 sm:pt-4">
         <div className="flex-1 text-center lg:text-left lg:pl-4 xl:pl-12 w-full">
           <FadeUpOnScroll>
             <h1 className="text-[1.75rem] xs:text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] xl:text-6xl font-display font-bold tracking-tight mb-6 sm:mb-8 leading-[1.12] md:leading-[1.05]">
-              <span className="text-white">Create </span>
-              <span className="text-white/40 font-light">a system </span>
-              <span className="text-white">of stable </span>
+              <span className="text-white">24/7 </span>
+              <span className="text-white/40 font-light">shift coverage </span>
               <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-0.5 sm:mx-2 align-middle">
-                <InfinityIcon className="w-5 h-5 md:w-6 md:h-6 text-gold" />
+                <Image
+                  src="/logo.png"
+                  alt="SwapBoard logo"
+                  width={24}
+                  height={24}
+                  className="w-5 h-5 md:w-6 md:h-6 object-contain"
+                />
               </span>
-              <span className="text-white">coverage </span>
-              <span className="text-white/40 font-light">where staff </span>
-              <span className="text-white">trade shifts </span>
-              <span className="text-white">for </span>
-              <span className="text-gold-gradient block sm:inline mt-1 sm:mt-0">your business 24/7</span>
+              <span className="text-white">on </span>
+              <span className="text-gold-gradient block sm:inline mt-1 sm:mt-0">autopilot.</span>
             </h1>
           </FadeUpOnScroll>
 

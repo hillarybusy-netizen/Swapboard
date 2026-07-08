@@ -30,7 +30,7 @@ const NAV_ITEMS = [
   { href: "/admin/claims",    label: "Shift Claims", icon: UserPlus },
   { href: "/analytics",       label: "Analytics", icon: BarChart3 },
   { href: "/team",            label: "Team", icon: Users },
-  { href: "/admin/settings",  label: "Settings", icon: Settings },
+  { href: "/settings",            label: "Settings", icon: Settings },
 ];
 
 interface AdminSidebarProps {

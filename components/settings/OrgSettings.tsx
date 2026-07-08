@@ -8,14 +8,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
-import { updateOrganizationName, updateOrganizationLogo } from "@/lib/actions/org";
+import { updateOrganizationLogo } from "@/lib/actions/org";
 import { toast } from "@/hooks/use-toast";
 import { INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
-import { Loader2, Upload } from "lucide-react";
+import { getTrialStatus } from "@/lib/trial";
+import { PLAN_LIMITS } from "@/lib/plans";
+import { Loader2, Upload, Users, Building2, CreditCard, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Organization } from "@/lib/database.types";
+import type { Organization, Plan } from "@/lib/database.types";
 
-export function OrgSettings({ org, userId }: { org: Organization | null; userId: string }) {
+interface OrgSettingsProps {
+  org: Organization | null;
+  userId: string;
+  profileCount: number;
+  departmentCount: number;
+}
+
+export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgSettingsProps) {
   const router = useRouter();
   const [name, setName] = useState(org?.name ?? "");
   const [loading, setLoading] = useState(false);
@@ -24,6 +33,9 @@ export function OrgSettings({ org, userId }: { org: Organization | null; userId:
 
   const logoUrl = (org?.settings as any)?.logo_url;
   const initials = org?.name ? org.name.substring(0, 2).toUpperCase() : "O";
+  const plan = (org?.plan as Plan) ?? "trial";
+  const planInfo = PLAN_LIMITS[plan];
+  const trial = getTrialStatus(org);
 
   async function handleSave() {
     if (!org) return;
@@ -77,6 +89,56 @@ export function OrgSettings({ org, userId }: { org: Organization | null; userId:
   }
 
   return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl font-black text-white tracking-tight">Organization</h2>
+        <p className="text-sm text-white/40 mt-1">Workspace details and usage overview</p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="glass rounded-2xl border border-white/5 p-4">
+          <div className="flex items-center gap-2 text-white/30 mb-2">
+            <CreditCard className="w-3.5 h-3.5" />
+            <span className="text-[9px] font-black uppercase tracking-widest">Plan</span>
+          </div>
+          <p className="text-sm font-black text-white">{planInfo.label}</p>
+          {trial.isOnTrial && !trial.isExpired && (
+            <p className="text-[10px] text-gold/70 mt-1 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {trial.daysRemaining} days left
+            </p>
+          )}
+        </div>
+        <div className="glass rounded-2xl border border-white/5 p-4">
+          <div className="flex items-center gap-2 text-white/30 mb-2">
+            <Users className="w-3.5 h-3.5" />
+            <span className="text-[9px] font-black uppercase tracking-widest">Members</span>
+          </div>
+          <p className="text-sm font-black text-white">
+            {profileCount}
+            <span className="text-white/30 font-bold"> / {planInfo.maxWorkers}</span>
+          </p>
+        </div>
+        <div className="glass rounded-2xl border border-white/5 p-4">
+          <div className="flex items-center gap-2 text-white/30 mb-2">
+            <Building2 className="w-3.5 h-3.5" />
+            <span className="text-[9px] font-black uppercase tracking-widest">Departments</span>
+          </div>
+          <p className="text-sm font-black text-white">
+            {departmentCount}
+            <span className="text-white/30 font-bold"> / {planInfo.maxDepartments}</span>
+          </p>
+        </div>
+        <div className="glass rounded-2xl border border-white/5 p-4">
+          <div className="flex items-center gap-2 text-white/30 mb-2">
+            <span className="text-[9px] font-black uppercase tracking-widest">Industry</span>
+          </div>
+          <p className="text-sm font-black text-white truncate">
+            {org ? `${INDUSTRY_ICONS[org.industry]} ${INDUSTRY_LABELS[org.industry]}` : "—"}
+          </p>
+        </div>
+      </div>
+
     <Card>
       <CardHeader>
         <CardTitle>Organization details</CardTitle>
@@ -130,5 +192,6 @@ export function OrgSettings({ org, userId }: { org: Organization | null; userId:
         </Button>
       </CardContent>
     </Card>
+    </div>
   );
 }

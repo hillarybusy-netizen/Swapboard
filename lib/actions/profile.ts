@@ -42,6 +42,49 @@ export async function updateProfile(formData: FormData) {
 
   revalidatePath("/my-profile");
   revalidatePath("/home");
+  revalidatePath("/settings");
+  revalidatePath("/admin/settings");
+
+  return { success: true };
+}
+
+export async function updateNotificationPreferences(prefs: {
+  in_app: boolean;
+  email_immediate: boolean;
+  email_digest: boolean;
+}) {
+  const { supabase, user } = await getAuthenticatedUser();
+
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("notification_preferences")
+    .eq("id", user.id)
+    .single();
+
+  const current = (existing?.notification_preferences as Record<string, unknown>) || {};
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      notification_preferences: {
+        ...current,
+        in_app: prefs.in_app,
+        email: {
+          ...(typeof current.email === "object" && current.email !== null ? current.email : {}),
+          immediate: prefs.email_immediate,
+          digest: prefs.email_digest,
+          frequency: "daily",
+          digest_time: "06:00",
+        },
+      },
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  if (error) throw error;
+
+  revalidatePath("/settings");
+  revalidatePath("/admin/settings");
 
   return { success: true };
 }
@@ -120,6 +163,8 @@ export async function updateUserTimezone(timezone: string) {
       .eq("id", user.id);
 
     if (error) throw new Error(error.message);
+    revalidatePath("/settings");
+    revalidatePath("/admin/settings");
     return { success: true };
   } catch {
     // Silently fail if not authenticated

@@ -286,8 +286,8 @@ export default async function AdminDashboardPage() {
             className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border-white/5 relative overflow-hidden"
           >
             <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} blur-3xl -z-10`} />
-            <div className={`inline-flex p-2 rounded-xl ${stat.bg} mb-3`}>
-              <stat.icon className={`w-5 h-5 ${stat.color}`} />
+            <div className="mb-3">
+              <stat.icon className={`w-6 h-6 ${stat.color}`} strokeWidth={2.5} />
             </div>
             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">
               {stat.label}
@@ -347,10 +347,8 @@ export default async function AdminDashboardPage() {
               </div>
             )}
             <div className="absolute top-0 right-0 w-24 h-24 bg-white/[0.02] blur-2xl group-hover:bg-gold/[0.05] transition-colors" />
-            <div
-              className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gold/10 flex items-center justify-center mb-4 md:mb-6 border border-white/5`}
-            >
-              <kpi.icon className="w-5 h-5 md:w-6 md:h-6 text-gold" />
+            <div className="mb-4 md:mb-6">
+              <kpi.icon className={`w-6 h-6 md:w-7 md:h-7 ${kpi.color}`} strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
               <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30">

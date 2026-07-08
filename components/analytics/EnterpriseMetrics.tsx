@@ -29,9 +29,7 @@ export function EnterpriseMetrics({
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center border border-emerald-500/20">
-              <span className="text-2xl font-black text-emerald-400">{workerEngagementScore}%</span>
-            </div>
+            <p className="text-3xl font-black text-white tabular-nums">{workerEngagementScore}%</p>
             <div>
               <p className="text-[10px] text-white/40 uppercase font-bold">Score</p>
               <p className="text-xs text-white/60">Based on swap participation</p>
@@ -47,9 +45,7 @@ export function EnterpriseMetrics({
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center border border-blue-500/20">
-              <span className="text-2xl font-black text-blue-400">{shiftCoverageRate}%</span>
-            </div>
+            <p className="text-3xl font-black text-white tabular-nums">{shiftCoverageRate}%</p>
             <div>
               <p className="text-[10px] text-white/40 uppercase font-bold">Rate</p>
               <p className="text-xs text-white/60">Swaps with coverage</p>
@@ -65,7 +61,7 @@ export function EnterpriseMetrics({
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <Zap className="w-8 h-8 text-yellow-400/60" />
+            <Zap className="w-7 h-7 text-yellow-400/60" strokeWidth={2.5} />
             <div>
               <p className="text-2xl font-black">{overtimeAvoided.toFixed(1)}h</p>
               <p className="text-[10px] text-white/40 uppercase font-bold">Shift hours</p>
@@ -101,7 +97,7 @@ export function EnterpriseMetrics({
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <TrendingDown className="w-8 h-8 text-red-400/60" />
+            <TrendingDown className="w-7 h-7 text-red-400/60" strokeWidth={2.5} />
             <div>
               <p className="text-2xl font-black">{cancellationRate}%</p>
               <p className="text-[10px] text-white/40 uppercase font-bold">Of requests</p>
@@ -118,7 +114,7 @@ export function EnterpriseMetrics({
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
-              <Clock className="w-8 h-8 text-purple-400/60" />
+              <Clock className="w-7 h-7 text-purple-400/60" strokeWidth={2.5} />
               <div>
                 <p className="text-2xl font-black">{avgFulfillmentTime.toFixed(1)}h</p>
                 <p className="text-[10px] text-white/40 uppercase font-bold">To approve</p>
