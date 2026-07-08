@@ -16,7 +16,7 @@ import type { Department, Profile } from "@/lib/database.types";
 
 interface Props {
   departments: Department[];
-  profiles: Pick<Profile, "id" | "full_name" | "department_id">[];
+  profiles: Pick<Profile, "id" | "full_name" | "department_id" | "department_ids">[];
   orgId: string;
 }
 
@@ -42,7 +42,11 @@ export function AddShiftDialog({ departments, profiles, orgId }: Props) {
   const filteredProfiles = form.department_id
     ? isGeneralDept
       ? [] // General department only allows open shifts
-      : profiles.filter(p => p.department_id === form.department_id)
+      : profiles.filter(
+          (p) =>
+            p.department_id === form.department_id ||
+            (Array.isArray(p.department_ids) && p.department_ids.includes(form.department_id))
+        )
     : profiles;
 
   // Convert a datetime-local string (browser local time) to UTC ISO string.

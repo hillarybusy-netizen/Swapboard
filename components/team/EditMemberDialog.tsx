@@ -77,7 +77,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
           <Settings2 className="w-3.5 h-3.5" />
         </button>
       </DialogTrigger>
-      <DialogContent className="glass border-white/10 max-w-[425px] overflow-hidden rounded-[2.5rem] p-0 gap-0 fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[90vw]">
+      <DialogContent className="glass border-white/10 w-[92vw] max-w-md rounded-[2rem] p-0 gap-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[80px] pointer-events-none" />
         
         <div className="p-8">

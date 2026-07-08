@@ -43,16 +43,16 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
       <div className="relative z-[3] w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 pt-2 sm:pt-4">
         <div className="flex-1 text-center lg:text-left lg:pl-4 xl:pl-12 w-full">
           <FadeUpOnScroll>
-            <h1 className="text-[1.75rem] xs:text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] xl:text-6xl font-display font-bold tracking-tight mb-6 sm:mb-8 leading-[1.12] md:leading-[1.05]">
+            <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-display font-bold tracking-tight mb-6 sm:mb-8 leading-[1.06] md:leading-[1.02]">
               <span className="text-white">24/7 </span>
               <span className="text-white/40 font-light">shift coverage </span>
-              <span className="inline-flex items-center justify-center bg-gold/10 border border-gold/30 rounded-xl p-1.5 mx-0.5 sm:mx-2 align-middle">
+              <span className="inline-flex items-center justify-center mx-1 sm:mx-2 align-middle">
                 <Image
                   src="/logo.png"
                   alt="SwapBoard logo"
-                  width={24}
-                  height={24}
-                  className="w-5 h-5 md:w-6 md:h-6 object-contain"
+                  width={44}
+                  height={44}
+                  className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 object-contain"
                 />
               </span>
               <span className="text-white">on </span>
@@ -89,6 +89,12 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
                   >
                     <Gift className="w-4 h-4" />
                     <span>14-day free trial included</span>
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="sm:hidden text-[11px] font-bold tracking-wide text-white/60 hover:text-gold transition-colors"
+                  >
+                    Already swapping? <span className="text-gold">Log in now</span>
                   </Link>
                 </>
               )}

@@ -145,7 +145,7 @@ export default async function DashboardPage() {
     // Profiles for PostShiftDialog (only workers)
     addDeptScope(supabase
       .from("profiles")
-      .select("id, full_name, department_id")
+      .select("id, full_name, department_id, department_ids")
       .eq("organization_id", orgId)
       .eq("is_active", true)
       .eq("user_role", "worker")

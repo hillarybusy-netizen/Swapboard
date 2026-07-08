@@ -26,11 +26,8 @@ export default async function TeamPage() {
   const orgId = profile?.organization_id;
   const org = (profile as any)?.organization;
   if (!orgId || !org) redirect("/onboarding/industry");
+  const isReadOnlyManager = profile?.user_role === "manager";
 
-  // Only admins can access team management
-  if (profile?.user_role === "manager") {
-    redirect("/dashboard");
-  }
 
   const [
     { data: membersData },
@@ -59,6 +56,37 @@ export default async function TeamPage() {
   const members = (membersData ?? []) as any[];
   const pendingInvites = (pendingInvitesData ?? []) as any[];
   const departments = (departmentsData ?? []) as any[];
+  const departmentsById = new Map(departments.map((d) => [d.id, d]));
+
+  const getMemberDepartments = (member: any) => {
+    const seen = new Set<string>();
+    const list: any[] = [];
+
+    if (member.department?.id && !seen.has(member.department.id)) {
+      seen.add(member.department.id);
+      list.push(member.department);
+    }
+
+    if (Array.isArray(member.department_ids)) {
+      for (const deptId of member.department_ids) {
+        if (!deptId || seen.has(deptId)) continue;
+        const dept = departmentsById.get(deptId);
+        if (!dept) continue;
+        seen.add(deptId);
+        list.push(dept);
+      }
+    }
+
+    if (member.department_id && !seen.has(member.department_id)) {
+      const dept = departmentsById.get(member.department_id);
+      if (dept) {
+        seen.add(member.department_id);
+        list.push(dept);
+      }
+    }
+
+    return list;
+  };
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto pb-10">
@@ -69,18 +97,22 @@ export default async function TeamPage() {
             Staff Overview · <span className="text-gold/60">{members.length} Active Members</span>
           </p>
         </div>
-        <AddShiftDialog orgId={orgId} departments={departments} profiles={members} />
+        {!isReadOnlyManager && (
+          <AddShiftDialog orgId={orgId} departments={departments} profiles={members} />
+        )}
       </div>
 
       {/* Add Team Section */}
-      <div className="px-1 md:px-2">
-        <InviteTeam 
-          orgId={orgId} 
-          departments={departments} 
-          org={org} 
-          profileCount={members.length + pendingInvites.length} 
-        />
-      </div>
+      {!isReadOnlyManager && (
+        <div className="px-1 md:px-2">
+          <InviteTeam 
+            orgId={orgId} 
+            departments={departments} 
+            org={org} 
+            profileCount={members.length + pendingInvites.length} 
+          />
+        </div>
+      )}
 
       <div className="px-1 md:px-2 pt-6 border-t border-white/5">
         <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Internal Staff</h2>
@@ -107,12 +139,12 @@ export default async function TeamPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-base md:text-lg font-black tracking-tight text-white mb-1 truncate">{member.full_name ?? "Unknown"}</h3>
                     <div className="flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30 flex-wrap">
-                      {member.department?.name && (
-                        <span className="flex items-center gap-1.5 md:gap-2">
-                          <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full" style={{ backgroundColor: member.department.color }} />
-                          {member.department.name}
+                      {getMemberDepartments(member).map((dept: any) => (
+                        <span key={`${member.id}-${dept.id}`} className="flex items-center gap-1.5 md:gap-2">
+                          <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full" style={{ backgroundColor: dept.color }} />
+                          {dept.name}
                         </span>
-                      )}
+                      ))}
 
                       {member.member_id && (
                         <>
@@ -165,7 +197,7 @@ export default async function TeamPage() {
                     <Badge className="bg-white/5 text-white/40 rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest border-none shrink-0">
                       {inv.user_role}
                     </Badge>
-                    <RevokeInviteButton id={inv.id} />
+                    {!isReadOnlyManager && <RevokeInviteButton id={inv.id} />}
                   </div>
                 </div>
               </div>

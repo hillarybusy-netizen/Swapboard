@@ -25,6 +25,7 @@ const NAV_ITEMS = [
   { href: "/shifts", label: "Shifts", icon: Calendar },
   { href: "/swaps", label: "Swap Requests", icon: ArrowLeftRight },
   { href: "/claims", label: "Shift Claims", icon: UserPlus },
+  { href: "/team", label: "Team", icon: Users },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 

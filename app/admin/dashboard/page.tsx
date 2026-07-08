@@ -49,6 +49,7 @@ export default async function AdminDashboardPage() {
   const [
     { data: swapsData },
     { data: pendingSwapsData },
+    { data: pendingInvitesData },
     { data: atRiskShiftsData },
     { data: departmentsData },
     { data: profilesData },
@@ -84,6 +85,15 @@ export default async function AdminDashboardPage() {
       .order("created_at", { ascending: false })
       .limit(5),
 
+    // Pending invitations (admin visibility only)
+    supabase
+      .from("invitations")
+      .select("id, email, user_role, created_at")
+      .eq("organization_id", orgId)
+      .is("accepted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(6),
+
     // At-risk shifts (within 48h)
     supabase
       .from("shifts")
@@ -106,7 +116,7 @@ export default async function AdminDashboardPage() {
     // Worker profiles
     supabase
       .from("profiles")
-      .select("id, full_name, department_id, user_role")
+      .select("id, full_name, department_id, department_ids, user_role")
       .eq("organization_id", orgId)
       .eq("is_active", true)
       .order("full_name"),
@@ -147,6 +157,7 @@ export default async function AdminDashboardPage() {
 
   const swaps = (swapsData ?? []) as any[];
   const pendingSwaps = (pendingSwapsData ?? []) as any[];
+  const pendingInvites = (pendingInvitesData ?? []) as any[];
   const atRiskShifts = (atRiskShiftsData ?? []) as any[];
   const departments = (departmentsData ?? []) as any[];
   const profiles = (profilesData ?? []) as any[];
@@ -559,6 +570,43 @@ export default async function AdminDashboardPage() {
                       shiftTitle={shift.title}
                       workerName={shift.profile?.full_name}
                     />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pending Invitations (admin only) */}
+          {pendingInvites.length > 0 && (
+            <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-base font-black tracking-tight text-white">Pending Invitations</h2>
+                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">
+                    Awaiting Team Acceptance
+                  </p>
+                </div>
+                <Link
+                  href="/team"
+                  className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold/20 hover:text-gold transition-all"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+              <div className="space-y-3">
+                {pendingInvites.map((invite: any) => (
+                  <div
+                    key={invite.id}
+                    className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/5"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-white truncate">
+                        {invite.email ?? "Manual link invite"}
+                      </p>
+                      <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-0.5">
+                        {invite.user_role} · {new Date(invite.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>

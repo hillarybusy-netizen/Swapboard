@@ -55,6 +55,30 @@ export default function LoginPage() {
         return;
       }
 
+      // Guard against partial/invalid accounts with no organization.
+      // Keep user on login with a clear message instead of redirecting to onboarding.
+      const {
+        data: { user: signedInUser },
+      } = await supabase.auth.getUser();
+      const currentUserId = signedInUser?.id;
+      if (!currentUserId) {
+        await supabase.auth.signOut();
+        setShowNoAccount(true);
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("organization_id")
+        .eq("id", currentUserId)
+        .maybeSingle();
+
+      if (!profile?.organization_id) {
+        await supabase.auth.signOut();
+        setShowNoAccount(true);
+        return;
+      }
+
       if (res.userRole === "worker") {
         router.push("/home");
       } else if (res.userRole === "org_admin") {
