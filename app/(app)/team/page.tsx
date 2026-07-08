@@ -61,20 +61,27 @@ export default async function TeamPage() {
   const getMemberDepartments = (member: any) => {
     const seen = new Set<string>();
     const list: any[] = [];
+    const departmentIds = Array.isArray(member.department_ids)
+      ? member.department_ids
+      : typeof member.department_ids === "string"
+        ? member.department_ids
+            .replace(/[{}]/g, "")
+            .split(",")
+            .map((id: string) => id.trim())
+            .filter(Boolean)
+        : [];
 
     if (member.department?.id && !seen.has(member.department.id)) {
       seen.add(member.department.id);
       list.push(member.department);
     }
 
-    if (Array.isArray(member.department_ids)) {
-      for (const deptId of member.department_ids) {
-        if (!deptId || seen.has(deptId)) continue;
-        const dept = departmentsById.get(deptId);
-        if (!dept) continue;
-        seen.add(deptId);
-        list.push(dept);
-      }
+    for (const deptId of departmentIds) {
+      if (!deptId || seen.has(deptId)) continue;
+      const dept = departmentsById.get(deptId);
+      if (!dept) continue;
+      seen.add(deptId);
+      list.push(dept);
     }
 
     if (member.department_id && !seen.has(member.department_id)) {
@@ -86,6 +93,17 @@ export default async function TeamPage() {
     }
 
     return list;
+  };
+
+  const getMemberDepartmentLabel = (member: any) => {
+    const departments = getMemberDepartments(member);
+    if (departments.length > 0) {
+      return departments.map((dept: any) => dept.name).join(", ");
+    }
+    if (member.user_role === "manager" && member.manager_type === "general") {
+      return "All Departments";
+    }
+    return "No Department";
   };
 
   return (
@@ -139,18 +157,14 @@ export default async function TeamPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-base md:text-lg font-black tracking-tight text-white mb-1 truncate">{member.full_name ?? "Unknown"}</h3>
                     <div className="flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30 flex-wrap">
-                      {getMemberDepartments(member).map((dept: any) => (
-                        <span key={`${member.id}-${dept.id}`} className="flex items-center gap-1.5 md:gap-2">
-                          <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full" style={{ backgroundColor: dept.color }} />
-                          {dept.name}
-                        </span>
-                      ))}
-
-                      {member.member_id && (
+                      {member.member_id ? (
                         <>
-                          <span>·</span>
                           <span className="text-white/40">{member.member_id}</span>
+                          <span>·</span>
+                          <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
                         </>
+                      ) : (
+                        <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
                       )}
                     </div>
                   </div>

@@ -77,10 +77,10 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
           <Settings2 className="w-3.5 h-3.5" />
         </button>
       </DialogTrigger>
-      <DialogContent className="glass border-white/10 w-[92vw] max-w-md rounded-[2rem] p-0 gap-0 overflow-hidden max-h-[90vh] overflow-y-auto">
+      <DialogContent className="glass border-white/10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-1rem)] max-w-md rounded-[2rem] p-0 gap-0 max-h-[85vh] overflow-y-auto">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[80px] pointer-events-none" />
         
-        <div className="p-8">
+        <div className="p-5 sm:p-8">
           <DialogHeader className="mb-6">
             <DialogTitle className="text-2xl font-black text-white">Edit Assignment</DialogTitle>
             <p className="text-sm text-white/40 font-medium">Configure departments for {memberName}</p>

@@ -223,9 +223,6 @@ export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavba
                 ) : (
                   /* Logged-out: Sign in + Try free */
                   <div className="flex flex-col w-full gap-3">
-                    <p className="text-[11px] font-bold text-white/55 text-center tracking-wide">
-                      Already swapping? <span className="text-gold">Log in now</span>
-                    </p>
                     <Link
                       href="/login"
                       onClick={() => setMobileOpen(false)}
