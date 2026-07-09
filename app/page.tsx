@@ -6,7 +6,7 @@ import { LandingStructuredData } from "@/components/seo/StructuredData";
 import { LandingFaq } from "@/components/seo/LandingFaq";
 
 export const metadata: Metadata = landingMetadata;
-import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3 } from "lucide-react";
+import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, Twitter, Linkedin, Github } from "lucide-react";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
 import { LandingCoverageVisual, LandingVerificationVisual, LandingAnalyticsVisual } from "@/components/landing/LandingShowcaseCards";
@@ -272,15 +272,15 @@ export default async function LandingPage() {
           <div className="pt-6 sm:pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
             <p className="text-xs text-white/20 font-medium text-center sm:text-left">© 2026 SwapBoard Inc. All rights reserved.</p>
             <div className="flex gap-6 sm:gap-8">
-              {["Twitter", "LinkedIn", "GitHub"].map((social) => (
-                <div
-                  key={social}
-                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-gold/10 border border-white/5 hover:border-gold/20 transition-all cursor-pointer flex items-center justify-center"
-                  title={social}
-                >
-                  <span className="text-[8px] font-bold text-white/30">{social[0]}</span>
-                </div>
-              ))}
+              <a href="#" className="w-8 h-8 rounded-full bg-white/5 hover:bg-gold/10 border border-white/5 hover:border-gold/20 transition-all cursor-pointer flex items-center justify-center text-white/30 hover:text-gold" title="Twitter">
+                <Twitter className="w-3.5 h-3.5" />
+              </a>
+              <a href="#" className="w-8 h-8 rounded-full bg-white/5 hover:bg-gold/10 border border-white/5 hover:border-gold/20 transition-all cursor-pointer flex items-center justify-center text-white/30 hover:text-gold" title="LinkedIn">
+                <Linkedin className="w-3.5 h-3.5" />
+              </a>
+              <a href="#" className="w-8 h-8 rounded-full bg-white/5 hover:bg-gold/10 border border-white/5 hover:border-gold/20 transition-all cursor-pointer flex items-center justify-center text-white/30 hover:text-gold" title="GitHub">
+                <Github className="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
         </div>

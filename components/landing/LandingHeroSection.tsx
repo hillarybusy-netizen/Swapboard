@@ -46,13 +46,13 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
             <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-display font-bold tracking-tight mb-6 sm:mb-8 leading-[1.06] md:leading-[1.02]">
               <span className="text-white">24/7 </span>
               <span className="text-white/40 font-light">shift coverage </span>
-              <span className="inline-flex items-center justify-center mx-1 sm:mx-2 align-middle">
+              <span className="inline-flex items-center justify-center mx-2 sm:mx-3 align-middle">
                 <Image
                   src="/logo.png"
                   alt="SwapBoard logo"
-                  width={44}
-                  height={44}
-                  className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 object-contain"
+                  width={80}
+                  height={80}
+                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-[88px] lg:h-[88px] object-contain"
                 />
               </span>
               <span className="text-white">on </span>
@@ -67,7 +67,7 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
           </FadeUpOnScroll>
 
           <FadeUpOnScroll delay={0.2}>
-            <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-8 sm:mb-10">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8 sm:mb-10">
               {user ? (
                 <Link
                   href="/dashboard"

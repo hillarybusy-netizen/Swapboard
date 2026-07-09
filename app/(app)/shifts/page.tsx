@@ -137,7 +137,7 @@ export default async function ShiftsPage(props: {
         </div>
         {canAddShift && (
           <div className="flex items-center gap-3">
-             <AddShiftDialog departments={departments as any} profiles={profiles as any} orgId={orgId} />
+             <AddShiftDialog departments={departments as any} profiles={profiles as any} orgId={orgId} timezone={tz} />
           </div>
         )}
       </div>

@@ -157,14 +157,23 @@ export async function updateUserTimezone(timezone: string) {
   try {
     const { supabase, user } = await getAuthenticatedUser();
 
-    const { error } = await supabase
+    // Only auto-update if the timezone is unset or still set to default 'UTC'
+    const { data: profile } = await supabase
       .from("profiles")
-      .update({ timezone })
-      .eq("id", user.id);
+      .select("timezone")
+      .eq("id", user.id)
+      .single();
 
-    if (error) throw new Error(error.message);
-    revalidatePath("/settings");
-    revalidatePath("/admin/settings");
+    if (profile && (profile.timezone === "UTC" || !profile.timezone)) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ timezone })
+        .eq("id", user.id);
+
+      if (error) throw new Error(error.message);
+      revalidatePath("/settings");
+      revalidatePath("/admin/settings");
+    }
     return { success: true };
   } catch {
     // Silently fail if not authenticated

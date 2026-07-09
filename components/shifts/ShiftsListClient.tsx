@@ -90,7 +90,7 @@ export function ShiftsListClient({ shifts, canAddShift, departments, profiles, o
           </div>
           <h3 className="text-xl font-black text-white mb-2 uppercase tracking-widest tracking-tighter">No Shifts Found</h3>
           <p className="text-sm text-white/30 font-medium mb-10 max-w-xs mx-auto">Create your first shift to start coordinating your team.</p>
-          {canAddShift && <AddShiftDialog departments={departments as any} profiles={profiles as any} orgId={orgId} />}
+          {canAddShift && <AddShiftDialog departments={departments as any} profiles={profiles as any} orgId={orgId} timezone={tz} />}
         </div>
       </div>
     );

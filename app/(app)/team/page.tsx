@@ -95,7 +95,8 @@ export default async function TeamPage() {
     return list;
   };
 
-  const getMemberDepartmentLabel = (member: any) => {
+  const getMemberDepartmentLabel = (member: any): string | null => {
+    if (member.user_role === "org_admin") return null;
     const departments = getMemberDepartments(member);
     if (departments.length > 0) {
       return departments.map((dept: any) => dept.name).join(", ");
@@ -116,7 +117,7 @@ export default async function TeamPage() {
           </p>
         </div>
         {!isReadOnlyManager && (
-          <AddShiftDialog orgId={orgId} departments={departments} profiles={members} />
+          <AddShiftDialog orgId={orgId} departments={departments} profiles={members} timezone={profile?.timezone || "UTC"} />
         )}
       </div>
 
@@ -160,11 +161,17 @@ export default async function TeamPage() {
                       {member.member_id ? (
                         <>
                           <span className="text-white/40">{member.member_id}</span>
-                          <span>·</span>
-                          <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
+                          {getMemberDepartmentLabel(member) && (
+                            <>
+                              <span>·</span>
+                              <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
+                            </>
+                          )}
                         </>
                       ) : (
-                        <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
+                        getMemberDepartmentLabel(member) && (
+                          <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
+                        )
                       )}
                     </div>
                   </div>

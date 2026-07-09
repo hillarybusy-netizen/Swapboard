@@ -18,21 +18,26 @@ interface Props {
   departments: Department[];
   profiles: Pick<Profile, "id" | "full_name" | "department_id" | "department_ids">[];
   orgId: string;
+  timezone?: string;
 }
 
-export function AddShiftDialog({ departments, profiles, orgId }: Props) {
+export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userTimezone, setUserTimezone] = useState<string>("UTC");
+  const [userTimezone, setUserTimezone] = useState<string>(timezone || "UTC");
   const [form, setForm] = useState({
     title: "", department_id: "", assigned_to: "", start_time: "", end_time: "", notes: "",
   });
 
-  // Detect timezone on mount
+  // Detect timezone on mount if not provided via prop
   useEffect(() => {
-    setUserTimezone(detectUserTimezone());
-  }, []);
+    if (timezone) {
+      setUserTimezone(timezone);
+    } else {
+      setUserTimezone(detectUserTimezone());
+    }
+  }, [timezone]);
 
   function set(field: string, value: string) { setForm((f) => ({ ...f, [field]: value })) }
 

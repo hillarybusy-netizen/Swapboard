@@ -70,11 +70,12 @@ export function LandingPricing() {
 
           {/* Animated slider background */}
           <div
-            className={cn(
-              "absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gold rounded-full transition-all duration-300 ease-out z-0",
-              isAnnual ? "translate-x-full" : "translate-x-0"
-            )}
-            style={{ width: isAnnual ? "142px" : "100px", left: "4px" }}
+            className="absolute top-1 bottom-1 bg-gold rounded-full transition-all duration-300 ease-out z-0"
+            style={{ 
+              width: isAnnual ? "172px" : "104px", 
+              transform: isAnnual ? "translateX(108px)" : "translateX(0px)",
+              left: "4px" 
+            }}
           />
         </div>
       </div>

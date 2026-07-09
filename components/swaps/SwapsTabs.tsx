@@ -11,9 +11,10 @@ interface SwapsTabsProps {
   defaultTab: string;
   pending: any[];
   history: any[];
+  timezone?: string;
 }
 
-export function SwapsTabs({ defaultTab, pending, history }: SwapsTabsProps) {
+export function SwapsTabs({ defaultTab, pending, history, timezone }: SwapsTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   return (
@@ -44,7 +45,7 @@ export function SwapsTabs({ defaultTab, pending, history }: SwapsTabsProps) {
               <p className="text-sm text-white/30 font-medium max-w-xs mx-auto">No pending swap requests requiring your attention.</p>
             </div>
           ) : (
-            pending.map((swap) => <SwapCard key={swap.id} swap={swap} />)
+            pending.map((swap) => <SwapCard key={swap.id} swap={swap} timezone={timezone} />)
           )}
         </div>
       )}
@@ -56,7 +57,7 @@ export function SwapsTabs({ defaultTab, pending, history }: SwapsTabsProps) {
               <h3 className="text-lg font-black text-white mb-2 uppercase tracking-widest tracking-tighter">No History</h3>
             </div>
           ) : (
-            history.map((swap) => <SwapCard key={swap.id} swap={swap} />)
+            history.map((swap) => <SwapCard key={swap.id} swap={swap} timezone={timezone} />)
           )}
         </div>
       )}
@@ -64,8 +65,8 @@ export function SwapsTabs({ defaultTab, pending, history }: SwapsTabsProps) {
   );
 }
 
-function SwapCard({ swap }: { swap: any }) {
-  const tz = typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC";
+function SwapCard({ swap, timezone }: { swap: any; timezone?: string }) {
+  const tz = timezone || (typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC");
   const isActionRequired = swap.status === "worker_accepted";
 
   return (

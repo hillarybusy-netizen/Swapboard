@@ -268,7 +268,7 @@ export default async function DashboardPage() {
         </div>
         <div className="flex items-center gap-3">
           <ExportReportDropdown data={{ metrics, swaps, orgName: org?.name ?? "Organization" }} />
-          <AddShiftDialog orgId={orgId} departments={departments} profiles={profiles} />
+          <AddShiftDialog orgId={orgId} departments={departments} profiles={profiles} timezone={tz} />
         </div>
       </div>
 

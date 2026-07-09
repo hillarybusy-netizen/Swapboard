@@ -41,6 +41,8 @@ export default async function SwapsPage() {
   const pending = allSwaps.filter((s) => s.status === "pending" || s.status === "worker_accepted");
   const history = allSwaps.filter((s) => ["manager_approved", "rejected", "cancelled"].includes(s.status));
 
+  const tz = profile?.timezone || "UTC";
+
   return (
     <div className="space-y-10 max-w-5xl mx-auto pb-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-2">
@@ -52,7 +54,7 @@ export default async function SwapsPage() {
         </div>
       </div>
 
-      <SwapsTabs defaultTab="pending" pending={pending} history={history} />
+      <SwapsTabs defaultTab="pending" pending={pending} history={history} timezone={tz} />
     </div>
   );
 }
