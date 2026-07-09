@@ -158,20 +158,33 @@ export default async function TeamPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-base md:text-lg font-black tracking-tight text-white mb-1 truncate">{member.full_name ?? "Unknown"}</h3>
                     <div className="flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30 flex-wrap">
-                      {member.member_id ? (
+                      {member.member_id && (
+                        <span className="text-white/40">{member.member_id}</span>
+                      )}
+                      
+                      {member.user_role !== "org_admin" && (
                         <>
-                          <span className="text-white/40">{member.member_id}</span>
-                          {getMemberDepartmentLabel(member) && (
-                            <>
-                              <span>·</span>
-                              <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
-                            </>
-                          )}
+                          {member.member_id && <span>·</span>}
+                          
+                          {(() => {
+                            const depts = getMemberDepartments(member);
+                            if (depts.length > 0) {
+                              return (
+                                <div className="flex flex-wrap gap-1.5 items-center">
+                                  {depts.map((d: any) => (
+                                    <Badge key={d.id} className="rounded-full px-2 py-0.5 text-[8px] font-black uppercase tracking-widest border-none shrink-0 hover:opacity-80 transition-opacity" style={{ backgroundColor: d.color || '#ffffff', color: "#000" }}>
+                                      {d.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              );
+                            }
+                            if (member.user_role === "manager" && member.manager_type === "general") {
+                              return <span className="text-white/60">All Departments</span>;
+                            }
+                            return <span className="text-white/60">No Department</span>;
+                          })()}
                         </>
-                      ) : (
-                        getMemberDepartmentLabel(member) && (
-                          <span className="text-white/60">{getMemberDepartmentLabel(member)}</span>
-                        )
                       )}
                     </div>
                   </div>
