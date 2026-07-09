@@ -180,7 +180,7 @@ export async function sendInvitation(inv: {
   // For managers, use the provided manager_type or default to 'general'
   // For other roles, don't set manager_type
   const managerType = inv.role === "manager" ? inv.manager_type || "general" : null;
-  const deptId = inv.role === "manager" && managerType === "department" ? inv.department_id : null;
+  const deptId = (inv.role === "manager" && managerType === "general") ? null : (inv.department_id || null);
 
   const { data: invitation, error: dbError } = await supabase
     .from("invitations")
@@ -257,7 +257,7 @@ export async function createManualInvitation(inv: {
 
   // For managers, use the provided manager_type or default to 'general'
   const managerType = inv.role === "manager" ? inv.manager_type || "general" : null;
-  const deptId = inv.role === "manager" && managerType === "department" ? inv.department_id : null;
+  const deptId = (inv.role === "manager" && managerType === "general") ? null : (inv.department_id || null);
 
   const { data: invitation, error: dbError } = await supabase
     .from("invitations")

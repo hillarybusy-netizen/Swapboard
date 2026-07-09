@@ -13,8 +13,20 @@ import { toast } from "@/hooks/use-toast";
 import { INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
 import { getTrialStatus } from "@/lib/trial";
 import { PLAN_LIMITS } from "@/lib/plans";
-import { Loader2, Upload, Users, Building2, CreditCard, Clock } from "lucide-react";
+import { Loader2, Upload, Users, Building2, CreditCard, Clock, AlertTriangle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteOrganizationAction } from "@/lib/actions/delete-org";
 import type { Organization, Plan } from "@/lib/database.types";
 
 interface OrgSettingsProps {
@@ -29,6 +41,8 @@ export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgS
   const [name, setName] = useState(org?.name ?? "");
   const [loading, setLoading] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [deletingOrg, setDeletingOrg] = useState(false);
+  const [confirmOrgName, setConfirmOrgName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const logoUrl = (org?.settings as any)?.logo_url;
@@ -85,6 +99,22 @@ export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgS
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+    }
+  }
+
+  async function handleDeleteOrganization() {
+    if (!org) return;
+    setDeletingOrg(true);
+    try {
+      const res = await deleteOrganizationAction(org.id);
+      if (!res.success) {
+        throw new Error(res.error || "Failed to delete organization");
+      }
+      toast({ title: "Organization deleted successfully.", variant: "success" });
+      router.push("/login");
+    } catch (err: any) {
+      toast({ title: "Deletion failed", description: catchError(err), variant: "destructive" });
+      setDeletingOrg(false);
     }
   }
 
@@ -190,6 +220,68 @@ export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgS
         <Button onClick={handleSave} disabled={loading || name === org?.name}>
           {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Save changes
         </Button>
+      </CardContent>
+    </Card>
+
+    <Card className="border-red-500/20 bg-red-500/5">
+      <CardHeader>
+        <CardTitle className="text-red-500 flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5" /> Danger Zone
+        </CardTitle>
+        <CardDescription className="text-red-500/70">
+          Destructive actions that cannot be undone
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+          <div>
+            <h4 className="text-sm font-bold text-white mb-1">Delete Organization</h4>
+            <p className="text-xs text-white/50 max-w-md">
+              Permanently delete this organization and all of its data. This includes all users, departments, shifts, swap requests, and settings. This action is irreversible.
+            </p>
+          </div>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="shrink-0 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 transition-all">
+                Delete Organization
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-[#0a0a0a] border-red-500/30 shadow-2xl shadow-red-500/10">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-red-500">Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-white/60">
+                  This action cannot be undone. This will permanently delete the organization <strong className="text-white">{org?.name}</strong> and remove all data associated with it, including all user accounts.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              
+              <div className="py-4">
+                <Label htmlFor="confirmOrgName" className="text-xs text-white/50 mb-2 block">
+                  Please type <strong className="text-white select-all">Delete {org?.name}</strong> to confirm.
+                </Label>
+                <Input 
+                  id="confirmOrgName" 
+                  value={confirmOrgName}
+                  onChange={(e) => setConfirmOrgName(e.target.value)}
+                  className="bg-white/5 border-white/10"
+                />
+              </div>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+                <Button 
+                  variant="destructive" 
+                  onClick={handleDeleteOrganization}
+                  disabled={deletingOrg || confirmOrgName !== `Delete ${org?.name}`}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {deletingOrg ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  Delete Permanently
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </CardContent>
     </Card>
     </div>
