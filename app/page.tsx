@@ -10,7 +10,7 @@ import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, Twi
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
 import { LandingCoverageVisual, LandingVerificationVisual, LandingAnalyticsVisual } from "@/components/landing/LandingShowcaseCards";
-import { FeatureCardVisual } from "@/components/landing/FeatureCardVisual";
+
 import { FadeUpOnScroll, StaggerContainer, StaggerItem, ParallaxOnScroll } from "@/components/animations/ScrollAnimations";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
