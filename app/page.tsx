@@ -25,15 +25,13 @@ import { createClient } from "@/lib/supabase/server";
 import { LandingNavbar } from "@/components/layout/LandingNavbar";
 import { cookies } from "next/headers";
 
-const FeatureContent = ({ desc, iconKey }: { desc: string; iconKey: string }) => {
+const FeatureContent = ({ desc }: { desc: string }) => {
   return (
-    <div className="bg-[#0a0a0a] border border-white/5 p-8 md:p-14 rounded-[2rem] mb-4">
-      <p className="text-white/70 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 leading-relaxed">
+    <div className="glass glass-shine border border-white/10 p-8 md:p-12 rounded-[2rem] shadow-2xl relative overflow-hidden">
+      <div className="absolute inset-0 bg-mesh opacity-5 pointer-events-none" />
+      <p className="text-white/80 text-lg md:text-2xl font-sans max-w-3xl mx-auto leading-relaxed relative z-10 text-center font-medium">
         {desc}
       </p>
-      <div className="max-w-lg mx-auto">
-        <FeatureCardVisual iconName={iconKey} />
-      </div>
     </div>
   );
 };
@@ -42,38 +40,38 @@ const CAROUSEL_FEATURES = [
   {
     category: "Operations",
     title: "Instant swap requests",
-    src: "/landing/feature-swap-request.jpg",
-    content: <FeatureContent desc="Workers post swap requests in seconds. Eligible colleagues get notified immediately via push." iconKey="RefreshCw" />,
+    icon: RefreshCw,
+    content: <FeatureContent desc="Workers post swap requests in seconds. Eligible colleagues get notified immediately via push." />,
   },
   {
     category: "Management",
     title: "One-tap approvals",
-    src: "/landing/feature-manager-approve.jpg",
-    content: <FeatureContent desc="Managers approve or reject swaps from their lock screen. No back-and-forth calls needed." iconKey="Clock" />,
+    icon: Clock,
+    content: <FeatureContent desc="Managers approve or reject swaps from their lock screen. No back-and-forth calls needed." />,
   },
   {
     category: "Insights",
     title: "ROI analytics",
-    src: "/landing/feature-analytics-dashboard.jpg",
-    content: <FeatureContent desc="See exactly how much you've saved in overtime costs and manager time every single week." iconKey="BarChart3" />,
+    icon: BarChart3,
+    content: <FeatureContent desc="See exactly how much you've saved in overtime costs and manager time every single week." />,
   },
   {
     category: "Structure",
     title: "Multi-department",
-    src: "/landing/feature-departments.jpg",
-    content: <FeatureContent desc="Restaurant, healthcare, retail — set up departments and roles that match your exact structure." iconKey="Users" />,
+    icon: Users,
+    content: <FeatureContent desc="Restaurant, healthcare, retail — set up departments and roles that match your exact structure." />,
   },
   {
     category: "Security",
     title: "Compliance ready",
-    src: "/landing/feature-compliance-audit.jpg",
-    content: <FeatureContent desc="Full audit trail of every swap. Stay compliant with labour regulations effortlessly." iconKey="Shield" />,
+    icon: Shield,
+    content: <FeatureContent desc="Full audit trail of every swap. Stay compliant with labour regulations effortlessly." />,
   },
   {
     category: "Growth",
     title: "Trial tracking",
-    src: "/landing/feature-trial-onboarding.jpg",
-    content: <FeatureContent desc="14-day trial with built-in feedback collection so you can prove ROI to leadership fast." iconKey="TrendingUp" />,
+    icon: TrendingUp,
+    content: <FeatureContent desc="14-day trial with built-in feedback collection so you can prove ROI to leadership fast." />,
   },
 ];
 
@@ -147,7 +145,7 @@ export default async function LandingPage() {
         
         <div className="w-full">
           <Carousel items={CAROUSEL_FEATURES.map((card, index) => (
-            <Card key={card.src} card={card} index={index} layout={true} />
+            <Card key={card.title} card={card} index={index} layout={true} />
           ))} />
         </div>
       </section>
