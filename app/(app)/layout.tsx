@@ -21,6 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   // org_admin can access shared pages (shifts, swaps, analytics, team)
+  // but /dashboard should redirect them to /admin/dashboard
   // /admin/* routes are gated separately in app/admin/layout.tsx
 
   if (profile?.user_role === "super_admin") {
@@ -38,6 +39,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const headerList = await headers();
   const pathname = headerList.get("x-pathname") || headerList.get("x-url") || "";
   const isSettingsPage = pathname.includes("/settings");
+
+  // org_admin hitting /dashboard: redirect to their own dashboard before any rendering starts
+  if (profile?.user_role === "org_admin" && (pathname.endsWith("/dashboard") || pathname === "/dashboard")) {
+    redirect("/admin/dashboard");
+  }
 
   const expired = needsSubscription(org);
   const wasOnTrial = org?.plan === "trial";
@@ -120,7 +126,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       )}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-20 bg-transparent">
-          <div className="flex items-center justify-end px-4 md:px-10 py-2">
+          <div className="flex items-center justify-end px-6 md:px-12 py-4 md:py-6">
             <ProfileDropdown profile={profile as any} email={user?.email || ''} />
           </div>
         </header>

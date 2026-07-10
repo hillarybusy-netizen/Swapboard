@@ -37,7 +37,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-20 bg-transparent">
-          <div className="flex items-center justify-end px-4 md:px-10 py-2">
+          <div className="flex items-center justify-end px-6 md:px-12 py-4 md:py-6">
             <ProfileDropdown profile={profile as any} />
           </div>
         </header>

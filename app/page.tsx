@@ -19,49 +19,63 @@ import { LandingIndustryStrip } from "@/components/landing/LandingIndustryStrip"
 import { LandingTestimonialCarousel } from "@/components/landing/LandingTestimonialCarousel";
 import { LandingHowItWorks } from "@/components/landing/LandingHowItWorks";
 import { GlassTiltCard } from "@/components/landing/GlassTiltCard";
+import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 
 import { createClient } from "@/lib/supabase/server";
 import { LandingNavbar } from "@/components/layout/LandingNavbar";
 import { cookies } from "next/headers";
 
-const FEATURES = [
+const FeatureContent = ({ desc, iconKey }: { desc: string; iconKey: string }) => {
+  return (
+    <div className="bg-[#0a0a0a] border border-white/5 p-8 md:p-14 rounded-[2rem] mb-4">
+      <p className="text-white/70 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 leading-relaxed">
+        {desc}
+      </p>
+      <div className="max-w-lg mx-auto">
+        <FeatureCardVisual iconName={iconKey} />
+      </div>
+    </div>
+  );
+};
+
+const CAROUSEL_FEATURES = [
   {
-    icon: RefreshCw,
-    iconKey: "RefreshCw",
+    category: "Operations",
     title: "Instant swap requests",
-    desc: "Workers post swap requests in seconds. Eligible colleagues get notified immediately via push.",
+    src: "/landing/feature-swap-request.jpg",
+    content: <FeatureContent desc="Workers post swap requests in seconds. Eligible colleagues get notified immediately via push." iconKey="RefreshCw" />,
   },
   {
-    icon: Clock,
-    iconKey: "Clock",
+    category: "Management",
     title: "One-tap approvals",
-    desc: "Managers approve or reject swaps from their lock screen. No back-and-forth calls needed.",
+    src: "/landing/feature-manager-approve.jpg",
+    content: <FeatureContent desc="Managers approve or reject swaps from their lock screen. No back-and-forth calls needed." iconKey="Clock" />,
   },
   {
-    icon: BarChart3,
-    iconKey: "BarChart3",
+    category: "Insights",
     title: "ROI analytics",
-    desc: "See exactly how much you've saved in overtime costs and manager time every single week.",
+    src: "/landing/feature-analytics-dashboard.jpg",
+    content: <FeatureContent desc="See exactly how much you've saved in overtime costs and manager time every single week." iconKey="BarChart3" />,
   },
   {
-    icon: Users,
-    iconKey: "Users",
+    category: "Structure",
     title: "Multi-department",
-    desc: "Restaurant, healthcare, retail — set up departments and roles that match your exact structure.",
+    src: "/landing/feature-departments.jpg",
+    content: <FeatureContent desc="Restaurant, healthcare, retail — set up departments and roles that match your exact structure." iconKey="Users" />,
   },
   {
-    icon: Shield,
-    iconKey: "Shield",
+    category: "Security",
     title: "Compliance ready",
-    desc: "Full audit trail of every swap. Stay compliant with labour regulations effortlessly.",
+    src: "/landing/feature-compliance-audit.jpg",
+    content: <FeatureContent desc="Full audit trail of every swap. Stay compliant with labour regulations effortlessly." iconKey="Shield" />,
   },
   {
-    icon: TrendingUp,
-    iconKey: "TrendingUp",
+    category: "Growth",
     title: "Trial tracking",
-    desc: "14-day trial with built-in feedback collection so you can prove ROI to leadership fast.",
+    src: "/landing/feature-trial-onboarding.jpg",
+    content: <FeatureContent desc="14-day trial with built-in feedback collection so you can prove ROI to leadership fast." iconKey="TrendingUp" />,
   },
-] as const;
+];
 
 export default async function LandingPage() {
   const cookieStore = await cookies();
@@ -117,10 +131,10 @@ export default async function LandingPage() {
       <LandingIndustryStrip />
 
       {/* Features */}
-      <section id="features" className="py-20 sm:py-32 px-4 sm:px-6 bg-[#080808] relative section-glow-top">
+      <section id="features" className="py-20 sm:py-32 bg-[#080808] relative section-glow-top">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gold/[0.03] blur-[150px] pointer-events-none" />
         <FadeUpOnScroll>
-          <div className="text-center mb-12 sm:mb-24 relative">
+          <div className="text-center mb-12 sm:mb-16 relative">
             <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold/50 mb-4">Platform capabilities</p>
             <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 tracking-tight px-2">
               Built for <span className="text-gold-gradient">real operations</span>
@@ -130,22 +144,12 @@ export default async function LandingPage() {
             </p>
           </div>
         </FadeUpOnScroll>
-        <StaggerContainer className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 relative">
-          {FEATURES.map((f) => (
-            <StaggerItem key={f.title}>
-              <GlassTiltCard intensity={6}>
-                <div className="card-premium p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] flex flex-col group overflow-hidden h-full">
-                  <FeatureCardVisual iconName={f.iconKey} />
-                  <div className="mb-4">
-                    <f.icon className="w-5 h-5 text-gold" />
-                  </div>
-                  <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3">{f.title}</h3>
-                  <p className="text-sm text-white/50 leading-relaxed font-medium">{f.desc}</p>
-                </div>
-              </GlassTiltCard>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        
+        <div className="w-full">
+          <Carousel items={CAROUSEL_FEATURES.map((card, index) => (
+            <Card key={card.src} card={card} index={index} layout={true} />
+          ))} />
+        </div>
       </section>
 
       <LandingTestimonialCarousel />

@@ -31,8 +31,8 @@ export function ProfileDropdown({ profile, email, children, align = "end" }: Pro
       <DropdownMenuTrigger asChild>
         {children ? children : (
           <button className="flex items-center gap-2 hover:opacity-80 transition-opacity outline-none">
-            <Avatar className="w-8 h-8 md:w-9 md:h-9 border-2 border-white/10 ring-2 ring-gold/10">
-              <AvatarFallback className="bg-gold/10 text-gold text-xs font-black italic">
+            <Avatar className="w-10 h-10 md:w-12 md:h-12 border-2 border-white/10 ring-2 ring-gold/10">
+              <AvatarFallback className="bg-gold/10 text-gold text-sm font-black italic">
                 {displayInitial}
               </AvatarFallback>
             </Avatar>

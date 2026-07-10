@@ -45,8 +45,8 @@ function NavContent({ org, profile }: AdminSidebarProps) {
     <div className="flex flex-col h-full min-h-0">
       <div className="shrink-0">
         {/* Brand Logo */}
-        <div className="mb-4">
-          <AnimatedLogo size="lg" showText={false} className="border-b border-white/5" />
+        <div className="mb-4 flex justify-center border-b border-white/5 pb-4 pt-4">
+          <AnimatedLogo size="lg" showText={false} />
         </div>
 
         {/* Org Badge */}
