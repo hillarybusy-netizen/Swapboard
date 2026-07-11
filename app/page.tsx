@@ -40,37 +40,37 @@ const CAROUSEL_FEATURES = [
   {
     category: "Operations",
     title: "Instant swap requests",
-    icon: RefreshCw,
+    iconKey: "RefreshCw",
     content: <FeatureContent desc="Workers post swap requests in seconds. Eligible colleagues get notified immediately via push." />,
   },
   {
     category: "Management",
     title: "One-tap approvals",
-    icon: Clock,
+    iconKey: "Clock",
     content: <FeatureContent desc="Managers approve or reject swaps from their lock screen. No back-and-forth calls needed." />,
   },
   {
     category: "Insights",
     title: "ROI analytics",
-    icon: BarChart3,
+    iconKey: "BarChart3",
     content: <FeatureContent desc="See exactly how much you've saved in overtime costs and manager time every single week." />,
   },
   {
     category: "Structure",
     title: "Multi-department",
-    icon: Users,
+    iconKey: "Users",
     content: <FeatureContent desc="Restaurant, healthcare, retail — set up departments and roles that match your exact structure." />,
   },
   {
     category: "Security",
     title: "Compliance ready",
-    icon: Shield,
+    iconKey: "Shield",
     content: <FeatureContent desc="Full audit trail of every swap. Stay compliant with labour regulations effortlessly." />,
   },
   {
     category: "Growth",
     title: "Trial tracking",
-    icon: TrendingUp,
+    iconKey: "TrendingUp",
     content: <FeatureContent desc="14-day trial with built-in feedback collection so you can prove ROI to leadership fast." />,
   },
 ];
@@ -145,7 +145,17 @@ export default async function LandingPage() {
         
         <div className="w-full">
           <Carousel items={CAROUSEL_FEATURES.map((card, index) => (
-            <Card key={card.title} card={card} index={index} layout={true} />
+            <Card 
+              key={card.title} 
+              card={{
+                title: card.title,
+                category: card.category,
+                iconKey: card.iconKey,
+                content: card.content
+              }} 
+              index={index} 
+              layout={true} 
+            />
           ))} />
         </div>
       </section>

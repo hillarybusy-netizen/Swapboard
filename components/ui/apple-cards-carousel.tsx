@@ -21,8 +21,10 @@ interface CarouselProps {
   initialScroll?: number;
 }
 
+import * as LucideIcons from "lucide-react";
+
 type Card = {
-  icon?: React.ComponentType<{ className?: string }>;
+  iconKey?: string;
   title: string;
   category: string;
   content: React.ReactNode;
@@ -183,7 +185,7 @@ export const Card = ({
     onCardClose(index);
   };
 
-  const IconComponent = card.icon;
+  const IconComponent = card.iconKey ? (LucideIcons as any)[card.iconKey] : null;
 
   return (
     <>
