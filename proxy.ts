@@ -33,14 +33,30 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
+          // Mutate the request cookies so request.cookies.getAll() reflects the new tokens
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
+
+          // Rebuild request headers from the NOW-UPDATED request.cookies,
+          // then re-apply our custom x-pathname / x-url headers.
+          // This is critical: if we reuse the original `requestHeaders` snapshot
+          // downstream server components still see the OLD expired token.
+          const updatedHeaders = new Headers(request.headers);
+          updatedHeaders.set(
+            "cookie",
+            request.cookies
+              .getAll()
+              .map((c) => `${c.name}=${c.value}`)
+              .join("; ")
+          );
+          updatedHeaders.set("x-pathname", request.nextUrl.pathname);
+          updatedHeaders.set("x-url", request.url);
+
           supabaseResponse = NextResponse.next({
-            request: {
-              headers: requestHeaders,
-            },
+            request: { headers: updatedHeaders },
           });
+
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
