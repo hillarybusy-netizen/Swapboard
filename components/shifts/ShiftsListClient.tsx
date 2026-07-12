@@ -189,6 +189,45 @@ export function ShiftsListClient({ shifts, canAddShift, departments, profiles, o
                     </div>
                   </div>
                 </div>
+
+                {/* Swap Details Block */}
+                {(() => {
+                  const activeSwap = shift.swap_requests?.find((sr: any) =>
+                    ["pending", "worker_accepted"].includes(sr.status)
+                  );
+                  if (!activeSwap) return null;
+                  return (
+                    <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-2 relative z-10">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-purple-400">
+                          Active Swap Request
+                        </span>
+                        <span className="text-[9px] text-white/30">
+                          {new Date(activeSwap.requested_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-white/60 font-medium">
+                        {activeSwap.status === "worker_accepted" ? (
+                          <>
+                            Cover offered by{" "}
+                            <span className="font-bold text-white">
+                              {activeSwap.covering_worker?.full_name}
+                            </span>
+                            . Awaiting manager approval.
+                          </>
+                        ) : (
+                          "Open for coverage. No offers yet."
+                        )}
+                      </p>
+                      {activeSwap.reason && (
+                        <p className="text-[11px] text-white/40 italic bg-white/[0.02] p-2.5 rounded-xl border border-white/5 max-w-xl">
+                          "{activeSwap.reason}"
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+
               </div>
             </Link>
           );

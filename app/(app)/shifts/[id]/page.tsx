@@ -44,9 +44,20 @@ export default async function ShiftDetailPage(props: {
     getCachedSession(),
     supabase
       .from("shifts")
-      .select(
-        "*, department:departments(*), profile:profiles!assigned_to(id, full_name, email, phone), creator:profiles!created_by(id, full_name)"
-      )
+      .select(`
+        *,
+        department:departments(*),
+        profile:profiles!assigned_to(id, full_name, email, phone),
+        creator:profiles!created_by(id, full_name),
+        swap_requests:swap_requests(
+          id,
+          status,
+          reason,
+          requested_at,
+          requester:profiles!requester_id(id, full_name),
+          covering_worker:profiles!covering_worker_id(id, full_name)
+        )
+      `)
       .eq("id", params.id)
       .single(),
   ]);
@@ -204,6 +215,44 @@ export default async function ShiftDetailPage(props: {
           </div>
 
         </div>
+
+        {/* Swap Request Details */}
+        {(() => {
+          const activeSwap = shift.swap_requests?.find((sr: any) =>
+            ["pending", "worker_accepted"].includes(sr.status)
+          );
+          if (!activeSwap) return null;
+          return (
+            <div className="p-6 rounded-[1.5rem] bg-purple-500/5 border border-purple-500/15 mb-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-black uppercase tracking-widest text-purple-400">
+                  Active Swap Request
+                </p>
+                <span className="text-[10px] text-white/30">
+                  {new Date(activeSwap.requested_at).toLocaleDateString()}
+                </span>
+              </div>
+              <p className="text-sm text-white/60 font-medium">
+                {activeSwap.status === "worker_accepted" ? (
+                  <>
+                    Cover offered by{" "}
+                    <span className="font-bold text-white">
+                      {activeSwap.covering_worker?.full_name}
+                    </span>
+                    . Awaiting manager approval.
+                  </>
+                ) : (
+                  "Open for coverage. No offers yet."
+                )}
+              </p>
+              {activeSwap.reason && (
+                <p className="text-xs text-white/40 italic bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                  "Reason: {activeSwap.reason}"
+                </p>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Notes */}
         {shift.notes && (

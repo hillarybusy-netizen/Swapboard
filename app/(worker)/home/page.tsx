@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { UpcomingShiftsList } from "@/components/shifts/UpcomingShiftsList";
 
 export const dynamic = "force-dynamic";
 
@@ -78,7 +79,18 @@ export default async function HomePage() {
   // Fetch upcoming shifts (next 3, assigned, not cancelled/done)
   const { data: upcomingData } = await supabase
     .from("shifts")
-    .select("*, department:departments(*)")
+    .select(`
+      *,
+      department:departments(*),
+      swap_requests:swap_requests(
+        id,
+        status,
+        reason,
+        requested_at,
+        requester:profiles!requester_id(id, full_name),
+        covering_worker:profiles!covering_worker_id(id, full_name)
+      )
+    `)
     .eq("assigned_to", user.id)
     .is("deleted_at", null)
     .not("status", "in", '("cancelled","done_manager_approved","swapped")')
@@ -278,47 +290,7 @@ export default async function HomePage() {
             <p className="text-[11px] text-white/20 mt-1">Check the swap board for available shifts</p>
           </div>
         ) : (
-          <div className="space-y-2.5">
-            {upcomingShifts.map((shift) => {
-              const badge = shiftStatusBadge(shift.status);
-              return (
-                <div
-                  key={shift.id}
-                  className="glass rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-all duration-200 hover:-translate-y-0.5"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-white truncate">{shift.title}</p>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
-                          <Calendar className="w-3 h-3" />
-                          {formatShiftDate(shift.start_time, tz)}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
-                          <Clock className="w-3 h-3" />
-                          {formatShiftTime(shift.start_time, shift.end_time, tz)}
-                        </span>
-                      </div>
-                      {shift.department && (
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <div
-                            className="w-1.5 h-1.5 rounded-full"
-                            style={{ backgroundColor: shift.department.color || "#d4af37" }}
-                          />
-                          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
-                            {shift.department.name}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <span className={cn("px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest shrink-0", badge.color)}>
-                      {badge.label}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <UpcomingShiftsList upcomingShifts={upcomingShifts} tz={tz} />
         )}
       </div>
 

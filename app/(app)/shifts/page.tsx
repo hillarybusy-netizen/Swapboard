@@ -48,7 +48,15 @@ export default async function ShiftsPage(props: {
     .select(`
       *,
       department:departments(*),
-      profile:profiles!shifts_user_id_fkey(id, full_name)
+      profile:profiles!shifts_user_id_fkey(id, full_name),
+      swap_requests:swap_requests(
+        id,
+        status,
+        reason,
+        requested_at,
+        requester:profiles!requester_id(id, full_name),
+        covering_worker:profiles!covering_worker_id(id, full_name)
+      )
     `)
     .eq("organization_id", orgId)
     .is("deleted_at", null)
