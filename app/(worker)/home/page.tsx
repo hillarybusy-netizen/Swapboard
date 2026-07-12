@@ -67,8 +67,6 @@ function shiftStatusBadge(status: string) {
 
 export default async function HomePage() {
   const { user, profile } = await getCachedSession();
-  if (!user) redirect("/login");
-
   const supabase = await createClient();
   const now = new Date().toISOString();
   const firstName = profile?.full_name?.split(" ")[0] || "there";

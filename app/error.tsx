@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function ErrorPage({
   error,
@@ -11,15 +10,6 @@ export default function ErrorPage({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace("/");
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [router]);
-
   useEffect(() => {
     // Useful in dev while keeping the UI clean for users.
     // eslint-disable-next-line no-console
@@ -37,8 +27,7 @@ export default function ErrorPage({
         <p className="text-xs uppercase tracking-[0.25em] text-red-300/80 font-black">Something Went Wrong</p>
         <h1 className="text-4xl md:text-6xl font-black tracking-tight mt-3">Something blew a fuse</h1>
         <p className="text-white/70 mt-4 leading-relaxed">
-          We hit an unexpected issue while opening this page. We are sending you back to the landing page in{" "}
-          <span className="text-gold font-black">3 seconds</span>.
+          We hit an unexpected issue while opening this page. Try reloading, or head back to the landing page.
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -52,7 +41,7 @@ export default function ErrorPage({
             href="/"
             className="rounded-full px-7 h-11 inline-flex items-center justify-center text-xs font-black uppercase tracking-widest border border-white/15 text-white/70 hover:text-white hover:border-white/30 transition-colors"
           >
-            Go Now
+            Go to Landing Page
           </Link>
         </div>
       </section>

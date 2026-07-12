@@ -30,16 +30,9 @@ export const revalidate = 0;
 
 export default async function AdminDashboardPage() {
   const { user, profile } = await getCachedSession();
-  if (!user) redirect("/login");
-
-  if (profile?.user_role !== "org_admin") redirect("/dashboard");
-
   const supabase = await createClient();
   const org = (profile as any)?.organization;
   const orgId = profile?.organization_id ?? "";
-
-  if (!orgId) redirect("/onboarding/industry");
-
   const tz = profile?.timezone || "UTC";
 
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);

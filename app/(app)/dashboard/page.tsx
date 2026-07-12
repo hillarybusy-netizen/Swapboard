@@ -31,23 +31,15 @@ import { EnterpriseMetrics } from "@/components/analytics/EnterpriseMetrics";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
+  // Auth + role guards are handled by (app)/layout.tsx.
+  // We only need the session here for data fetching.
   const { user, profile } = await getCachedSession();
-  if (!user) redirect("/login");
-
-  if (profile?.user_role === "worker") {
-    redirect("/home");
-  }
 
   if (profile?.user_role === "org_admin") {
     redirect("/admin");
   }
 
-  if (profile?.user_role === "super_admin") {
-    redirect("/super-admin");
-  }
-
   const tz = profile?.timezone || "UTC";
-
   const supabase = await createClient();
   const org = (profile as any)?.organization;
   const orgId = profile?.organization_id ?? "";
