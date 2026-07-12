@@ -16,7 +16,11 @@ export default async function SwapsPage() {
 
   // Scope queries for Manager
   const isManager = profile?.user_role === "manager";
-  const managerDeptIds = profile?.department_ids || [];
+  // Use manager_type and department_id (the updated schema) instead of deprecated department_ids
+  const managerDeptIds: string[] =
+    isManager && profile?.manager_type === "department" && profile?.department_id
+      ? [profile.department_id]
+      : [];
 
   let query = supabase
     .from("swap_requests")

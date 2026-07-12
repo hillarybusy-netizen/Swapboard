@@ -58,7 +58,7 @@ export function InviteTeam({
       if (field === "role" && val === "worker") {
         updated.manager_type = undefined;
       }
-      if (field === "role" && val === "admin") {
+      if (field === "role" && val === "org_admin") {
         updated.manager_type = undefined;
         updated.department_id = "";
       }
@@ -215,7 +215,7 @@ export function InviteTeam({
                         <SelectContent className="bg-[#050505] border-white/10">
                           <SelectItem value="worker">Worker</SelectItem>
                           <SelectItem value="manager">Manager</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="org_admin">Admin</SelectItem>
                         </SelectContent>
                       </Select>
 
@@ -338,7 +338,7 @@ export function InviteTeam({
                   <SelectContent className="bg-[#050505] border-white/10">
                     <SelectItem value="worker">Worker</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="org_admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -370,7 +370,7 @@ export function InviteTeam({
                       Target Department
                       {linkRole === "worker" && <span className="text-red-400 ml-1">*</span>}
                     </Label>
-                    {linkRole === "admin" ? (
+                    {linkRole === "org_admin" ? (
                       <div className="h-10 bg-white/[0.02] border border-white/5 rounded-xl flex items-center px-4 text-[10px] font-bold text-white/30 uppercase tracking-wider select-none cursor-not-allowed">
                         All Access (N/A)
                       </div>

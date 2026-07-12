@@ -22,14 +22,23 @@ export function RealtimeNotificationsProvider() {
 
         const { data: profile } = await supabase
           .from("profiles")
-          .select("user_role, department_ids")
+          .select("user_role, manager_type, department_id")
           .eq("id", user.id)
           .single();
 
         if (profile) {
           setUserRole(profile.user_role);
-          if (profile.department_ids) {
-            setDepartmentIds(profile.department_ids);
+
+          if (profile.user_role === "org_admin" || profile.user_role === "super_admin") {
+            // Admins get a wildcard so ManagerRealtimeNotifications doesn't bail
+            setDepartmentIds(["*"]);
+          } else if (profile.user_role === "manager") {
+            if (profile.manager_type === "department" && profile.department_id) {
+              setDepartmentIds([profile.department_id]);
+            } else {
+              // General manager — sees all departments
+              setDepartmentIds(["*"]);
+            }
           }
         }
       } catch (error) {
@@ -47,7 +56,9 @@ export function RealtimeNotificationsProvider() {
   return (
     <>
       {userRole === "worker" && <WorkerRealtimeNotifications />}
-      {userRole === "manager" && <ManagerRealtimeNotifications departmentIds={departmentIds} />}
+      {(userRole === "manager" || userRole === "org_admin" || userRole === "super_admin") && (
+        <ManagerRealtimeNotifications departmentIds={departmentIds} />
+      )}
     </>
   );
 }

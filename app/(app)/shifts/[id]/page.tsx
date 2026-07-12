@@ -15,6 +15,7 @@ import Link from "next/link";
 import { ConfirmCompletionButton } from "@/components/shifts/ConfirmCompletionButton";
 import { ApproveClaimButton } from "@/components/shifts/ApproveClaimButton";
 import { ShiftManagerActions } from "@/components/shifts/ShiftManagerActions";
+import { canManagerAccessDepartment } from "@/lib/managers";
 
 export const dynamic = "force-dynamic";
 
@@ -59,11 +60,12 @@ export default async function ShiftDetailPage(props: {
     profile?.user_role === "manager" || profile?.user_role === "org_admin";
   const isOwner = shift.assigned_to === user.id;
 
-  // Manager dept scope check
+  // Manager dept scope check — org_admins always have access;
+  // managers are checked via canManagerAccessDepartment which respects manager_type
   const canAct =
     profile?.user_role === "org_admin" ||
     (profile?.user_role === "manager" &&
-      profile.department_ids?.includes(shift.department_id));
+      canManagerAccessDepartment(profile as any, shift.department_id));
 
   const dept = shift.department as any;
   const assignee = shift.profile as any;

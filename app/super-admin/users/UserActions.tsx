@@ -56,7 +56,7 @@ export function UserActions({ user }: { user: any }) {
   const handleMakeAdmin = async () => {
     try {
       setLoading(true);
-      await assignUserRole(user.id, "admin");
+      await assignUserRole(user.id, "org_admin");
       toast({ title: "Role Updated", description: `${user.full_name || user.email} is now an admin.` });
     } catch (err) {
       toast({ title: "Failed", description: "Could not update role.", variant: "destructive" });

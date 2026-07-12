@@ -19,7 +19,7 @@ interface Department {
 interface Props {
   memberId: string;
   memberName: string;
-  memberRole: "worker" | "manager" | "admin";
+  memberRole: "worker" | "manager" | "org_admin";
   currentDeptId?: string | null;
   currentDeptIds?: string[] | null;
   currentManagerType?: "general" | "department" | null;
