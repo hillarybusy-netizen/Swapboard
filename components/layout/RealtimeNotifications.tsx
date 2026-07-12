@@ -16,10 +16,13 @@ export function RealtimeNotifications({ userId, departmentId }: Props) {
 
   useEffect(() => {
     const supabase = createClient();
+    // Unique suffix prevents Supabase reusing a stale subscribed channel instance
+    // across React StrictMode double-invocations or departmentId changes.
+    const uid = crypto.randomUUID();
 
     // Listen to department-wide shift changes (for new available shifts and auto-starts)
     const deptShiftsChannel = departmentId 
-      ? supabase.channel("dept-shifts")
+      ? supabase.channel(`dept-shifts-${uid}`)
         .on(
           "postgres_changes",
           {
@@ -59,7 +62,7 @@ export function RealtimeNotifications({ userId, departmentId }: Props) {
       : null;
 
     // Listen to personal shift updates
-    const personalShiftsChannel = supabase.channel("personal-shifts")
+    const personalShiftsChannel = supabase.channel(`personal-shifts-${uid}`)
       .on(
         "postgres_changes",
         {
@@ -133,7 +136,7 @@ export function RealtimeNotifications({ userId, departmentId }: Props) {
 
     // Listen for swap request updates
     const swapsChannel = departmentId 
-      ? supabase.channel("dept-swaps")
+      ? supabase.channel(`dept-swaps-${uid}`)
         .on(
           "postgres_changes",
           {

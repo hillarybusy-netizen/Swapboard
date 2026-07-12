@@ -23,7 +23,7 @@ import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 
 import { createClient } from "@/lib/supabase/server";
 import { LandingNavbar } from "@/components/layout/LandingNavbar";
-import { cookies } from "next/headers";
+
 
 const FeatureContent = ({ desc }: { desc: string }) => {
   return (
@@ -76,45 +76,36 @@ const CAROUSEL_FEATURES = [
 ];
 
 export default async function LandingPage() {
-  const cookieStore = await cookies();
-  const hasSession = cookieStore.getAll().some(c => c.name.includes("-auth-token"));
+  // The middleware refreshes the Supabase token on every request, so
+  // getUser() here always reflects the true auth state — no cookie sniffing needed.
+  const supabase = await createClient();
+  const { data: { user: authUser } } = await supabase.auth.getUser();
 
   let user = null;
   let org = null;
   let initials = "";
 
-  if (hasSession) {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    const authUser = data.user;
+  if (authUser) {
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*, organization:organizations(*)")
+      .eq("id", authUser.id)
+      .single();
 
-    if (authUser) {
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("*, organization:organizations(*)")
-        .eq("id", authUser.id)
-        .single();
-
-      if (profileError || !profile) {
-        user = null;
-        org = null;
-      } else {
-        user = authUser;
-        org = (profile as any)?.organization;
-        // Prefer full name initials, fall back to org name — never use "U"
-        if (profile?.full_name) {
-          const parts = profile.full_name.trim().split(/\s+/);
-          initials = parts.length >= 2
-            ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-            : parts[0].substring(0, 2).toUpperCase();
-        } else if (org?.name) {
-          initials = org.name.substring(0, 2).toUpperCase();
-        } else {
-          initials = "";
-        }
+    if (!profileError && profile) {
+      user = authUser;
+      org = (profile as any)?.organization;
+      if (profile?.full_name) {
+        const parts = profile.full_name.trim().split(/\s+/);
+        initials = parts.length >= 2
+          ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+          : parts[0].substring(0, 2).toUpperCase();
+      } else if (org?.name) {
+        initials = org.name.substring(0, 2).toUpperCase();
       }
     }
   }
+
 
   const logoUrl = org?.settings?.logo_url;
 
