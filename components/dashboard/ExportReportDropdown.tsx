@@ -124,9 +124,14 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[min(22rem,calc(100vw-1.5rem))] sm:w-96 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
+        <div
+          className="fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-white/10 bg-[#0a0a0a] shadow-xl max-h-[calc(100dvh-2rem)]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Export report options"
+        >
           {/* Tab Navigation */}
-          <div className="flex border-b border-white/10">
+          <div className="grid grid-cols-2 border-b border-white/10 sm:grid-cols-4">
             {[
               { id: "day", label: "Day Report" },
               { id: "month", label: "Month Report" },
@@ -136,7 +141,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id === activeTab ? null : tab.id)}
-                className={`flex-1 px-4 py-3 text-xs font-black uppercase tracking-widest transition-all border-b-2 ${
+                className={`min-w-0 px-2 py-3 text-[10px] font-black uppercase tracking-wide transition-all border-b-2 sm:px-3 sm:text-xs sm:tracking-widest ${
                   activeTab === tab.id
                     ? "border-gold text-gold bg-gold/5"
                     : "border-transparent text-white/50 hover:text-white/70"

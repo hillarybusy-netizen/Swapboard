@@ -31,7 +31,10 @@ export async function SettingsPageContent({
   const [departmentsRes, profileCountRes, pendingInvitesRes] = await Promise.all([
     supabase
       .from("departments")
-      .select("*, roles(*)")
+      // Settings only needs the department records. Avoid depending on the
+      // optional roles relationship, which can make the whole query fail when
+      // that relationship is unavailable in an existing database.
+      .select("id, organization_id, name, color, sort_order")
       .eq("organization_id", orgId)
       .order("sort_order"),
     supabase
