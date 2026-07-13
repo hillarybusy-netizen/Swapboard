@@ -88,7 +88,6 @@ export default function LoginPage() {
       } else {
         router.push("/dashboard");
       }
-      router.refresh();
     } catch (err: any) {
       toast({ title: "Sign in failed", description: err.message, variant: "destructive" });
     } finally {
