@@ -172,7 +172,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
       </div>
 
       <AlertDialog open={!!confirmUpgrade} onOpenChange={() => setConfirmUpgrade(null)}>
-        <AlertDialogContent className="glass bg-[#0a0a0a]/95 border-gold/20">
+        <AlertDialogContent className="bg-[#0a0a0a]/95 border-gold/20 backdrop-blur-xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-gold font-black uppercase tracking-wider text-base">
               <Zap className="w-5 h-5 text-gold" />
@@ -206,7 +206,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
       </AlertDialog>
 
       <AlertDialog open={!!confirmDowngrade} onOpenChange={() => setConfirmDowngrade(null)}>
-        <AlertDialogContent className="glass bg-[#0a0a0a]/95 border-red-500/20">
+        <AlertDialogContent className="bg-[#0a0a0a]/95 border-red-500/20 backdrop-blur-xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-red-500 font-black uppercase tracking-wider text-base">
               <AlertTriangle className="w-5 h-5 text-red-500" />

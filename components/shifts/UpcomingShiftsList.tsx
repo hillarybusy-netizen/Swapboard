@@ -110,7 +110,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
 
       {/* Shift Details Dialog */}
       <Dialog open={!!selectedShift} onOpenChange={(open) => { if (!open) setSelectedShift(null); }}>
-        <DialogContent className="glass bg-[#0a0a0a]/95 border-white/10 text-white max-w-md rounded-3xl p-6 shadow-2xl">
+        <DialogContent className="bg-[#0a0a0a]/95 border-white/10 text-white max-w-md rounded-3xl p-6 shadow-2xl backdrop-blur-xl">
           {selectedShift && (() => {
             const badge = shiftStatusBadge(selectedShift.status);
             const activeSwap = selectedShift.swap_requests?.find((sr: any) =>

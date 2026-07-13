@@ -41,7 +41,7 @@ export default function ErrorPage({
             href="/"
             className="rounded-full px-7 h-11 inline-flex items-center justify-center text-xs font-black uppercase tracking-widest border border-white/15 text-white/70 hover:text-white hover:border-white/30 transition-colors"
           >
-            Go to Landing Page
+            Go Home
           </Link>
         </div>
       </section>

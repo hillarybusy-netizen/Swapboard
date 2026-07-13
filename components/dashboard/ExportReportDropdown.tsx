@@ -89,24 +89,23 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
       ["Export Date", new Date(reportData.exportDate).toLocaleString()],
       ["Report Type", reportData.reportType],
       [],
-      ["Metric", "Value"],
     ];
 
-    Object.entries(reportData).forEach(([key, value]: any) => {
-      if (!["organizationName", "exportDate", "reportType", "metrics", "swaps", "month", "year", "startDate", "endDate", "fields"].includes(key)) {
-        if (typeof value === "number") {
-          if (key.includes("Rate") || key.includes("Fulfillment")) {
-            rows.push([key.replace(/([A-Z])/g, " $1"), `${value}%`]);
-          } else if (key.includes("Savings")) {
-            rows.push([key.replace(/([A-Z])/g, " $1"), `$${value.toLocaleString()}`]);
-          } else if (key.includes("Hours") || key.includes("Time")) {
-            rows.push([key.replace(/([A-Z])/g, " $1"), `${value.toFixed(1)}h`]);
-          } else {
-            rows.push([key.replace(/([A-Z])/g, " $1"), value.toString()]);
-          }
-        }
-      }
-    });
+    const ignoredKeys = ["organizationName", "exportDate", "reportType", "metrics", "swaps", "month", "year", "startDate", "endDate", "fields"];
+    const metrics = Object.entries(reportData).filter(
+      ([key, value]) => !ignoredKeys.includes(key) && typeof value === "number"
+    );
+
+    // Excel displays these two rows as a horizontal metrics table.
+    rows.push(
+      metrics.map(([key]) => key.replace(/([A-Z])/g, " $1").trim()),
+      metrics.map(([key, value]) => {
+        if (key.includes("Rate") || key.includes("Fulfillment")) return `${value}%`;
+        if (key.includes("Savings")) return `$${value.toLocaleString()}`;
+        if (key.includes("Hours") || key.includes("Time")) return `${value.toFixed(1)}h`;
+        return value.toString();
+      })
+    );
 
     const csv = rows.map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
