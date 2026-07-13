@@ -8,6 +8,7 @@ import { AddShiftDialog } from "@/components/shifts/AddShiftDialog";
 import { Calendar, Clock, Users, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { ShiftsListClient } from "@/components/shifts/ShiftsListClient";
+import { ShiftStatusSummary } from "@/components/shifts/ShiftStatusSummary";
 import { autoCloseExpiredShifts } from "@/lib/actions/shifts";
 
 export const dynamic = "force-dynamic";
@@ -149,6 +150,8 @@ export default async function ShiftsPage(props: {
           </div>
         )}
       </div>
+
+      <ShiftStatusSummary shifts={rawShifts ?? []} />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2 md:gap-3 px-1 md:px-2">

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ShiftActionButton } from "@/components/shifts/ShiftActionButton";
 import { CancelClaimButton } from "@/components/shifts/CancelClaimButton";
+import { ShiftStatusSummary } from "@/components/shifts/ShiftStatusSummary";
 
 export const dynamic = "force-dynamic";
 
@@ -119,7 +120,9 @@ export default async function MyShiftsPage({
   const displayShifts = filterShifts(allShifts, currentTab);
   const department = departmentData as any;
 
-  const upcomingCount = filterShifts(allShifts, "upcoming").length;
+  const upcomingCount = allShifts.filter((shift) =>
+    ["not_started", "started", "up_for_swap", "pending_approval_claim", "pending_approval_swap"].includes(shift.status)
+  ).length;
   const completedCount = filterShifts(allShifts, "completed").length;
 
   return (
@@ -144,23 +147,7 @@ export default async function MyShiftsPage({
         )}
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="glass rounded-2xl p-4 text-center border border-white/5">
-          <span className="text-2xl font-black text-gold block">{upcomingCount}</span>
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Upcoming</span>
-        </div>
-        <div className="glass rounded-2xl p-4 text-center border border-white/5">
-          <span className="text-2xl font-black text-emerald-400 block">{completedCount}</span>
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Completed</span>
-        </div>
-        <div className="glass rounded-2xl p-4 text-center border border-white/5">
-          <span className="text-2xl font-black text-purple-400 block">
-            {allShifts.filter((s) => s.status === "swapped").length}
-          </span>
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Swapped</span>
-        </div>
-      </div>
+      <ShiftStatusSummary shifts={allShifts} />
 
       {/* Filter Tabs */}
       <div className="glass rounded-full p-1.5 flex gap-1 border border-white/5">
