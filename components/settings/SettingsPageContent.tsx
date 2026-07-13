@@ -14,17 +14,18 @@ export async function SettingsPageContent({
   const { user, profile } = await getCachedSession();
   if (!user) redirect("/login");
 
-  if (profile?.user_role === "manager") {
-    redirect("/dashboard");
-  }
-
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
 
   const org = (profile as any)?.organization;
   const expired = needsSubscription(org);
   const wasOnTrial = org?.plan === "trial";
-  const activeTab = expired ? "billing" : (searchParams.tab ?? "org");
+  const isManager = profile?.user_role === "manager";
+  const activeTab = isManager
+    ? "account"
+    : expired
+    ? "billing"
+    : (searchParams.tab ?? "org");
 
   const supabase = await createClient();
 
@@ -105,6 +106,7 @@ export async function SettingsPageContent({
         orgId={orgId}
         profileCount={profileCount || 0}
         pendingInvites={pendingInvites}
+        isManager={isManager}
       />
 
       {!expired && (

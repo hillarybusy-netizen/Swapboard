@@ -29,6 +29,7 @@ interface SettingsTabsProps {
   orgId: string;
   profileCount: number;
   pendingInvites: PendingInvite[];
+  isManager: boolean;
 }
 
 const TABS = [
@@ -54,14 +55,18 @@ export function SettingsTabs({
   orgId,
   profileCount,
   pendingInvites,
+  isManager,
 }: SettingsTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const availableTabs = isManager
+    ? TABS.filter((tab) => tab.value === "account" || tab.value === "notifications")
+    : TABS;
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="px-1 md:px-2">
       <div className="-mx-1 mb-8 overflow-x-auto px-1 pb-2 no-scrollbar md:mb-10">
         <TabsList className="flex h-11 w-max min-w-full gap-1 rounded-full border border-white/5 bg-white/5 p-1 md:h-12 md:min-w-0">
-          {TABS.map((tab) => {
+          {availableTabs.map((tab) => {
             const isDisabled = expired && EXPIRED_DISABLED.has(tab.value);
             return (
               <TabsTrigger

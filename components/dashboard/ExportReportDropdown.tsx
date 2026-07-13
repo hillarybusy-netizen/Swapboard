@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Download, ChevronDown, X } from "lucide-react";
 
 interface ExportReportDropdownProps {
@@ -20,6 +21,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
   const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]);
   const [selectedFields, setSelectedFields] = useState<string[]>(["fulfillmentRate", "costSavings", "managerHoursSaved", "activeSwaps"]);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const allFields = [
     { key: "totalSwaps", label: "Total Swaps" },
@@ -34,7 +36,11 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        !dropdownRef.current?.contains(target) &&
+        !panelRef.current?.contains(target)
+      ) {
         setIsOpen(false);
       }
     }
@@ -123,9 +129,12 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <div
-          className="fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-white/10 bg-[#0a0a0a] shadow-xl max-h-[calc(100dvh-2rem)]"
+          ref={panelRef}
+          className="relative z-10 max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-xl border border-white/10 bg-[#0a0a0a] shadow-xl"
           role="dialog"
           aria-modal="true"
           aria-label="Export report options"
@@ -308,6 +317,8 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
             )}
           </div>
         </div>
+        </div>,
+        document.body
       )}
     </div>
   );

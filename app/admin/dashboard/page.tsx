@@ -324,7 +324,7 @@ export default async function AdminDashboardPage() {
                   className="btn-gold rounded-full px-8 text-xs font-black uppercase tracking-widest w-full md:w-auto h-12 md:h-auto"
                   asChild
                 >
-                  <Link href="/settings?tab=billing">Upgrade to Pro</Link>
+                  <Link href="/admin/settings?tab=billing">Upgrade to Pro</Link>
                 </Button>
               </div>
             </div>
@@ -380,7 +380,7 @@ export default async function AdminDashboardPage() {
                   Upgrade to the Growth plan to unlock historical trends and deep cost-saving insights.
                 </p>
                 <Button className="btn-gold rounded-full px-8" asChild>
-                  <Link href="/settings?tab=billing">View Plans</Link>
+                  <Link href="/admin/settings?tab=billing">View Plans</Link>
                 </Button>
               </div>
             )}
