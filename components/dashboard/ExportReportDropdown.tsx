@@ -92,9 +92,9 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
     ];
 
     const ignoredKeys = ["organizationName", "exportDate", "reportType", "metrics", "swaps", "month", "year", "startDate", "endDate", "fields"];
-    const metrics = Object.entries(reportData).filter(
-      ([key, value]) => !ignoredKeys.includes(key) && typeof value === "number"
-    );
+    const metrics: Array<[string, number]> = Object.entries(reportData)
+      .filter(([key, value]) => !ignoredKeys.includes(key) && typeof value === "number")
+      .map(([key, value]) => [key, value as number]);
 
     // Excel displays these two rows as a horizontal metrics table.
     rows.push(

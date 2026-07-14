@@ -215,9 +215,10 @@ export default async function ShiftsPage(props: {
           </h2>
           <div className="space-y-2">
             {endedShifts.map((shift) => (
-              <div
+              <Link
                 key={shift.id}
-                className="glass rounded-xl p-4 border border-white/5 flex items-center justify-between hover:border-white/10 transition-all"
+                href={`/shifts/${shift.id}`}
+                className="glass group flex items-center justify-between rounded-xl border border-white/5 p-4 transition-all hover:border-gold/30 hover:bg-white/[0.03]"
               >
                 <div>
                   <h3 className="font-bold text-white">{shift.title}</h3>
@@ -242,12 +243,12 @@ export default async function ShiftsPage(props: {
                   </div>
                 </div>
                 <Badge className={cn(
-                  "whitespace-nowrap ml-4 border-none",
+                  "ml-4 whitespace-nowrap border-none group-hover:scale-105 transition-transform",
                   STATUS_BADGE[shift.status] ?? "bg-white/10 text-white/50"
                 )}>
                   {SHIFT_STATUS_LABELS[shift.status] ?? shift.status}
                 </Badge>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
