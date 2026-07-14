@@ -16,21 +16,21 @@ import {
 
 export async function autoCloseExpiredShifts(orgId: string) {
   const admin = createAdminClient();
-  const now = new Date().toISOString();
+  const submissionCutoff = new Date(Date.now() - 15 * 60 * 1000).toISOString();
 
   // Find all shifts that have passed their end_time but aren't closed yet
   const { data: expiredShifts, error: fetchError } = await admin
     .from("shifts")
     .select("id, organization_id, status")
     .eq("organization_id", orgId)
-    .lt("end_time", now)
+    .lt("end_time", submissionCutoff)
     .in("status", ["not_started", "started"])
     .is("deleted_at", null);
 
   if (fetchError) throw fetchError;
   if (!expiredShifts || expiredShifts.length === 0) return { count: 0 };
 
-  // Update all expired shifts to "overdue_not_done"
+  // A worker can submit up to 15 minutes after the scheduled end time.
   const { error: updateError } = await admin
     .from("shifts")
     .update({ status: "overdue_not_done" })
@@ -271,24 +271,34 @@ export async function startShift(shiftId: string) {
 
   const { data: shift, error: fetchError } = await supabase
     .from("shifts")
-    .select("assigned_to, status, organization_id, start_time")
+    .select("assigned_to, status, organization_id, start_time, end_time")
     .eq("id", shiftId)
     .single();
 
   if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
   if (shift.assigned_to !== user.id) throw new Error("You are not assigned to this shift.");
-  if (shift.status !== "not_started" && shift.status !== "overdue_not_done") {
+  if (shift.status !== "not_started") {
     throw new Error("This shift cannot be started from its current state.");
   }
   
-  if (new Date() < new Date(shift.start_time)) {
+  const now = new Date();
+  if (now < new Date(shift.start_time)) {
     throw new Error("Shift can't start before its time.");
+  }
+  if (now.getTime() > new Date(shift.end_time).getTime() + 15 * 60 * 1000) {
+    await createAdminClient().from("shifts").update({ status: "overdue_not_done" }).eq("id", shiftId);
+    throw new Error("This shift is overdue and can no longer be started.");
   }
 
   const admin = createAdminClient();
+  const isLateStart = now.getTime() > new Date(shift.start_time).getTime() + 5 * 60 * 1000;
   const { error } = await admin
     .from("shifts")
-    .update({ status: "started", actual_start_time: new Date().toISOString() })
+    .update({
+      status: "started",
+      actual_start_time: now.toISOString(),
+      late_started_at: isLateStart ? now.toISOString() : null,
+    })
     .eq("id", shiftId);
 
   if (error) throw new Error(formatError(error.message));
@@ -299,7 +309,32 @@ export async function startShift(shiftId: string) {
   revalidatePath("/shifts");
   revalidatePath("/my-shifts");
 
-  return { success: true };
+  return { success: true, lateStarted: isLateStart };
+}
+
+export async function enforceShiftSubmissionDeadline(shiftId: string) {
+  const { supabase, user } = await requireUser();
+  const { data: shift, error } = await supabase
+    .from("shifts")
+    .select("assigned_to, status, end_time")
+    .eq("id", shiftId)
+    .single();
+
+  if (error || !shift || shift.assigned_to !== user.id) return { overdue: false };
+  if (!["not_started", "started"].includes(shift.status)) return { overdue: false };
+  if (Date.now() <= new Date(shift.end_time).getTime() + 15 * 60 * 1000) return { overdue: false };
+
+  const { error: updateError } = await createAdminClient()
+    .from("shifts")
+    .update({ status: "overdue_not_done" })
+    .eq("id", shiftId);
+
+  if (updateError) throw new Error(formatError(updateError.message));
+
+  revalidatePath("/my-shifts");
+  revalidatePath("/shifts");
+  revalidatePath("/dashboard");
+  return { overdue: true };
 }
 
 export async function markShiftDone(shiftId: string) {
@@ -307,20 +342,31 @@ export async function markShiftDone(shiftId: string) {
 
   const { data: shift, error: fetchError } = await supabase
     .from("shifts")
-    .select("assigned_to, status, organization_id")
+    .select("assigned_to, status, organization_id, end_time")
     .eq("id", shiftId)
     .single();
 
   if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
   if (shift.assigned_to !== user.id) throw new Error("You are not assigned to this shift.");
-  if (shift.status !== "started" && shift.status !== "not_started" && shift.status !== "overdue_not_done") {
+  if (shift.status !== "started" && shift.status !== "not_started") {
     throw new Error("This shift cannot be marked as done in its current state. Please contact your manager if you think this is an error.");
   }
 
+  const now = new Date();
+  if (now.getTime() > new Date(shift.end_time).getTime() + 15 * 60 * 1000) {
+    await createAdminClient().from("shifts").update({ status: "overdue_not_done" }).eq("id", shiftId);
+    throw new Error("This shift is overdue and can no longer be submitted. Please contact your manager.");
+  }
+
   const admin = createAdminClient();
+  const isLateSubmission = now.getTime() > new Date(shift.end_time).getTime() + 5 * 60 * 1000;
   const { error } = await admin
     .from("shifts")
-    .update({ status: "done_pending_approval", actual_end_time: new Date().toISOString() })
+    .update({
+      status: "done_pending_approval",
+      actual_end_time: now.toISOString(),
+      late_submitted_at: isLateSubmission ? now.toISOString() : null,
+    })
     .eq("id", shiftId);
 
   if (error) throw error;
@@ -334,7 +380,7 @@ export async function markShiftDone(shiftId: string) {
   revalidatePath("/shifts");
   revalidatePath("/dashboard");
 
-  return { success: true };
+  return { success: true, lateSubmitted: isLateSubmission };
 }
 
 export async function reviewShiftCompletion(shiftId: string, action: "approve" | "reject" | "no_show", notes?: string) {

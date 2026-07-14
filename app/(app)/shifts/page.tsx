@@ -9,6 +9,7 @@ import { Calendar, Clock, Users, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { ShiftsListClient } from "@/components/shifts/ShiftsListClient";
 import { ShiftStatusSummary } from "@/components/shifts/ShiftStatusSummary";
+import { ShiftTimingBadges } from "@/components/shifts/ShiftTimingBadges";
 import { autoCloseExpiredShifts } from "@/lib/actions/shifts";
 
 export const dynamic = "force-dynamic";
@@ -248,6 +249,14 @@ export default async function ShiftsPage(props: {
                 )}>
                   {SHIFT_STATUS_LABELS[shift.status] ?? shift.status}
                 </Badge>
+                <ShiftTimingBadges
+                  status={shift.status}
+                  startTime={shift.start_time}
+                  endTime={shift.end_time}
+                  lateStartedAt={shift.late_started_at}
+                  lateSubmittedAt={shift.late_submitted_at}
+                  className="justify-end"
+                />
               </Link>
             ))}
           </div>

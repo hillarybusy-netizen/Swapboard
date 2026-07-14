@@ -40,11 +40,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const pathname = headerList.get("x-pathname") || headerList.get("x-url") || "";
   const isSettingsPage = pathname.includes("/settings");
 
-  // org_admin hitting /dashboard: redirect to their own dashboard before any rendering starts
-  if (profile?.user_role === "org_admin" && (pathname.endsWith("/dashboard") || pathname === "/dashboard")) {
-    redirect("/admin/dashboard");
-  }
-
   const expired = needsSubscription(org);
   const wasOnTrial = org?.plan === "trial";
 

@@ -15,6 +15,7 @@ import Link from "next/link";
 import { ConfirmCompletionButton } from "@/components/shifts/ConfirmCompletionButton";
 import { ApproveClaimButton } from "@/components/shifts/ApproveClaimButton";
 import { ShiftManagerActions } from "@/components/shifts/ShiftManagerActions";
+import { ShiftTimingBadges } from "@/components/shifts/ShiftTimingBadges";
 import { canManagerAccessDepartment } from "@/lib/managers";
 
 export const dynamic = "force-dynamic";
@@ -123,6 +124,14 @@ export default async function ShiftDetailPage(props: {
           >
             {SHIFT_STATUS_LABELS[shift.status] ?? shift.status}
           </Badge>
+          <ShiftTimingBadges
+            status={shift.status}
+            startTime={shift.start_time}
+            endTime={shift.end_time}
+            lateStartedAt={shift.late_started_at}
+            lateSubmittedAt={shift.late_submitted_at}
+            className="justify-end"
+          />
         </div>
 
         {/* Time/date grid */}

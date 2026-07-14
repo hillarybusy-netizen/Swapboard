@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { ShiftActionButton } from "@/components/shifts/ShiftActionButton";
 import { CancelClaimButton } from "@/components/shifts/CancelClaimButton";
 import { ShiftStatusSummary } from "@/components/shifts/ShiftStatusSummary";
+import { ShiftTimingBadges } from "@/components/shifts/ShiftTimingBadges";
+import { autoCloseExpiredShifts } from "@/lib/actions/shifts";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +70,7 @@ export default async function MyShiftsPage({
   const currentTab = (params.tab as TabKey) || "all";
 
   const supabase = await createClient();
+  if (profile?.organization_id) await autoCloseExpiredShifts(profile.organization_id);
 
   const [
     { data: allShiftsData },
@@ -229,6 +232,14 @@ export default async function MyShiftsPage({
                   >
                     {badge.label}
                   </span>
+                  <ShiftTimingBadges
+                    status={shift.status}
+                    startTime={shift.start_time}
+                    endTime={shift.end_time}
+                    lateStartedAt={shift.late_started_at}
+                    lateSubmittedAt={shift.late_submitted_at}
+                    className="justify-end"
+                  />
                 </div>
 
                 {/* Date / Time / Duration row */}

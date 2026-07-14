@@ -38,7 +38,7 @@ interface AdminSidebarProps {
   profile?: Profile | null;
 }
 
-function NavContent({ org, profile }: AdminSidebarProps) {
+function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
@@ -73,7 +73,7 @@ function NavContent({ org, profile }: AdminSidebarProps) {
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
-            <Link key={href} href={href} prefetch>
+            <Link key={href} href={href} prefetch onClick={onNavigate}>
               <span
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300",
@@ -133,7 +133,7 @@ export function AdminSidebar({ org, profile }: AdminSidebarProps = {}) {
           </button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0 bg-[#050505] border-white/5 h-full flex flex-col">
-          <NavContent org={org} profile={profile} />
+          <NavContent org={org} profile={profile} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </>

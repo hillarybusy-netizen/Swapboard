@@ -64,6 +64,10 @@ export interface Shift {
   start_time: string;
   end_time: string;
   status: ShiftStatus;
+  actual_start_time: string | null;
+  actual_end_time: string | null;
+  late_started_at: string | null;
+  late_submitted_at: string | null;
   notes: string | null;
   created_by: string | null;
   deleted_at: string | null;

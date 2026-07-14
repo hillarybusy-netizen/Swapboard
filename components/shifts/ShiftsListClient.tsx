@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, Trash2, Loader2, CheckSquare, Square } from "lucide-react";
 import { AddShiftDialog } from "@/components/shifts/AddShiftDialog";
+import { ShiftTimingBadges } from "@/components/shifts/ShiftTimingBadges";
 import { bulkSoftDeleteShifts } from "@/lib/actions/shifts";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -186,6 +187,14 @@ export function ShiftsListClient({ shifts, canAddShift, departments, profiles, o
                       )}>
                         {SHIFT_STATUS_LABELS[shift.status] ?? shift.status}
                       </Badge>
+                      <ShiftTimingBadges
+                        status={shift.status}
+                        startTime={shift.start_time}
+                        endTime={shift.end_time}
+                        lateStartedAt={shift.late_started_at}
+                        lateSubmittedAt={shift.late_submitted_at}
+                        className="justify-end"
+                      />
                     </div>
                   </div>
                 </div>

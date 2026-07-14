@@ -3,7 +3,7 @@ import { catchError } from "@/lib/errors";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, Play, Clock } from "lucide-react";
-import { startShift, markShiftDone } from "@/lib/actions/shifts";
+import { startShift, markShiftDone, enforceShiftSubmissionDeadline } from "@/lib/actions/shifts";
 import { toast } from "@/hooks/use-toast";
 
 interface Props {
@@ -20,18 +20,26 @@ export function ShiftActionButton({ shiftId, shiftTitle, status, startTime, endT
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "started" || status === "overdue_not_done") {
+    if (status === "started") {
+      let deadlineHandled = false;
       const checkDoneTime = () => {
-        // 1 minute past end time
-        const doneTime = new Date(endTime).getTime() + 60000;
+        const endTimeMs = new Date(endTime).getTime();
+        const doneTime = endTimeMs + 60000;
         setCanMarkDone(Date.now() > doneTime);
+
+        if (!deadlineHandled && Date.now() > endTimeMs + 15 * 60 * 1000) {
+          deadlineHandled = true;
+          enforceShiftSubmissionDeadline(shiftId).then((result) => {
+            if (result.overdue) router.refresh();
+          });
+        }
       };
 
       checkDoneTime();
       const interval = setInterval(checkDoneTime, 10000); // Check every 10s
       return () => clearInterval(interval);
     }
-  }, [status, endTime]);
+  }, [status, endTime, shiftId, router]);
 
   async function handleStartShift() {
     if (new Date() < new Date(startTime)) {
@@ -45,10 +53,12 @@ export function ShiftActionButton({ shiftId, shiftTitle, status, startTime, endT
 
     setLoading(true);
     try {
-      await startShift(shiftId);
+      const result = await startShift(shiftId);
       toast({
-        title: "Shift Started",
-        description: `You have successfully clocked in/started "${shiftTitle}".`,
+        title: result.lateStarted ? "Shift Started Late" : "Shift Started",
+        description: result.lateStarted
+          ? `"${shiftTitle}" was started after the five-minute grace period.`
+          : `You have successfully clocked in/started "${shiftTitle}".`,
         className: "bg-blue-500/20 border-blue-500/50 text-blue-300",
       });
       router.refresh();
@@ -62,10 +72,12 @@ export function ShiftActionButton({ shiftId, shiftTitle, status, startTime, endT
   async function handleMarkDone() {
     setLoading(true);
     try {
-      await markShiftDone(shiftId);
+      const result = await markShiftDone(shiftId);
       toast({
-        title: "Awaiting manager approval",
-        description: `"${shiftTitle}" marked as done. Your manager will confirm shortly.`,
+        title: result.lateSubmitted ? "Submitted Late" : "Awaiting manager approval",
+        description: result.lateSubmitted
+          ? `"${shiftTitle}" was submitted after the five-minute grace period.`
+          : `"${shiftTitle}" marked as done. Your manager will confirm shortly.`,
         className: "bg-emerald-500/20 border-emerald-500/50 text-emerald-300",
       });
       router.refresh();
@@ -97,7 +109,7 @@ export function ShiftActionButton({ shiftId, shiftTitle, status, startTime, endT
     );
   }
 
-  if (status === "started" || status === "overdue_not_done") {
+  if (status === "started") {
     if (!canMarkDone) {
       return (
         <button

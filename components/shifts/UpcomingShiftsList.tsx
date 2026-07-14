@@ -22,6 +22,7 @@ import {
 import { ShiftActionButton } from "@/components/shifts/ShiftActionButton";
 import { CancelClaimButton } from "@/components/shifts/CancelClaimButton";
 import { Badge } from "@/components/ui/badge";
+import { ShiftTimingBadges } from "@/components/shifts/ShiftTimingBadges";
 
 interface Props {
   upcomingShifts: any[];
@@ -103,6 +104,14 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                   <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
                 </div>
               </div>
+              <ShiftTimingBadges
+                status={shift.status}
+                startTime={shift.start_time}
+                endTime={shift.end_time}
+                lateStartedAt={shift.late_started_at}
+                lateSubmittedAt={shift.late_submitted_at}
+                className="mt-2"
+              />
             </div>
           );
         })}
@@ -140,6 +149,13 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                       {badge.label}
                     </span>
                   </div>
+                  <ShiftTimingBadges
+                    status={selectedShift.status}
+                    startTime={selectedShift.start_time}
+                    endTime={selectedShift.end_time}
+                    lateStartedAt={selectedShift.late_started_at}
+                    lateSubmittedAt={selectedShift.late_submitted_at}
+                  />
                   <DialogTitle className="text-xl font-black tracking-tight text-left">
                     {selectedShift.title}
                   </DialogTitle>
