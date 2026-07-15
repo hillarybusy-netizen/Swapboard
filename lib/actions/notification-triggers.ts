@@ -17,6 +17,9 @@ import {
   sendSwapPostedAdminEmail,
   sendCoverOfferedConfirmationEmail,
   sendSwapApprovedAdminEmail,
+  sendShiftStartingSoonEmail,
+  sendShiftOverdueEmail,
+  sendShiftCompletionApprovedEmail,
 } from "@/lib/email";
 
 interface NotificationTriggerOptions {
@@ -643,6 +646,15 @@ export async function triggerShiftStartingSoon(
       relatedEntityType: 'shift',
       relatedEntityId: shiftId,
     });
+
+    if (worker.email) {
+      await sendShiftStartingSoonEmail(
+        worker.email,
+        worker.full_name || 'Worker',
+        shift.title,
+        timeStr,
+      );
+    }
   }
 }
 
@@ -665,20 +677,46 @@ export async function triggerShiftOverdue(
 
   if (!shift) return;
 
+  const endedAtStr = new Date(shift.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   // Notify worker
+  const { data: workerProfile } = await admin
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', assignedToId)
+    .single();
+
   if (await shouldSendNotification(assignedToId, 'in_app', 'shift_overdue')) {
     await createNotification({
       userId: assignedToId,
       organizationId,
       type: 'shift_overdue',
       title: '⚠️ Shift Overdue',
-      message: `Your shift "${shift.title}" ended ${new Date(shift.end_time).toLocaleTimeString()}. Please mark it as done.`,
+      message: `Your shift "${shift.title}" ended ${endedAtStr}. Please mark it as done.`,
       relatedEntityType: 'shift',
       relatedEntityId: shiftId,
     });
   }
 
+  if (await shouldSendNotification(assignedToId, 'email', 'shift_overdue')) {
+    if (workerProfile?.email) {
+      await sendShiftOverdueEmail(
+        workerProfile.email,
+        workerProfile.full_name || 'Worker',
+        shift.title,
+        endedAtStr,
+        'worker',
+      );
+    }
+  }
+
   // Notify manager
+  const { data: managerProfile } = await admin
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', managerId)
+    .single();
+
   if (await shouldSendNotification(managerId, 'in_app', 'shift_overdue')) {
     await createNotification({
       userId: managerId,
@@ -689,6 +727,18 @@ export async function triggerShiftOverdue(
       relatedEntityType: 'shift',
       relatedEntityId: shiftId,
     });
+  }
+
+  if (await shouldSendNotification(managerId, 'email', 'shift_overdue')) {
+    if (managerProfile?.email) {
+      await sendShiftOverdueEmail(
+        managerProfile.email,
+        managerProfile.full_name || 'Manager',
+        shift.title,
+        endedAtStr,
+        'manager',
+      );
+    }
   }
 }
 
@@ -718,6 +768,12 @@ export async function triggerCompletionPending(
     .eq('id', shift?.assigned_to)
     .single();
 
+  const { data: managerForPending } = await admin
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', managerId)
+    .single();
+
   if (await shouldSendNotification(managerId, 'in_app', 'shift_completion_pending')) {
     await createNotification({
       userId: managerId,
@@ -728,6 +784,18 @@ export async function triggerCompletionPending(
       relatedEntityType: 'shift',
       relatedEntityId: shiftId,
     });
+  }
+
+  if (await shouldSendNotification(managerId, 'email', 'shift_completion_pending')) {
+    if (managerForPending?.email) {
+      await sendShiftCompletedEmail(
+        managerForPending.email,
+        managerForPending.full_name || 'Manager',
+        worker?.full_name || 'A worker',
+        shift?.title || 'Shift',
+        'manager',
+      );
+    }
   }
 }
 
@@ -747,6 +815,24 @@ export async function triggerCompletionApproved(
     .eq('id', shiftId)
     .single();
 
+  const { data: workerForApproval } = await admin
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', workerId)
+    .single();
+
+  // Fetch the manager who approved (from the shift)
+  const { data: approvedShift } = await admin
+    .from('shifts')
+    .select('created_by')
+    .eq('id', shiftId)
+    .single();
+
+  // Best-effort: use the org's first admin name as fallback for managerName
+  const { data: approverProfile } = approvedShift?.created_by
+    ? await admin.from('profiles').select('full_name').eq('id', approvedShift.created_by).single()
+    : { data: null };
+
   if (await shouldSendNotification(workerId, 'in_app', 'completion_approved')) {
     await createNotification({
       userId: workerId,
@@ -757,6 +843,17 @@ export async function triggerCompletionApproved(
       relatedEntityType: 'shift',
       relatedEntityId: shiftId,
     });
+  }
+
+  if (await shouldSendNotification(workerId, 'email', 'completion_approved')) {
+    if (workerForApproval?.email) {
+      await sendShiftCompletionApprovedEmail(
+        workerForApproval.email,
+        workerForApproval.full_name || 'Worker',
+        shift?.title || 'Shift',
+        approverProfile?.full_name || 'Your manager',
+      );
+    }
   }
 }
 

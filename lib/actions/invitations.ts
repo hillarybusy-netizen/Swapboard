@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resend } from "@/lib/resend";
-import { revalidatePath } from "next/cache";
+import { FROM_EMAIL } from "@/lib/email";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { Plan } from "@/lib/database.types";
 import { requireManager } from "@/lib/auth-helpers";
@@ -221,7 +221,7 @@ export async function sendInvitation(inv: {
 
   try {
     await resend.emails.send({
-      from: "SwapBoard <no-reply@swapboard.ca>",
+      from: FROM_EMAIL,
       to: inv.email,
       subject: `Join ${inv.organization_name} on SwapBoard`,
       html: swapboardEmailHtml({

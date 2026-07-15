@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import * as React from 'react';
+import { render } from '@react-email/render';
 import { SwapApprovedEmail } from './email-templates/SwapApprovedEmail';
 import { SwapRejectedEmail } from './email-templates/SwapRejectedEmail';
 import { ShiftAssignedEmail } from './email-templates/ShiftAssignedEmail';
@@ -14,8 +15,11 @@ import { SwapPostedConfirmationEmail } from './email-templates/SwapPostedConfirm
 import { SwapPostedAdminEmail } from './email-templates/SwapPostedAdminEmail';
 import { CoverOfferedConfirmationEmail } from './email-templates/CoverOfferedConfirmationEmail';
 import { SwapApprovedAdminEmail } from './email-templates/SwapApprovedAdminEmail';
+import { ShiftStartingSoonEmail } from './email-templates/ShiftStartingSoonEmail';
+import { ShiftOverdueEmail } from './email-templates/ShiftOverdueEmail';
+import { ShiftCompletionApprovedEmail } from './email-templates/ShiftCompletionApprovedEmail';
 
-const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'SwapBoard <no-reply@swapboard.ca>';
+export const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'SwapBoard <no-reply@swapboard.ca>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.swapboard.ca';
 
 // Lazy-load Resend client
@@ -27,7 +31,11 @@ function getResendClient() {
   return new Resend(apiKey);
 }
 
-// Generic email sending function
+// Generic email sending function — pre-renders the React component to an HTML
+// string via @react-email/render, then sends it as plain HTML. Using the
+// `react:` field on resend.emails.send() requires @react-email/render to be
+// available inside Resend's own bundling context, which is not guaranteed in
+// Next.js Turbopack builds and was the reason notification emails silently failed.
 async function sendEmail(
   to: string,
   subject: string,
@@ -47,11 +55,13 @@ async function sendEmail(
   }
 
   try {
+    const html = await render(component);
+
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to,
       subject,
-      react: component,
+      html,
     });
 
     if (result.error) {
@@ -464,6 +474,78 @@ export async function sendSwapApprovedAdminEmail(
       shiftTitle,
       shiftDate,
       managerNotes,
+      dashboardUrl,
+    }),
+  );
+}
+
+// ============================================================================
+// PREVIOUSLY IN-APP-ONLY NOTIFICATIONS — NOW ALSO EMAIL
+// ============================================================================
+
+/**
+ * Remind a worker their shift is starting soon
+ */
+export async function sendShiftStartingSoonEmail(
+  to: string,
+  workerName: string,
+  shiftTitle: string,
+  startTime: string,
+) {
+  const dashboardUrl = `${APP_URL}/my-shifts`;
+  return sendEmail(
+    to,
+    `⏰ Your Shift Starts Soon — ${shiftTitle}`,
+    React.createElement(ShiftStartingSoonEmail, {
+      workerName,
+      shiftTitle,
+      startTime,
+      dashboardUrl,
+    }),
+  );
+}
+
+/**
+ * Alert a worker or manager that a shift is overdue
+ */
+export async function sendShiftOverdueEmail(
+  to: string,
+  recipientName: string,
+  shiftTitle: string,
+  endedAt: string,
+  recipientRole: 'worker' | 'manager' | 'org_admin',
+) {
+  const dashboardUrl = recipientRole === 'worker' ? `${APP_URL}/my-shifts` : `${APP_URL}/dashboard`;
+  return sendEmail(
+    to,
+    `⚠️ Shift Overdue — ${shiftTitle}`,
+    React.createElement(ShiftOverdueEmail, {
+      recipientName,
+      shiftTitle,
+      endedAt,
+      recipientRole,
+      dashboardUrl,
+    }),
+  );
+}
+
+/**
+ * Notify a worker that their shift completion has been approved
+ */
+export async function sendShiftCompletionApprovedEmail(
+  to: string,
+  workerName: string,
+  shiftTitle: string,
+  managerName: string,
+) {
+  const dashboardUrl = `${APP_URL}/my-shifts`;
+  return sendEmail(
+    to,
+    `✅ Shift Completion Approved — ${shiftTitle}`,
+    React.createElement(ShiftCompletionApprovedEmail, {
+      workerName,
+      shiftTitle,
+      managerName,
       dashboardUrl,
     }),
   );

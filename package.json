@@ -20,6 +20,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
+    "@react-email/render": "^2.1.0",
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.110.0",
     "@tabler/icons-react": "^3.44.0",
