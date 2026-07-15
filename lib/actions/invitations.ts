@@ -9,6 +9,7 @@ import { Plan } from "@/lib/database.types";
 import { requireManager } from "@/lib/auth-helpers";
 import { swapboardEmailHtml, isResendConfigured } from "@/lib/email-template";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { formatError } from "@/lib/errors";
 
