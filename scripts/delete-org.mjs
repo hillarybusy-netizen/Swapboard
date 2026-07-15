@@ -4,8 +4,14 @@
  * Run with: node scripts/delete-org.mjs
  */
 
-const SUPABASE_URL = "https://kymhjoaddfglyyfyrpri.supabase.co";
-const SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5bWhqb2FkZGZnbHl5ZnlycHJpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTEyMTQ0MiwiZXhwIjoyMDg2Njk3NDQyfQ._TJxp9b8vDq57tTSgeWNAyFVWt0bZJpxnd_rYkjIuCI";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+  throw new Error(
+    "Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before running this script."
+  );
+}
 
 const headers = {
   "apikey": SERVICE_ROLE_KEY,

@@ -46,3 +46,20 @@ export async function addDepartment(orgId: string, name: string, sortOrder: numb
   revalidatePath("/settings");
   return { success: true };
 }
+
+export async function deleteDepartment(orgId: string, departmentId: string) {
+  const { supabase, profile } = await requireManager(orgId);
+  if (profile.user_role !== "org_admin") {
+    throw new Error("Only organization admins can delete departments.");
+  }
+
+  const { error } = await supabase
+    .from("departments")
+    .delete()
+    .eq("id", departmentId)
+    .eq("organization_id", orgId);
+
+  if (error) throw new Error(formatError(error.message));
+  revalidatePath("/settings");
+  return { success: true };
+}

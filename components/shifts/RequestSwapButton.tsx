@@ -1,6 +1,6 @@
 "use client";
 import { catchError } from "@/lib/errors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -20,12 +20,34 @@ const REASONS = [
   "Other",
 ];
 
-export function RequestSwapButton({ shiftId, shiftTitle }: { shiftId: string; shiftTitle: string }) {
+export function RequestSwapButton({
+  shiftId,
+  shiftTitle,
+  startTime,
+  endTime,
+}: {
+  shiftId: string;
+  shiftTitle: string;
+  startTime: string;
+  endTime: string;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPastMidpoint, setIsPastMidpoint] = useState(false);
+
+  useEffect(() => {
+    const updateCutoff = () => {
+      const start = new Date(startTime).getTime();
+      const end = new Date(endTime).getTime();
+      setIsPastMidpoint(Date.now() >= start + (end - start) / 2);
+    };
+    updateCutoff();
+    const timer = window.setInterval(updateCutoff, 30_000);
+    return () => window.clearInterval(timer);
+  }, [startTime, endTime]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,7 +69,16 @@ export function RequestSwapButton({ shiftId, shiftTitle }: { shiftId: string; sh
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className={`gap-2 ${isPastMidpoint ? "cursor-not-allowed opacity-40" : ""}`}
+          onClick={(event) => {
+            if (!isPastMidpoint) return;
+            event.preventDefault();
+            toast({ title: "Too late for swapping", description: "This shift has passed its halfway point.", variant: "destructive" });
+          }}
+        >
           <ArrowLeftRight className="w-3.5 h-3.5" />
           Request swap
         </Button>

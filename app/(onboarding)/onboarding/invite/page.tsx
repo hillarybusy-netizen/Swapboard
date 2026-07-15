@@ -167,11 +167,6 @@ export default function InvitePage() {
         }
       }
 
-      if (!isAnonymous && authUser?.id) {
-        const supabase = createClient();
-        await supabase.from("profiles").update({ onboarding_complete: true }).eq("id", authUser.id);
-      }
-
       sessionStorage.removeItem("onboarding_industry");
       sessionStorage.removeItem("onboarding_setup");
 

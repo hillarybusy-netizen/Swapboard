@@ -15,6 +15,60 @@ import {
   triggerSwapPostedNotification,
 } from "./notification-triggers";
 
+function isPastSwapMidpoint(startTime: string, endTime: string) {
+  const start = new Date(startTime).getTime();
+  const end = new Date(endTime).getTime();
+  return Date.now() >= start + (end - start) / 2;
+}
+
+function statusBeforeSwap(actualStartTime: string | null) {
+  return actualStartTime ? "started" : "not_started";
+}
+
+/** Cancels only unclaimed swaps after the shift midpoint. Manager-pending swaps stay open. */
+export async function expireUnclaimedSwapRequests(orgId: string) {
+  const { profile } = await requireUser();
+  if (!profile?.organization_id || profile.organization_id !== orgId) {
+    throw new Error("Unauthorized");
+  }
+
+  const admin = createAdminClient();
+  const { data: pendingSwaps, error } = await admin
+    .from("swap_requests")
+    .select("id, shift_id, shift:shifts(start_time, end_time, actual_start_time)")
+    .eq("organization_id", orgId)
+    .eq("status", "pending");
+
+  if (error) throw new Error(formatError(error.message));
+
+  let cancelled = 0;
+  for (const swap of pendingSwaps ?? []) {
+    const shift = swap.shift as unknown as { start_time: string; end_time: string; actual_start_time: string | null } | null;
+    if (!shift || !isPastSwapMidpoint(shift.start_time, shift.end_time)) continue;
+
+    // The status condition prevents cancellation if a worker accepted in the meantime.
+    const { data: cancelledSwap, error: cancelError } = await admin
+      .from("swap_requests")
+      .update({ status: "cancelled" })
+      .eq("id", swap.id)
+      .eq("status", "pending")
+      .select("id")
+      .maybeSingle();
+
+    if (cancelError) throw new Error(formatError(cancelError.message));
+    if (!cancelledSwap) continue;
+
+    const { error: shiftError } = await admin
+      .from("shifts")
+      .update({ status: statusBeforeSwap(shift.actual_start_time) })
+      .eq("id", swap.shift_id);
+    if (shiftError) throw new Error(formatError(shiftError.message));
+    cancelled++;
+  }
+
+  return { count: cancelled };
+}
+
 export async function requestSwap(shiftId: string, reason: string) {
   const { supabase, user, profile } = await requireUser();
 
@@ -24,7 +78,7 @@ export async function requestSwap(shiftId: string, reason: string) {
 
   const { data: shift, error: shiftError } = await supabase
     .from("shifts")
-    .select("id, organization_id, department_id, assigned_to, status")
+    .select("id, organization_id, department_id, assigned_to, status, start_time, end_time")
     .eq("id", shiftId)
     .single();
 
@@ -32,6 +86,9 @@ export async function requestSwap(shiftId: string, reason: string) {
   if (shift.assigned_to !== user.id) throw new Error("You can only request swaps for shifts assigned to you.");
   if (shift.status !== "not_started" && shift.status !== "started") {
     throw new Error("This shift is not eligible for a swap in its current state.");
+  }
+  if (isPastSwapMidpoint(shift.start_time, shift.end_time)) {
+    throw new Error("Too late for swapping. A shift can only be posted for swap before its halfway point.");
   }
 
   if (!profile.organization_id || profile.organization_id !== shift.organization_id) {
@@ -121,6 +178,12 @@ export async function offerToCoverSwap(swapId: string) {
     .single();
 
   if (shift && shift.start_time && shift.end_time) {
+    if (isPastSwapMidpoint(shift.start_time, shift.end_time)) {
+      throw new Error("Too late for swapping. This shift has passed its halfway point.");
+    }
+    if (shift.department_id && profile.department_id !== shift.department_id) {
+      throw new Error("You can only offer to cover shifts within your assigned department.");
+    }
     const { data: overlappingShifts } = await supabase
       .from("shifts")
       .select("id")
@@ -136,7 +199,7 @@ export async function offerToCoverSwap(swapId: string) {
 
   // Lock the swap (first come first serve)
   const admin = createAdminClient();
-  const { error: updateError } = await admin
+  const { data: acceptedSwap, error: updateError } = await admin
     .from("swap_requests")
     .update({
       covering_worker_id: user.id,
@@ -144,9 +207,12 @@ export async function offerToCoverSwap(swapId: string) {
       worker_responded_at: new Date().toISOString(),
     })
     .eq("id", swapId)
-    .eq("status", "pending"); // ensure it's still pending
+    .eq("status", "pending") // ensure it's still pending
+    .select("id")
+    .maybeSingle();
 
   if (updateError) throw new Error(formatError(updateError.message));
+  if (!acceptedSwap) throw new Error("This swap was just claimed by another team member.");
 
   // Update shift status
   await admin.from("shifts").update({ status: "pending_approval_swap" }).eq("id", swap.shift_id);
@@ -207,6 +273,10 @@ export async function managerSwapAction(
 
   if (error || !swap) throw new Error("This swap request could not be found. Please refresh and try again.");
 
+  if (!profile.organization_id || profile.organization_id !== swap.organization_id) {
+    throw new Error("You don't have permission to manage swaps outside your organization.");
+  }
+
   if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, swap.shift?.department_id)) {
     throw new Error("You don't have permission to manage swaps in this department.");
   } else if (profile.user_role !== "manager" && profile.user_role !== "org_admin") {
@@ -221,7 +291,7 @@ export async function managerSwapAction(
       throw new Error("Cannot approve this swap because no one has offered to cover it yet.");
     }
 
-    const { error: swapError } = await admin
+    const { data: updatedSwap, error: swapError } = await admin
       .from("swap_requests")
       .update({
         status: "manager_approved",
@@ -229,9 +299,13 @@ export async function managerSwapAction(
         manager_responded_at: new Date().toISOString(),
         manager_notes: managerNotes || null,
       })
-      .eq("id", swapId);
+      .eq("id", swapId)
+      .eq("status", "worker_accepted")
+      .select("id")
+      .maybeSingle();
 
     if (swapError) throw new Error(formatError(swapError.message));
+    if (!updatedSwap) throw new Error("This swap was already processed. Please refresh and try again.");
 
     if (swap.covering_worker_id) {
       const { error: shiftError } = await admin
@@ -253,7 +327,11 @@ export async function managerSwapAction(
     // Notifications and emails handled by triggerSwapApproved
   } else {
     // Reject
-    const { error: swapError } = await admin
+    if (!["pending", "worker_accepted"].includes(swap.status)) {
+      throw new Error("This swap was already processed. Please refresh and try again.");
+    }
+
+    const { data: updatedSwap, error: swapError } = await admin
       .from("swap_requests")
       .update({
         status: "rejected",
@@ -261,9 +339,13 @@ export async function managerSwapAction(
         manager_responded_at: new Date().toISOString(),
         manager_notes: managerNotes || null,
       })
-      .eq("id", swapId);
+      .eq("id", swapId)
+      .eq("status", swap.status)
+      .select("id")
+      .maybeSingle();
 
     if (swapError) throw new Error(formatError(swapError.message));
+    if (!updatedSwap) throw new Error("This swap was already processed. Please refresh and try again.");
 
     const nextStatus = blockReswap ? "not_started" : "up_for_swap";
 

@@ -4,7 +4,8 @@ import { Profile } from "@/lib/database.types";
 /**
  * Check if a manager can access a specific department
  * - General Managers can access all departments
- * - Department Managers can only access their assigned department
+ * - General shifts (department_id = null) can be managed by any manager
+ * - Department Managers can otherwise only access their assigned department
  */
 export function canManagerAccessDepartment(
   profile: Profile,
@@ -15,6 +16,12 @@ export function canManagerAccessDepartment(
   }
 
   if (profile.manager_type === "general") {
+    return true;
+  }
+
+  // General shifts are organization-wide open shifts. Any manager can review
+  // their claims, swaps, completion, and no-show actions.
+  if (departmentId === null || departmentId === undefined) {
     return true;
   }
 

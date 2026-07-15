@@ -1,6 +1,7 @@
-"use server";
+import "server-only";
 
-import { createNotification, type NotificationType } from "./notifications";
+import type { NotificationType } from "./notifications";
+import { createNotification } from "@/lib/notifications/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   sendSwapApprovedEmail,
@@ -115,8 +116,8 @@ async function getWorkersInDepartment(departmentId: string) {
   
   const { data } = await admin
     .from('profiles')
-    .select('id, email, full_name, department_ids')
-    .contains('department_ids', [departmentId])
+    .select('id, email, full_name, department_id')
+    .eq('department_id', departmentId)
     .eq('user_role', 'worker');
   
   return data || [];
@@ -130,15 +131,16 @@ async function getAdminsAndDepartmentManagers(organizationId: string, department
 
   const { data } = await admin
     .from('profiles')
-    .select('id, email, full_name, department_ids, user_role')
+    .select('id, email, full_name, department_id, manager_type, user_role')
     .eq('organization_id', organizationId)
     .in('user_role', ['org_admin', 'manager']);
 
   if (!data) return [];
 
-  // Org admins see everything; managers must have the department in their list
+  // Org admins and general managers see everything; department managers only
+  // receive notifications for their own department.
   return data.filter(
-    (u) => u.user_role === 'org_admin' || (u.department_ids || []).includes(departmentId),
+    (u) => u.user_role === 'org_admin' || u.manager_type === 'general' || u.department_id === departmentId,
   );
 }
 
@@ -236,13 +238,13 @@ export async function triggerCoverOffered(
   // Fetch required data
   const { data: swap } = await admin
     .from('swap_requests')
-    .select('shift_id, reason, department_id')
+    .select('shift_id, reason')
     .eq('id', swapId)
     .single();
 
   const { data: shift } = await admin
     .from('shifts')
-    .select('title, start_time')
+    .select('title, start_time, department_id')
     .eq('id', swap?.shift_id)
     .single();
 
@@ -300,7 +302,7 @@ export async function triggerCoverOffered(
   }
 
   // Notify all relevant admins & managers (department-scoped)
-  const departmentManagers = await getAdminsAndDepartmentManagers(organizationId, swap?.department_id || '');
+  const departmentManagers = await getAdminsAndDepartmentManagers(organizationId, shift?.department_id || '');
 
   for (const mgr of departmentManagers) {
     await createNotification({
@@ -340,10 +342,10 @@ export async function triggerSwapApproved(
   const admin = createAdminClient();
 
   // Fetch required data (include start_time for the date string)
-  const swapRecord = await admin.from('swap_requests').select('shift_id, department_id').eq('id', swapId).single();
+  const swapRecord = await admin.from('swap_requests').select('shift_id').eq('id', swapId).single();
   const { data: shift } = await admin
     .from('shifts')
-    .select('title, start_time')
+    .select('title, start_time, department_id')
     .eq('id', swapRecord.data?.shift_id)
     .single();
 
@@ -371,7 +373,7 @@ export async function triggerSwapApproved(
   // Notify & email all department-scoped admins/managers about the approved swap
   const departmentManagers = await getAdminsAndDepartmentManagers(
     organizationId,
-    swapRecord.data?.department_id || '',
+    shift?.department_id || '',
   );
 
   for (const mgr of departmentManagers) {
@@ -903,7 +905,7 @@ export async function triggerSwapPostedNotification(
   // Get workers in the same department
   const { data: departmentWorkers } = await admin
     .from('profiles')
-    .select('id, email, full_name, department_ids')
+    .select('id, email, full_name, department_id')
     .eq('organization_id', organizationId)
     .eq('user_role', 'worker');
 
@@ -916,8 +918,7 @@ export async function triggerSwapPostedNotification(
     if (worker.id === requesterUserId) continue; // Don't notify requester
     
     // Check if worker is in the department
-    const departmentIds = worker.department_ids || [];
-    if (!departmentIds.includes(departmentId) && !departmentIds.includes(shift.department_id)) continue;
+    if (worker.department_id !== departmentId && worker.department_id !== shift.department_id) continue;
 
     await createNotification({
       userId: worker.id,

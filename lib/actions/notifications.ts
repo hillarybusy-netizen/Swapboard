@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export type NotificationType =
   | 'shift_assigned'
@@ -32,34 +31,6 @@ export interface NotificationData {
   message: string;
   relatedEntityType?: NotificationEntityType;
   relatedEntityId?: string;
-}
-
-/**
- * Create a new notification in the database
- */
-export async function createNotification(data: NotificationData) {
-  const admin = createAdminClient();
-
-  const { data: notification, error } = await admin
-    .from('user_notifications')
-    .insert({
-      user_id: data.userId,
-      organization_id: data.organizationId,
-      type: data.type,
-      title: data.title,
-      message: data.message,
-      related_entity_type: data.relatedEntityType || null,
-      related_entity_id: data.relatedEntityId || null,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('[Notification Error]', error);
-    return { success: false, error };
-  }
-
-  return { success: true, data: notification };
 }
 
 /**
@@ -192,86 +163,4 @@ export async function getUnreadNotificationCount(userId?: string) {
   }
 
   return { success: true, count: count || 0 };
-}
-
-/**
- * Get notifications by type for digest generation
- */
-export async function getNotificationsForDigest(
-  userId: string,
-  types: NotificationType[],
-  since: Date,
-) {
-  const admin = createAdminClient();
-
-  const { data, error } = await admin
-    .from('user_notifications')
-    .select('*')
-    .eq('user_id', userId)
-    .in('type', types)
-    .gte('created_at', since.toISOString())
-    .is('read_at', null)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('[Notification Error]', error);
-    return { success: false, error };
-  }
-
-  return { success: true, data: data || [] };
-}
-
-/**
- * Delete old notifications (cleanup)
- */
-export async function deleteOldNotifications(olderThanDays: number = 30) {
-  const admin = createAdminClient();
-
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
-
-  const { error, count } = await admin
-    .from('user_notifications')
-    .delete()
-    .lt('created_at', cutoffDate.toISOString());
-
-  if (error) {
-    console.error('[Notification Error]', error);
-    return { success: false, error };
-  }
-
-  return { success: true, count };
-}
-
-/**
- * Record digest email send
- */
-export async function recordDigestSend(
-  userId: string,
-  organizationId: string,
-  digestType: string,
-  status: 'sent' | 'failed' = 'sent'
-) {
-  const admin = createAdminClient();
-
-  const today = new Date().toISOString().split('T')[0];
-
-  const { error } = await admin
-    .from('email_digests')
-    .upsert({
-      user_id: userId,
-      organization_id: organizationId,
-      digest_date: today,
-      notification_type: digestType,
-      sent_at: new Date().toISOString(),
-      status,
-      retry_count: 0,
-    });
-
-  if (error) {
-    console.error('[Digest Error]', error);
-    return { success: false, error };
-  }
-
-  return { success: true };
 }

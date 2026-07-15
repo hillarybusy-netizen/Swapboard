@@ -20,17 +20,18 @@ export function ShiftActionButton({ shiftId, shiftTitle, status, startTime, endT
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "started") {
+    if (status === "started" || status === "not_started") {
       let deadlineHandled = false;
       const checkDoneTime = () => {
         const endTimeMs = new Date(endTime).getTime();
         const doneTime = endTimeMs + 60000;
-        setCanMarkDone(Date.now() > doneTime);
+        if (status === "started") setCanMarkDone(Date.now() > doneTime);
 
-        if (!deadlineHandled && Date.now() > endTimeMs + 15 * 60 * 1000) {
+        const cutoff = status === "not_started" ? endTimeMs : endTimeMs + 15 * 60 * 1000;
+        if (!deadlineHandled && Date.now() > cutoff) {
           deadlineHandled = true;
           enforceShiftSubmissionDeadline(shiftId).then((result) => {
-            if (result.overdue) router.refresh();
+            if (result.updated) router.refresh();
           });
         }
       };

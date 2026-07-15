@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 
 async function getAuthenticatedUser() {
@@ -14,7 +15,8 @@ async function getAuthenticatedUser() {
 }
 
 export async function updateProfile(formData: FormData) {
-  const { supabase, user } = await getAuthenticatedUser();
+  const { user } = await getAuthenticatedUser();
+  const admin = createAdminClient();
 
   const full_name = formData.get("full_name") as string;
   const phone = formData.get("phone") as string;
@@ -26,7 +28,7 @@ export async function updateProfile(formData: FormData) {
     "emergency_contact_phone"
   ) as string;
 
-  const { error } = await supabase
+  const { error } = await admin
     .from("profiles")
     .update({
       full_name: full_name || null,
@@ -54,6 +56,7 @@ export async function updateNotificationPreferences(prefs: {
   email_digest: boolean;
 }) {
   const { supabase, user } = await getAuthenticatedUser();
+  const admin = createAdminClient();
 
   const { data: existing } = await supabase
     .from("profiles")
@@ -63,7 +66,7 @@ export async function updateNotificationPreferences(prefs: {
 
   const current = (existing?.notification_preferences as Record<string, unknown>) || {};
 
-  const { error } = await supabase
+  const { error } = await admin
     .from("profiles")
     .update({
       notification_preferences: {
@@ -96,6 +99,7 @@ export async function updateMemberDepartments(
   managerType?: "general" | "department" | null
 ) {
   const { supabase, user } = await getAuthenticatedUser();
+  const admin = createAdminClient();
 
   // Ensure current user is an admin
   const { data: currentUserProfile } = await supabase
@@ -142,7 +146,17 @@ export async function updateMemberDepartments(
     }
   }
 
-  const { error } = await supabase
+  if (departmentId) {
+    const { data: department } = await admin
+      .from("departments")
+      .select("id")
+      .eq("id", departmentId)
+      .eq("organization_id", currentUserProfile.organization_id)
+      .maybeSingle();
+    if (!department) throw new Error("Department not found in your organisation.");
+  }
+
+  const { error } = await admin
     .from("profiles")
     .update(updatePayload)
     .eq("id", memberId);
@@ -156,6 +170,7 @@ export async function updateMemberDepartments(
 export async function updateUserTimezone(timezone: string) {
   try {
     const { supabase, user } = await getAuthenticatedUser();
+    const admin = createAdminClient();
 
     // Only auto-update if the timezone is unset or still set to default 'UTC'
     const { data: profile } = await supabase
@@ -165,7 +180,7 @@ export async function updateUserTimezone(timezone: string) {
       .single();
 
     if (profile && (profile.timezone === "UTC" || !profile.timezone)) {
-      const { error } = await supabase
+      const { error } = await admin
         .from("profiles")
         .update({ timezone })
         .eq("id", user.id);

@@ -1,5 +1,6 @@
 import { getCachedSession } from "@/lib/supabase/cached";
 import { createClient } from "@/lib/supabase/server";
+import { expireUnclaimedSwapRequests } from "@/lib/actions/swaps";
 import { redirect } from "next/navigation";
 import { formatShiftDate, formatShiftTime } from "@/lib/utils";
 import { Calendar, Clock, Search, Briefcase, ArrowLeftRight } from "lucide-react";
@@ -15,6 +16,7 @@ export default async function AvailableShiftsPage() {
   const supabase = await createClient();
   const deptId = profile?.department_id;
   const orgId = profile?.organization_id;
+  if (orgId) await expireUnclaimedSwapRequests(orgId);
   const tz = profile?.timezone || "UTC";
 
   // Fetch unassigned shifts in user's department + General department

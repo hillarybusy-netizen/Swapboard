@@ -2,6 +2,7 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { registerUser, signInUser } from "@/lib/actions/auth";
+import { requireUser } from "@/lib/auth-helpers";
 
 interface PendingDepartment {
   name: string;
@@ -9,7 +10,7 @@ interface PendingDepartment {
   requiresCertification?: boolean;
 }
 
-export async function setupWorkspace(
+async function provisionWorkspace(
   userId: string,
   orgName: string,
   industry: string,
@@ -35,7 +36,8 @@ export async function setupWorkspace(
 
   if (orgErr) throw new Error("Failed to create organization: " + orgErr.message);
 
-  // 2. Initialize departmentMap and create General Department (always available for unassigned shifts)
+  // 2. Create the reserved General record for setup/invite compatibility.
+  // General shifts themselves are stored without a department and stay open.
   const departmentMap: Record<string, string> = {};
 
   const { data: generalDept, error: generalDeptErr } = await supabase
@@ -85,13 +87,27 @@ export async function setupWorkspace(
     .update({
       organization_id: org.id,
       user_role: "org_admin",
-      onboarding_complete: false,
+      onboarding_complete: true,
     })
     .eq("id", userId);
 
   if (profileErr) throw new Error("Failed to update profile: " + profileErr.message);
 
   return { orgId: org.id, departmentMap };
+}
+
+export async function setupWorkspace(
+  userId: string,
+  orgName: string,
+  industry: string,
+  departments: PendingDepartment[]
+): Promise<{ orgId: string; departmentMap: Record<string, string> }> {
+  const { user, profile } = await requireUser();
+
+  if (user.id !== userId) throw new Error("Unauthorized");
+  if (profile?.organization_id) throw new Error("You already belong to an organization.");
+
+  return provisionWorkspace(userId, orgName, industry, departments);
 }
 
 async function rollbackRegistration(userId: string, orgId?: string) {
@@ -151,11 +167,8 @@ export async function registerAndSetupWorkspace({
 
   let orgId: string | undefined;
   try {
-    const { orgId: createdOrgId, departmentMap } = await setupWorkspace(userId, orgName, industry, departments);
+    const { orgId: createdOrgId, departmentMap } = await provisionWorkspace(userId, orgName, industry, departments);
     orgId = createdOrgId;
-
-    const admin = createAdminClient();
-    await admin.from("profiles").update({ onboarding_complete: true }).eq("id", userId);
 
     return { success: true, orgId, departmentMap };
   } catch (err: unknown) {

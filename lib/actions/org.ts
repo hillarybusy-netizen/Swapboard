@@ -1,10 +1,10 @@
 "use server";
 
-import { requireManager } from "@/lib/auth-helpers";
+import { requireOrgAdmin } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 
 export async function updateOrganizationName(orgId: string, name: string) {
-  const { supabase } = await requireManager(orgId);
+  const { supabase } = await requireOrgAdmin(orgId);
   const trimmed = name.trim();
   if (!trimmed) throw new Error("Organization name is required");
 
@@ -19,7 +19,7 @@ export async function updateOrganizationName(orgId: string, name: string) {
 }
 
 export async function updateOrganizationLogo(orgId: string, logoUrl: string) {
-  const { supabase } = await requireManager(orgId);
+  const { supabase } = await requireOrgAdmin(orgId);
 
   const { data: org, error: fetchError } = await supabase
     .from("organizations")

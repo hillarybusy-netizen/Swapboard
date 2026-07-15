@@ -76,8 +76,9 @@ export default async function HomePage() {
 
   const { pct: profilePct, missing: profileMissing } = calcProfileCompletion(profile);
 
-  // Fetch upcoming shifts (next 3, assigned, not cancelled/done)
-  const { data: upcomingData } = await supabase
+  // Fetch the worker's active shifts. Future shifts are displayed first below,
+  // followed by ongoing or unstarted shifts whose scheduled start has passed.
+  const { data: activeShiftsData } = await supabase
     .from("shifts")
     .select(`
       *,
@@ -93,12 +94,21 @@ export default async function HomePage() {
     `)
     .eq("assigned_to", user.id)
     .is("deleted_at", null)
-    .not("status", "in", '("cancelled","done_manager_approved","swapped")')
-    .gte("start_time", now)
+    .in("status", ["not_started", "started", "up_for_swap", "pending_approval_claim", "pending_approval_swap"])
     .order("start_time", { ascending: true })
-    .limit(3);
+    .limit(12);
 
-  const upcomingShifts = (upcomingData ?? []) as any[];
+  const nowMs = new Date(now).getTime();
+  const upcomingShifts = ((activeShiftsData ?? []) as any[])
+    .sort((a, b) => {
+      const aIsUpcoming = new Date(a.start_time).getTime() >= nowMs;
+      const bIsUpcoming = new Date(b.start_time).getTime() >= nowMs;
+      if (aIsUpcoming !== bIsUpcoming) return aIsUpcoming ? -1 : 1;
+      return aIsUpcoming
+        ? new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        : new Date(b.start_time).getTime() - new Date(a.start_time).getTime();
+    })
+    .slice(0, 3);
 
   // Fetch pending swap requests involving the user (as requester or covering_worker)
   const { data: mySwapData } = await supabase
@@ -269,11 +279,11 @@ export default async function HomePage() {
         </Link>
       </div>
 
-      {/* Upcoming Shifts */}
+      {/* Current & Upcoming Shifts */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-            Upcoming Shifts
+            Current & Upcoming Shifts
           </h2>
           <Link
             href="/my-shifts"
@@ -286,7 +296,7 @@ export default async function HomePage() {
         {upcomingShifts.length === 0 ? (
           <div className="glass rounded-2xl p-8 text-center border border-white/5">
             <Calendar className="w-8 h-8 text-white/15 mx-auto mb-3" />
-            <p className="text-sm font-bold text-white/30">No upcoming shifts</p>
+            <p className="text-sm font-bold text-white/30">No current or upcoming shifts</p>
             <p className="text-[11px] text-white/20 mt-1">Check the swap board for available shifts</p>
           </div>
         ) : (

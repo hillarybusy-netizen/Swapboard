@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
-import { updateOrganizationLogo } from "@/lib/actions/org";
+import { updateOrganizationLogo, updateOrganizationName } from "@/lib/actions/org";
 import { toast } from "@/hooks/use-toast";
 import { INDUSTRY_ICONS, INDUSTRY_LABELS } from "@/lib/utils";
 import { getTrialStatus } from "@/lib/trial";
@@ -55,9 +55,7 @@ export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgS
     if (!org) return;
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("organizations").update({ name }).eq("id", org.id);
-      if (error) throw error;
+      await updateOrganizationName(org.id, name);
       toast({ title: "Saved!", variant: "success" });
       router.refresh();
     } catch (err: any) {

@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { createClient } from "@/lib/supabase/client";
-import { createNotification } from "@/lib/actions/notifications";
 
 export function WorkerRealtimeNotifications() {
   const router = useRouter();

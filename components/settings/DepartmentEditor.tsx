@@ -5,12 +5,11 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, ChevronDown, ChevronRight, Loader2, Lock } from "lucide-react";
 import { Organization } from "@/lib/database.types";
 import { checkPlanLimit } from "@/lib/plans";
-import { addDepartment as addDepartmentAction } from "@/lib/actions/departments";
+import { addDepartment as addDepartmentAction, deleteDepartment as deleteDepartmentAction } from "@/lib/actions/departments";
 
 interface Dept { id: string; name: string; color: string; }
 
@@ -48,9 +47,7 @@ export function DepartmentEditor({ departments, orgId, org }: { departments: Dep
   async function deleteDepartment(id: string) {
     setLoading(`del-${id}`);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("departments").delete().eq("id", id);
-      if (error) throw error;
+      await deleteDepartmentAction(orgId, id);
       toast({ title: "Department deleted" });
       router.refresh();
     } catch (err: any) {

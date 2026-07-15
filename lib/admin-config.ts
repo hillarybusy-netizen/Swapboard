@@ -5,7 +5,7 @@ export function getPlatformAdminEmails(): string[] {
   if (fromEnv) {
     return fromEnv.split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
   }
-  return ["admin@swapboard.app", "brendan@swapboard.app"];
+  return [];
 }
 
 export async function isSuperAdmin(email: string | undefined) {

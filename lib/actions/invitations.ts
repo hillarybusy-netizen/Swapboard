@@ -59,23 +59,35 @@ export async function acceptInvitation({
   fullName: string;
   password: string;
 }) {
-  const inviteResult = await getInvitationByToken(token);
-  if (!inviteResult.success) {
-    return { success: false, error: "This invitation link has expired or is invalid." };
-  }
-
-  const invite = inviteResult.invitation;
   const normalizedEmail = email.trim().toLowerCase();
-
-  if (invite.email && invite.email.toLowerCase() !== normalizedEmail) {
-    return { success: false, error: "This invitation was sent to a different email address." };
-  }
-
   if (password.length < 8) {
     return { success: false, error: "Password must be at least 8 characters." };
   }
+  if (!normalizedEmail || !fullName.trim()) {
+    return { success: false, error: "Name and email are required." };
+  }
 
   const supabase = createAdminClient();
+  const { data: claimedInvitations, error: claimError } = await supabase.rpc("claim_invitation", {
+    p_token: token.trim(),
+  });
+  const invite = Array.isArray(claimedInvitations) ? claimedInvitations[0] : claimedInvitations;
+
+  if (claimError || !invite) {
+    return { success: false, error: "This invitation link has expired, is invalid, or is already being used." };
+  }
+
+  const releaseClaim = async () => {
+    await supabase.rpc("release_invitation_claim", {
+      p_invitation_id: invite.id,
+      p_claim_token: invite.claim_token,
+    });
+  };
+
+  if (invite.email && invite.email.toLowerCase() !== normalizedEmail) {
+    await releaseClaim();
+    return { success: false, error: "This invitation was sent to a different email address." };
+  }
 
   const { data: userData, error: signUpError } = await supabase.auth.admin.createUser({
     email: normalizedEmail,
@@ -85,6 +97,7 @@ export async function acceptInvitation({
   });
 
   if (signUpError) {
+    await releaseClaim();
     return { success: false, error: formatError(signUpError.message) };
   }
 
@@ -103,19 +116,20 @@ export async function acceptInvitation({
 
   if (profileError) {
     console.error("acceptInvitation profile update error:", profileError);
+    await supabase.auth.admin.deleteUser(userId);
+    await releaseClaim();
     return { success: false, error: "Failed to complete onboarding. Please contact your manager." };
   }
 
-  const { error: inviteError } = await supabase
-    .from("invitations")
-    .update({
-      accepted_at: new Date().toISOString(),
-      email: normalizedEmail,
-    })
-    .eq("id", invite.id);
-
-  if (inviteError) {
-    console.error("acceptInvitation invite update error:", inviteError);
+  const { data: invitationCompleted, error: completeError } = await supabase.rpc("complete_invitation_claim", {
+    p_invitation_id: invite.id,
+    p_claim_token: invite.claim_token,
+    p_email: normalizedEmail,
+  });
+  if (completeError || !invitationCompleted) {
+    await supabase.auth.admin.deleteUser(userId);
+    await releaseClaim();
+    return { success: false, error: "Failed to complete the invitation. Please try again." };
   }
 
   const { data: profile } = await supabase

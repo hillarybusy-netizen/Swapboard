@@ -84,7 +84,7 @@ export async function getDetailedUsers() {
       const { count } = await admin
         .from("swap_requests")
         .select("*", { count: "exact", head: true })
-        .eq("initiator_id", user.id);
+        .eq("requester_id", user.id);
 
       return {
         ...user,

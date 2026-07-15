@@ -20,6 +20,7 @@ import { CancelSwapButton } from "@/components/swaps/CancelSwapButton";
 import { WorkerSwapActions } from "@/components/swaps/WorkerSwapActions";
 import { RequestSwapButton } from "@/components/shifts/RequestSwapButton";
 import { SwapHistoryBadge } from "@/components/swaps/SwapHistoryBadge";
+import { expireUnclaimedSwapRequests } from "@/lib/actions/swaps";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,7 @@ export default async function SwapPage({
   const supabase = await createClient();
   const orgId = profile?.organization_id;
   const deptId = profile?.department_id;
+  if (orgId) await expireUnclaimedSwapRequests(orgId);
 
   // Pre-fill shift for posting (if ?post=SHIFT_ID)
   let postShift: any = null;
@@ -144,7 +146,12 @@ export default async function SwapPage({
                 </p>
               </div>
             </div>
-            <RequestSwapButton shiftId={postShift.id} shiftTitle={postShift.title} />
+            <RequestSwapButton
+              shiftId={postShift.id}
+              shiftTitle={postShift.title}
+              startTime={postShift.start_time}
+              endTime={postShift.end_time}
+            />
           </div>
         </div>
       )}
@@ -334,7 +341,12 @@ export default async function SwapPage({
                   </div>
                 )}
 
-                <WorkerSwapActions swapId={swap.id} mode="offer" />
+                <WorkerSwapActions
+                  swapId={swap.id}
+                  mode="offer"
+                  startTime={swap.shift?.start_time}
+                  endTime={swap.shift?.end_time}
+                />
               </div>
             ))}
           </div>

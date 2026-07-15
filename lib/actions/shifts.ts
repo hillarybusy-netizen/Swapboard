@@ -15,30 +15,54 @@ import {
 } from "./notification-triggers";
 
 export async function autoCloseExpiredShifts(orgId: string) {
+  const { profile } = await requireUser();
+  if (!profile?.organization_id || profile.organization_id !== orgId) {
+    throw new Error("Unauthorized");
+  }
+
   const admin = createAdminClient();
+  const now = new Date().toISOString();
   const submissionCutoff = new Date(Date.now() - 15 * 60 * 1000).toISOString();
 
-  // Find all shifts that have passed their end_time but aren't closed yet
-  const { data: expiredShifts, error: fetchError } = await admin
-    .from("shifts")
-    .select("id, organization_id, status")
-    .eq("organization_id", orgId)
-    .lt("end_time", submissionCutoff)
-    .in("status", ["not_started", "started"])
-    .is("deleted_at", null);
+  const [{ data: missedShifts, error: missedFetchError }, { data: overdueShifts, error: overdueFetchError }] = await Promise.all([
+    // A shift that was never started is automatically a no-show as soon as it ends.
+    admin
+      .from("shifts")
+      .select("id")
+      .eq("organization_id", orgId)
+      .lt("end_time", now)
+      .eq("status", "not_started")
+      .is("deleted_at", null),
+    // A started shift has a 15-minute grace period to be submitted.
+    admin
+      .from("shifts")
+      .select("id")
+      .eq("organization_id", orgId)
+      .lt("end_time", submissionCutoff)
+      .eq("status", "started")
+      .is("deleted_at", null),
+  ]);
 
-  if (fetchError) throw fetchError;
-  if (!expiredShifts || expiredShifts.length === 0) return { count: 0 };
+  if (missedFetchError) throw missedFetchError;
+  if (overdueFetchError) throw overdueFetchError;
 
-  // A worker can submit up to 15 minutes after the scheduled end time.
-  const { error: updateError } = await admin
-    .from("shifts")
-    .update({ status: "overdue_not_done" })
-    .in("id", expiredShifts.map(s => s.id));
+  const noShowIds = (missedShifts ?? []).map((shift) => shift.id);
+  const overdueIds = (overdueShifts ?? []).map((shift) => shift.id);
+  if (noShowIds.length === 0 && overdueIds.length === 0) return { count: 0 };
 
+  const updates = [];
+  if (noShowIds.length > 0) {
+    updates.push(admin.from("shifts").update({ status: "no_show" }).in("id", noShowIds));
+  }
+  if (overdueIds.length > 0) {
+    updates.push(admin.from("shifts").update({ status: "overdue_not_done" }).in("id", overdueIds));
+  }
+
+  const results = await Promise.all(updates);
+  const updateError = results.find((result) => result.error)?.error;
   if (updateError) throw updateError;
 
-  return { count: expiredShifts.length };
+  return { count: noShowIds.length + overdueIds.length };
 }
 
 export async function createShift(formData: {
@@ -213,12 +237,17 @@ export async function claimUnassignedShift(shiftId: string) {
   }
 
   const admin = createAdminClient();
-  const { error } = await admin
+  const { data: claimedShift, error } = await admin
     .from("shifts")
     .update({ status: "pending_approval_claim", assigned_to: user.id })
-    .eq("id", shiftId);
+    .eq("id", shiftId)
+    .is("assigned_to", null)
+    .eq("status", "not_started")
+    .select("id")
+    .maybeSingle();
 
   if (error) throw error;
+  if (!claimedShift) throw new Error("This shift was just claimed by another team member.");
 
   await logAudit(shift.organization_id, "shift", shiftId, "claim_requested", user.id);
 
@@ -240,6 +269,10 @@ export async function managerApproveClaim(shiftId: string, approve: boolean) {
 
   if (fetchError || !shift) throw new Error("The requested shift could not be found. Please refresh and try again.");
   if (shift.status !== "pending_approval_claim") throw new Error("This shift is not awaiting a claim approval.");
+
+  if (profile.user_role !== "manager" && profile.user_role !== "org_admin") {
+    throw new Error("You don't have permission to approve shift claims.");
+  }
 
   if (profile.user_role === "manager" && !canManagerAccessDepartment(profile, shift.department_id)) {
     throw new Error("Unauthorized to approve this department's claims");
@@ -285,9 +318,9 @@ export async function startShift(shiftId: string) {
   if (now < new Date(shift.start_time)) {
     throw new Error("Shift can't start before its time.");
   }
-  if (now.getTime() > new Date(shift.end_time).getTime() + 15 * 60 * 1000) {
-    await createAdminClient().from("shifts").update({ status: "overdue_not_done" }).eq("id", shiftId);
-    throw new Error("This shift is overdue and can no longer be started.");
+  if (now.getTime() > new Date(shift.end_time).getTime()) {
+    await createAdminClient().from("shifts").update({ status: "no_show" }).eq("id", shiftId);
+    throw new Error("This shift has ended and was automatically marked as a no-show.");
   }
 
   const admin = createAdminClient();
@@ -320,13 +353,19 @@ export async function enforceShiftSubmissionDeadline(shiftId: string) {
     .eq("id", shiftId)
     .single();
 
-  if (error || !shift || shift.assigned_to !== user.id) return { overdue: false };
-  if (!["not_started", "started"].includes(shift.status)) return { overdue: false };
-  if (Date.now() <= new Date(shift.end_time).getTime() + 15 * 60 * 1000) return { overdue: false };
+  if (error || !shift || shift.assigned_to !== user.id) return { updated: false };
+  if (!["not_started", "started"].includes(shift.status)) return { updated: false };
+
+  const now = Date.now();
+  const endTime = new Date(shift.end_time).getTime();
+  const terminalStatus = shift.status === "not_started"
+    ? now > endTime ? "no_show" : null
+    : now > endTime + 15 * 60 * 1000 ? "overdue_not_done" : null;
+  if (!terminalStatus) return { updated: false };
 
   const { error: updateError } = await createAdminClient()
     .from("shifts")
-    .update({ status: "overdue_not_done" })
+    .update({ status: terminalStatus })
     .eq("id", shiftId);
 
   if (updateError) throw new Error(formatError(updateError.message));
@@ -334,7 +373,7 @@ export async function enforceShiftSubmissionDeadline(shiftId: string) {
   revalidatePath("/my-shifts");
   revalidatePath("/shifts");
   revalidatePath("/dashboard");
-  return { overdue: true };
+  return { updated: true };
 }
 
 export async function markShiftDone(shiftId: string) {

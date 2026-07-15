@@ -89,7 +89,12 @@ export default async function SwapRequestsPage() {
                   )}
 
                   <div className="pt-2">
-                    <WorkerSwapActions swapId={swap.id} mode="offer" />
+                    <WorkerSwapActions
+                      swapId={swap.id}
+                      mode="offer"
+                      startTime={swap.shift?.start_time}
+                      endTime={swap.shift?.end_time}
+                    />
                   </div>
                 </div>
               </div>

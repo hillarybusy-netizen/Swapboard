@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { expireUnclaimedSwapRequests } from "@/lib/actions/swaps";
 import { getCachedSession } from "@/lib/supabase/cached";
 import { redirect } from "next/navigation";
 import { SwapsTabs } from "@/components/swaps/SwapsTabs";
@@ -11,6 +12,7 @@ export default async function SwapsPage() {
 
   const orgId = profile?.organization_id;
   if (!orgId) redirect("/onboarding/industry");
+  await expireUnclaimedSwapRequests(orgId);
 
   const supabase = await createClient();
 
