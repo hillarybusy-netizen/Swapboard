@@ -230,7 +230,7 @@ export function ShiftsListClient({ shifts, canAddShift, departments, profiles, o
                       </p>
                       {activeSwap.reason && (
                         <p className="text-[11px] text-white/40 italic bg-white/[0.02] p-2.5 rounded-xl border border-white/5 max-w-xl">
-                          "{activeSwap.reason}"
+                          &ldquo;{activeSwap.reason}&rdquo;
                         </p>
                       )}
                     </div>

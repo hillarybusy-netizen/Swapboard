@@ -1,7 +1,7 @@
 import { getCachedSession } from "@/lib/supabase/cached";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Users, Crown, Award, Shield, UserCheck } from "lucide-react";
+import { Users } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -33,9 +33,9 @@ export default async function MyTeamPage() {
     .eq("organization_id", profile.organization_id)
     .eq("is_active", true);
 
-  // If user belongs to a specific department, filter to same department OR any manager/admin
+  // If user belongs to a specific department, show same department members + managers
   if (profile.department_id) {
-    teamQuery = teamQuery.or(`department_id.eq.${profile.department_id},user_role.in.(manager,org_admin)`);
+    teamQuery = teamQuery.or(`department_id.eq.${profile.department_id},user_role.in.(manager)`);
   }
 
   teamQuery = teamQuery.order("full_name");
@@ -44,13 +44,9 @@ export default async function MyTeamPage() {
 
   const members = (membersData ?? []) as any[];
 
-  // Separate managers/admins from workers
-  const managers = members.filter(
-    (m) => m.user_role === "manager" || m.user_role === "org_admin"
-  );
-  const workers = members.filter(
-    (m) => m.user_role !== "manager" && m.user_role !== "org_admin"
-  );
+  // Separate managers from workers for the worker-facing team view
+  const managers = members.filter((m) => m.user_role === "manager");
+  const workers = members.filter((m) => m.user_role !== "manager");
 
   function MemberCard({ member, isManager = false }: { member: any; isManager?: boolean }) {
     const isMe = member.id === user!.id;
@@ -111,27 +107,13 @@ export default async function MyTeamPage() {
           </div>
 
           {/* Role badge */}
-          <div className="shrink-0">
-            {member.user_role === "org_admin" ? (
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center shadow-lg shadow-gold/20">
-                  <Crown className="w-4 h-4 text-[#050505]" />
-                </div>
-                <span className="text-[8px] font-black text-gold uppercase tracking-widest">Admin</span>
-              </div>
-            ) : member.user_role === "manager" ? (
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center">
-                  <Shield className="w-4 h-4 text-gold" />
-                </div>
-                <span className="text-[8px] font-black text-gold/60 uppercase tracking-widest">Manager</span>
-              </div>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/8 flex items-center justify-center">
-                <UserCheck className="w-4 h-4 text-white/20" />
-              </div>
-            )}
-          </div>
+          {isManager && (
+            <div className="shrink-0">
+              <span className="text-[8px] font-black text-gold/60 uppercase tracking-widest rounded-full border border-gold/20 bg-gold/10 px-2 py-1">
+                Manager
+              </span>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -168,9 +150,9 @@ export default async function MyTeamPage() {
       {managers.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-2 px-1">
-            <Crown className="w-3.5 h-3.5 text-gold/60" />
+            <Users className="w-3.5 h-3.5 text-gold/60" />
             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-gold/50">
-              Managers & Admins
+              Managers
             </h2>
           </div>
           <div className="grid gap-3">

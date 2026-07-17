@@ -45,7 +45,7 @@ export function CoverOfferedConfirmationEmail({
       <Divider />
       <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
         <strong>Important:</strong> Do not assume this shift is yours until you receive a
-        confirmation email. You'll be notified as soon as your manager makes a decision.
+        confirmation email. You&apos;ll be notified as soon as your manager makes a decision.
       </p>
       <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>

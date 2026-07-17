@@ -27,7 +27,7 @@ export function ShiftStartingSoonEmail({
       </p>
 
       <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
-        Just a heads-up — your shift is coming up soon. Make sure you're ready to go on time!
+        Just a heads-up — your shift is coming up soon. Make sure you&apos;re ready to go on time!
       </p>
 
       <InfoBox>

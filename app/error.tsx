@@ -12,7 +12,7 @@ export default function ErrorPage({
 }) {
   useEffect(() => {
     // Useful in dev while keeping the UI clean for users.
-    // eslint-disable-next-line no-console
+     
     console.error(error);
   }, [error]);
 

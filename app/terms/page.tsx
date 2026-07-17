@@ -23,7 +23,7 @@ export default function TermsPage() {
         <div className="space-y-8 text-white/80 leading-relaxed text-sm">
           <section>
             <h2 className="text-xl font-bold text-white mb-3">1. Acceptance of Terms</h2>
-            <p>By accessing or using SwapBoard ("the Platform"), operated by SwapBoard ("we," "us," "our"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not use the Platform. These Terms apply to all users, including managers ("Subscribers") and workers ("Members").</p>
+            <p>By accessing or using SwapBoard (&quot;the Platform&quot;), operated by SwapBoard (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to these Terms, you must not use the Platform. These Terms apply to all users, including managers (&quot;Subscribers&quot;) and workers (&quot;Members&quot;).</p>
           </section>
 
           <section>
@@ -53,7 +53,7 @@ export default function TermsPage() {
               <li>Growth: $199/month (or $149/month billed annually at $1,788/year)</li>
               <li>Enterprise: $499/month (or $374/month billed annually at $4,488/year)</li>
             </ul>
-            <p>All prices are in Canadian Dollars (CAD) unless otherwise stated. Prices are subject to change with 30 days' notice.</p>
+            <p>All prices are in Canadian Dollars (CAD) unless otherwise stated. Prices are subject to change with 30 days&apos; notice.</p>
 
             <h3 className="font-semibold text-white/90 mt-4 mb-2">4.2 Billing</h3>
             <p>Payments are processed securely through Stripe. By subscribing, you authorize us to charge your payment method on a recurring basis according to your chosen billing cycle (monthly or annual). Annual plans are billed in a single payment at the start of each billing year.</p>
@@ -71,7 +71,7 @@ export default function TermsPage() {
             <ul className="list-disc pl-5 space-y-1 marker:text-gold mb-2">
               <li>Use SwapBoard for any purpose other than workplace shift management</li>
               <li>Share your account credentials with any other person</li>
-              <li>Attempt to access another user's account without authorization</li>
+              <li>Attempt to access another user&apos;s account without authorization</li>
               <li>Post false or misleading shift information</li>
               <li>Use SwapBoard to harass, discriminate against, or harm any user</li>
               <li>Attempt to reverse engineer, decompile, or disassemble any part of the Platform</li>
@@ -93,7 +93,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">8. Limitation of Liability</h2>
-            <p>To the maximum extent permitted by law, SwapBoard and its officers, directors, employees, and agents shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, use, or goodwill, arising from or related to your use of the Platform. Our total liability for any claim arising from or related to these Terms or the Platform shall not exceed the amount you paid us in the twelve (12) months preceding the claim. The Platform is provided "as is" and "as available" without warranties of any kind, either express or implied.</p>
+            <p>To the maximum extent permitted by law, SwapBoard and its officers, directors, employees, and agents shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, use, or goodwill, arising from or related to your use of the Platform. Our total liability for any claim arising from or related to these Terms or the Platform shall not exceed the amount you paid us in the twelve (12) months preceding the claim. The Platform is provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind, either express or implied.</p>
           </section>
 
           <section>

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 const STORAGE_KEY = "swapHistoryLastSeen";
 
@@ -8,19 +8,14 @@ interface Props {
 }
 
 export function SwapHistoryBadge({ historyItems }: Props) {
-  const [unseenCount, setUnseenCount] = useState(0);
+  const unseenCount = useMemo(() => {
+    if (typeof window === "undefined") return 0;
 
-  useEffect(() => {
-    const lastSeen = localStorage.getItem(STORAGE_KEY);
-    if (!lastSeen) {
-      setUnseenCount(historyItems.length);
-      return;
-    }
+    const lastSeen = window.localStorage.getItem(STORAGE_KEY);
+    if (!lastSeen) return historyItems.length;
+
     const lastSeenDate = new Date(lastSeen);
-    const unseen = historyItems.filter(
-      (item) => new Date(item.requested_at) > lastSeenDate
-    ).length;
-    setUnseenCount(unseen);
+    return historyItems.filter((item) => new Date(item.requested_at) > lastSeenDate).length;
   }, [historyItems]);
 
   if (unseenCount === 0) return null;

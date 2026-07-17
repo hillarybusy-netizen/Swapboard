@@ -21,7 +21,7 @@ export default function GlobalError({
   }, [router]);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
+     
     console.error(error);
   }, [error]);
 

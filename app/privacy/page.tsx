@@ -23,7 +23,7 @@ export default function PrivacyPage() {
         <div className="space-y-8 text-white/80 leading-relaxed text-sm">
           <section>
             <h2 className="text-xl font-bold text-white mb-3">1. Introduction</h2>
-            <p>SwapBoard ("we," "us," "our") is a shift management platform operated in Canada. We are committed to protecting the privacy and personal information of our users in compliance with the Personal Information Protection and Electronic Documents Act (PIPEDA) and applicable provincial privacy legislation.</p>
+            <p>SwapBoard (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) is a shift management platform operated in Canada. We are committed to protecting the privacy and personal information of our users in compliance with the Personal Information Protection and Electronic Documents Act (PIPEDA) and applicable provincial privacy legislation.</p>
             <p className="mt-2">This Privacy Policy explains how we collect, use, disclose, and safeguard your personal information when you use our platform, website (swapboard.ca), and related services.</p>
           </section>
 
@@ -116,11 +116,11 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">10. Electronic Communications (CASL)</h2>
-            <p>We comply with Canada's Anti-Spam Legislation (CASL). By creating an account, you consent to receive transactional emails related to your shift activity (swap notifications, account confirmations, security alerts). You may also opt in to receive product updates and announcements. You can unsubscribe from non-essential communications at any time using the unsubscribe link in our emails.</p>
+            <p>We comply with Canada&apos;s Anti-Spam Legislation (CASL). By creating an account, you consent to receive transactional emails related to your shift activity (swap notifications, account confirmations, security alerts). You may also opt in to receive product updates and announcements. You can unsubscribe from non-essential communications at any time using the unsubscribe link in our emails.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">11. Children's Privacy</h2>
+            <h2 className="text-xl font-bold text-white mb-3">11. Children&apos;s Privacy</h2>
             <p>SwapBoard is not intended for individuals under the age of 16. We do not knowingly collect personal information from children. If we become aware that we have collected information from a child under 16, we will take steps to delete it promptly.</p>
           </section>
 

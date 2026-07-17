@@ -196,7 +196,7 @@ export function EmailLayout({
                         }}
                       >
                         <p style={{ margin: '0 0 8px', fontSize: 12, color: '#6B7280' }}>
-                          You're receiving this because you have notifications enabled in SwapBoard.
+                          You&apos;re receiving this because you have notifications enabled in SwapBoard.
                         </p>
                         <p style={{ margin: 0, fontSize: 12, color: '#9CA3AF' }}>
                           © {new Date().getFullYear()} SwapBoard Inc. · Shift Management Made Simple

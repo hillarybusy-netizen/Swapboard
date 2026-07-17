@@ -30,7 +30,7 @@ export function SwapPostedEmail({
       </p>
 
       <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
-        A colleague in your department has posted a shift for swap. If you're available, you can
+        A colleague in your department has posted a shift for swap. If you&apos;re available, you can
         offer to cover it directly from your SwapBoard dashboard.
       </p>
 
@@ -48,7 +48,7 @@ export function SwapPostedEmail({
             Reason for swap
           </p>
           <p style={{ margin: '0 0 20px', fontSize: 14, color: '#374151', fontStyle: 'italic' }}>
-            "{reason}"
+            &quot;{reason}&quot;
           </p>
         </>
       )}

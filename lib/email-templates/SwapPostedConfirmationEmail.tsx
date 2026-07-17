@@ -40,7 +40,7 @@ export function SwapPostedConfirmationEmail({
 
       <Divider />
       <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
-        You'll receive a notification as soon as someone offers to cover your shift. Your manager
+        You&apos;ll receive a notification as soon as someone offers to cover your shift. Your manager
         will then review and approve the swap.
       </p>
       <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>

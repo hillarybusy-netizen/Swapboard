@@ -32,7 +32,7 @@ export function ShiftAssignedEmail({
       </p>
 
       <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
-        You've been assigned a new shift. Here are the details — please add it to your calendar
+        You&apos;ve been assigned a new shift. Here are the details — please add it to your calendar
         and mark your attendance when the shift begins.
       </p>
 

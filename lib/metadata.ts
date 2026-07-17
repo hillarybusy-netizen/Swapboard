@@ -60,7 +60,7 @@ export function createMetadata({
           url: absoluteUrl("/opengraph-image"),
           width: 1200,
           height: 630,
-          alt: `${SITE_NAME} — Shift Swapping Platform`,
+          alt: SITE_NAME,
         },
       ],
     },

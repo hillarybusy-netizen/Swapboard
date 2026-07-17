@@ -34,27 +34,36 @@ function getNextDepartmentColor(departments: DepartmentTemplate[]): string {
 
 export default function SetupPage() {
   const router = useRouter();
-  const [orgName, setOrgName] = useState("");
-  const [industry, setIndustry] = useState<string | null>(null);
-  const [departments, setDepartments] = useState<DepartmentTemplate[]>([]);
-
-  useEffect(() => {
-    const stored = sessionStorage.getItem("onboarding_industry");
-    if (!stored) { router.push("/onboarding/industry"); return; }
-    setIndustry(stored);
-
-    const savedSetup = sessionStorage.getItem("onboarding_setup");
-    if (savedSetup) {
-      try {
-        const parsed = JSON.parse(savedSetup);
-        if (parsed.orgName) setOrgName(parsed.orgName);
-        if (parsed.departments) setDepartments(parsed.departments);
-        return;
-      } catch { /* ignore */ }
+  const storedIndustry = typeof window !== "undefined" ? sessionStorage.getItem("onboarding_industry") : null;
+  const savedSetup = typeof window !== "undefined" ? sessionStorage.getItem("onboarding_setup") : null;
+  const [orgName, setOrgName] = useState(() => {
+    if (!savedSetup) return "";
+    try {
+      const parsed = JSON.parse(savedSetup);
+      return parsed.orgName ?? "";
+    } catch {
+      return "";
+    }
+  });
+  const [industry, setIndustry] = useState<string | null>(storedIndustry);
+  const [departments, setDepartments] = useState<DepartmentTemplate[]>(() => {
+    if (!savedSetup) {
+      return INDUSTRY_TEMPLATES[storedIndustry ?? ""]?.departments ?? [];
     }
 
-    setDepartments(INDUSTRY_TEMPLATES[stored]?.departments ?? []);
-  }, [router]);
+    try {
+      const parsed = JSON.parse(savedSetup);
+      return parsed.departments ?? [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    if (!storedIndustry) {
+      router.push("/onboarding/industry");
+    }
+  }, [router, storedIndustry]);
 
   function removeDept(i: number) {
     setDepartments((d) => d.filter((_, idx) => idx !== i));

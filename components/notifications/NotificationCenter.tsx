@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Check, Trash2, Filter, ChevronDown } from "lucide-react";
@@ -43,18 +43,7 @@ export function NotificationCenter() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const LIMIT = 20;
 
-  useEffect(() => {
-    loadNotifications();
-    const interval = setInterval(() => {
-      getUnreadNotificationCount().then((res) => {
-        if (res.success) setUnreadCount(res.count);
-      });
-    }, 10000); // Poll every 10 seconds for unread count
-
-    return () => clearInterval(interval);
-  }, [filter]);
-
-  async function loadNotifications() {
+  const loadNotifications = useCallback(async () => {
     setLoading(true);
     setOffset(0);
     const result = await getUserNotifications(undefined, LIMIT, 0, {
@@ -69,7 +58,24 @@ export function NotificationCenter() {
     }
 
     setLoading(false);
-  }
+  }, [filter]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadNotifications();
+    }, 0);
+
+    const interval = window.setInterval(() => {
+      void getUnreadNotificationCount().then((res) => {
+        if (res.success) setUnreadCount(res.count);
+      });
+    }, 10000);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.clearInterval(interval);
+    };
+  }, [loadNotifications]);
 
   async function loadMore() {
     setIsLoadingMore(true);

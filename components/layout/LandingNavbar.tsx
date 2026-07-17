@@ -22,29 +22,59 @@ const NAV_LINKS = [
   { href: "#faq", label: "FAQ" },
 ];
 
+function AuthButtons({
+  user,
+  logoUrl,
+  initials,
+  mobile = false,
+  onNavigate,
+}: {
+  user: any;
+  logoUrl?: string | null;
+  initials: string;
+  mobile?: boolean;
+  onNavigate?: () => void;
+}) {
+  if (user?.id && initials) {
+    return (
+      <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
+        <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex ${mobile ? "flex-col w-full gap-3" : "items-center gap-3 sm:gap-4"}`}>
+      <Link
+        href="/login"
+        onClick={onNavigate}
+        className={`text-sm font-medium text-white/50 hover:text-white transition-colors ${mobile ? "text-center py-3 glass rounded-2xl" : ""}`}
+      >
+        Sign in
+      </Link>
+      <Link
+        href="/onboarding/industry"
+        onClick={onNavigate}
+        className={`btn-gold font-bold whitespace-nowrap ${mobile ? "text-center py-3.5 rounded-2xl w-full" : "px-5 py-2 rounded-full text-sm"}`}
+      >
+        Try free
+      </Link>
+    </div>
+  );
+}
+
 export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavbarProps) {
   const { scrollY } = useScroll();
-  const [mounted, setMounted] = useState(false);
-  const [heroHeight, setHeroHeight] = useState(600);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const heroEl = document.querySelector("[data-hero-section]") as HTMLElement;
-    if (heroEl) {
-      setHeroHeight(heroEl.offsetHeight);
-      const ro = new ResizeObserver(() => setHeroHeight(heroEl.offsetHeight));
-      ro.observe(heroEl);
-      return () => ro.disconnect();
-    }
-  }, []);
+  const heroHeight = 640;
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
-  const scrollRange = mounted ? [80, Math.max(heroHeight - 120, 200)] : [80, 500];
+  const scrollRange = [80, Math.max(heroHeight - 120, 200)];
   const rawProgress = useTransform(scrollY, scrollRange, [0, 1], { clamp: true });
   const scrollProgress = useSpring(rawProgress, { stiffness: 200, damping: 35, mass: 0.5 });
 
@@ -55,58 +85,6 @@ export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavba
   const bgOpacity = useTransform(scrollProgress, [0, 0.15, 1], [0, 0.8, 1]);
   const bgRadius = useTransform(scrollProgress, [0, 1], ["0px", "9999px"]);
   const linkGap = useTransform(scrollProgress, [0, 1], ["2.5rem", "1.5rem"]);
-
-  const AuthButtons = ({ mobile = false }: { mobile?: boolean }) =>
-    user?.id && initials ? (
-      <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
-        <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
-      </div>
-    ) : (
-      <div className={`flex ${mobile ? "flex-col w-full gap-3" : "items-center gap-3 sm:gap-4"}`}>
-        <Link
-          href="/login"
-          onClick={() => setMobileOpen(false)}
-          className={`text-sm font-medium text-white/50 hover:text-white transition-colors ${mobile ? "text-center py-3 glass rounded-2xl" : ""}`}
-        >
-          Sign in
-        </Link>
-        <Link
-          href="/onboarding/industry"
-          onClick={() => setMobileOpen(false)}
-          className={`btn-gold font-bold whitespace-nowrap ${mobile ? "text-center py-3.5 rounded-2xl w-full" : "px-5 py-2 rounded-full text-sm"}`}
-        >
-          Try free
-        </Link>
-      </div>
-    );
-
-  if (!mounted) {
-    return (
-      <nav className="fixed top-0 inset-x-0 mx-auto z-50 flex items-center justify-center w-full max-w-[1280px] h-[4rem] sm:h-[4.5rem] px-4 sm:px-6">
-        <div className="flex items-center w-full justify-between">
-          <div className="flex justify-start items-center shrink-0">
-            <AnimatedLogo size="md" showText={false} />
-          </div>
-          <div className="hidden md:flex items-center gap-10">
-            {NAV_LINKS.map((l) => (
-              <a key={l.href} href={l.href} className="nav-link text-sm font-medium text-white/50 hover:text-gold transition-colors">{l.label}</a>
-            ))}
-          </div>
-          <div className="flex justify-end items-center gap-2 sm:gap-4 shrink-0">
-            <div className="hidden sm:flex">
-              <AuthButtons />
-            </div>
-            <button
-              className="md:hidden w-10 h-10 rounded-xl glass border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors"
-              aria-label="Open menu"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </nav>
-    );
-  }
 
   return (
     <>

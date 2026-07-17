@@ -47,7 +47,7 @@ export function ShiftCompletedEmail({
 
       <Divider />
       <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
-        Please review this completion promptly so the worker's record stays up to date.
+        Please review this completion promptly so the worker&apos;s record stays up to date.
       </p>
       <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>

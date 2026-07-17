@@ -74,8 +74,12 @@ export default async function DashboardPage() {
     return q;
   };
 
-  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const in48h = new Date(Date.now() + 48 * 60 * 60 * 1000);
+  const now = new Date();
+  const since = new Date(now);
+  since.setDate(now.getDate() - 30);
+
+  const in48h = new Date(now);
+  in48h.setHours(now.getHours() + 48);
 
   const [
     { data: swapsData }, 
@@ -538,7 +542,7 @@ export default async function DashboardPage() {
                           </div>
                           {swap.reason && (
                             <p className="text-[11px] md:text-xs text-white/50 italic bg-white/[0.03] p-2 md:p-3 rounded-xl border border-white/5 group-hover:bg-white/[0.05] transition-colors">
-                              "{swap.reason}"
+                              &ldquo;{swap.reason}&rdquo;
                             </p>
                           )}
                         </div>

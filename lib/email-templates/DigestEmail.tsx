@@ -30,7 +30,7 @@ export function DigestEmail({ userName, userRole, items, dashboardUrl }: DigestE
     >
       <p>Hi {userName},</p>
 
-      <p>Here's your daily summary from SwapBoard:</p>
+      <p>Here&apos;s your daily summary from SwapBoard:</p>
 
       {items.pending_approvals && items.pending_approvals.length > 0 && (
         <>

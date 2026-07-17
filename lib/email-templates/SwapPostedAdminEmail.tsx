@@ -48,14 +48,14 @@ export function SwapPostedAdminEmail({
             Reason for swap
           </p>
           <p style={{ margin: '0 0 20px', fontSize: 14, color: '#374151', fontStyle: 'italic' }}>
-            "{reason}"
+            &quot;{reason}&quot;
           </p>
         </>
       )}
 
       <Divider />
       <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
-        You'll receive another notification when a worker offers to cover this shift and approval is needed.
+        You&apos;ll receive another notification when a worker offers to cover this shift and approval is needed.
       </p>
       <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>
     </EmailLayout>

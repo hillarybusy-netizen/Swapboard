@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   ...rootMetadata,
   title: {
     default: DEFAULT_TITLE,
-    template: "%s | SwapBoard",
+    template: "%s | Swapboard - Shift Swapping Platform",
   },
 };
 

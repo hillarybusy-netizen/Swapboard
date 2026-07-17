@@ -32,8 +32,8 @@ export function GeneralShiftAvailableEmail({
       </p>
 
       <p style={{ margin: '0 0 20px', fontSize: 15, color: '#374151' }}>
-        A new unassigned shift is available for claiming. If you're free and interested, grab
-        it before someone else does — it's first come, first served.
+        A new unassigned shift is available for claiming. If you&apos;re free and interested, grab
+        it before someone else does — it&apos;s first come, first served.
       </p>
 
       <InfoBox>

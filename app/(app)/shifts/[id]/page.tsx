@@ -256,7 +256,7 @@ export default async function ShiftDetailPage(props: {
               </p>
               {activeSwap.reason && (
                 <p className="text-xs text-white/40 italic bg-white/[0.02] p-3 rounded-xl border border-white/5">
-                  "Reason: {activeSwap.reason}"
+                  &ldquo;Reason: {activeSwap.reason}&rdquo;
                 </p>
               )}
             </div>

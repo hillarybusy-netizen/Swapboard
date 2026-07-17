@@ -24,7 +24,9 @@ export default async function AnalyticsPage() {
   const supabase = await createClient();
   const org = (profile as any)?.organization;
 
-  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const since = new Date(now);
+  since.setDate(now.getDate() - 30);
 
   const [
     { data: swapsData },

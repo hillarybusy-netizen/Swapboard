@@ -215,7 +215,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                       </p>
                       {activeSwap.reason && (
                         <p className="text-[11px] text-white/40 italic bg-white/[0.02] p-2 rounded-xl border border-white/5">
-                          "{activeSwap.reason}"
+                          &ldquo;{activeSwap.reason}&rdquo;
                         </p>
                       )}
                     </div>
@@ -228,7 +228,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                         <FileText className="w-3.5 h-3.5" /> Notes & Instructions
                       </p>
                       <p className="text-xs text-white/60 font-medium leading-relaxed italic">
-                        "{selectedShift.notes}"
+                        &ldquo;{selectedShift.notes}&rdquo;
                       </p>
                     </div>
                   )}

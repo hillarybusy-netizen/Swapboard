@@ -12,13 +12,19 @@ interface ExportReportDropdownProps {
   };
 }
 
+const REPORT_NOW = new Date();
+const REPORT_START_DATE = new Date(REPORT_NOW);
+REPORT_START_DATE.setDate(REPORT_NOW.getDate() - 30);
+const REPORT_END_DATE = REPORT_NOW.toISOString().split("T")[0];
+const REPORT_START_DATE_STRING = REPORT_START_DATE.toISOString().split("T")[0];
+
 export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"day" | "month" | "year" | "custom" | null>(null);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [startDate, setStartDate] = useState(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]);
-  const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]);
+  const [selectedMonth, setSelectedMonth] = useState(REPORT_NOW.getMonth());
+  const [selectedYear, setSelectedYear] = useState(REPORT_NOW.getFullYear());
+  const [startDate, setStartDate] = useState(REPORT_START_DATE_STRING);
+  const [endDate, setEndDate] = useState(REPORT_END_DATE);
   const [selectedFields, setSelectedFields] = useState<string[]>(["fulfillmentRate", "costSavings", "managerHoursSaved", "activeSwaps"]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);

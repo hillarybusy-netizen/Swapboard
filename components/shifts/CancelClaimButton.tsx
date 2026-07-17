@@ -62,7 +62,7 @@ export function CancelClaimButton({ shiftId, shiftTitle }: Props) {
             <h3 className="text-xl font-black text-white text-center mb-2">Cancel Claim?</h3>
             <p className="text-sm text-white/50 text-center font-medium mb-6 leading-relaxed">
               Are you sure you want to cancel your claim for{" "}
-              <span className="text-white/80 font-bold">"{shiftTitle ?? "this shift"}"</span>?
+              <span className="text-white/80 font-bold">&ldquo;{shiftTitle ?? "this shift"}&rdquo;</span>?
               It will become available for other workers immediately.
             </p>
             <div className="flex gap-3">

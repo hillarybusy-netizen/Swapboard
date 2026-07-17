@@ -2,14 +2,13 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_APP_URL ?? "https://swapboard.ca"
 ).replace(/\/$/, "");
 
-export const SITE_NAME = "SwapBoard";
+export const SITE_NAME = "Swapboard";
 export const SITE_DOMAIN = "swapboard.ca";
 
-export const DEFAULT_TITLE =
-  "SwapBoard — Shift Swapping Platform for Restaurants, Healthcare & Retail";
+export const DEFAULT_TITLE = "Swapboard - Shift Swapping Platform";
 
 export const DEFAULT_DESCRIPTION =
-  "SwapBoard is a shift swapping platform that lets staff trade shifts instantly while managers approve in one tap. Built for restaurants, healthcare, and retail. 94% swap fulfillment, 14-day free trial.";
+  "Swapboard is a shift swapping platform that lets staff trade shifts instantly while managers approve in one tap. Built for restaurants, healthcare, and retail. 94% swap fulfillment, 14-day free trial.";
 
 export const SEO_KEYWORDS = [
   "shift swapping platform",
@@ -36,32 +35,32 @@ export const PUBLIC_ROUTES = [
 
 export const FAQ_ITEMS = [
   {
-    question: "What is SwapBoard?",
+    question: "What is Swapboard?",
     answer:
-      "SwapBoard is a shift swapping platform for businesses that need reliable shift coverage. Workers post swap requests from their phone, qualified colleagues accept instantly, and managers approve with one tap. Schedules update in real time for everyone.",
+      "Swapboard is a shift swapping platform for businesses that need reliable shift coverage. Workers post swap requests from their phone, qualified colleagues accept instantly, and managers approve with one tap. Schedules update in real time for everyone.",
   },
   {
-    question: "What industries does SwapBoard support?",
+    question: "What industries does Swapboard support?",
     answer:
-      "SwapBoard supports restaurants, healthcare, retail, and other multi-department operations. You set up departments and roles that match your organization structure.",
+      "Swapboard supports restaurants, healthcare, retail, and other multi-department operations. You set up departments and roles that match your organization structure.",
   },
   {
-    question: "How does shift swapping work on SwapBoard?",
+    question: "How does shift swapping work on Swapboard?",
     answer:
       "Set up your organization and invite your team. Workers request swaps from their phone. Qualified colleagues can accept instantly. Managers approve with one tap and the schedule updates automatically for everyone in real time.",
   },
   {
-    question: "Is SwapBoard a good shift swapping platform for restaurants?",
+    question: "Is Swapboard a good shift swapping platform for restaurants?",
     answer:
-      "Yes. SwapBoard is built for real operations including restaurants. It supports multi-department setups, instant swap requests, push notifications, manager approvals, and ROI analytics showing overtime savings and manager time recovered.",
+      "Yes. Swapboard is built for real operations including restaurants. It supports multi-department setups, instant swap requests, push notifications, manager approvals, and ROI analytics showing overtime savings and manager time recovered.",
   },
   {
-    question: "How much does SwapBoard cost?",
+    question: "How much does Swapboard cost?",
     answer:
-      "SwapBoard offers Starter at $79/month (up to 100 workers), Growth at $199/month (up to 200 workers), and Enterprise at $499/month (unlimited workers). All plans include a 14-day free premium trial with no hidden fees.",
+      "Swapboard offers Starter at $79/month (up to 100 workers), Growth at $199/month (up to 200 workers), and Enterprise at $499/month (unlimited workers). All plans include a 14-day free premium trial with no hidden fees.",
   },
   {
-    question: "What results do teams see with SwapBoard?",
+    question: "What results do teams see with Swapboard?",
     answer:
       "Teams report a 94% swap fulfillment rate, 2-minute average swap resolution, $4,200 average monthly savings, and 3 hours of manager time saved per week.",
   },

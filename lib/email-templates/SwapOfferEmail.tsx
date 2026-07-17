@@ -40,7 +40,7 @@ export function SwapOfferEmail({
 
       <Divider />
       <p style={{ margin: '0 0 4px', fontSize: 14, color: '#6B7280' }}>
-        You'll receive another email once your manager makes a decision. In the meantime, assume
+        You&apos;ll receive another email once your manager makes a decision. In the meantime, assume
         you still hold this shift until confirmed otherwise.
       </p>
       <p style={{ margin: '24px 0 0', fontSize: 14, color: '#6B7280' }}>The SwapBoard Team</p>

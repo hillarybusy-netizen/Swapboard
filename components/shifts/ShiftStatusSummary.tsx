@@ -13,12 +13,11 @@ const SUMMARY_ITEMS = [
   { label: "Overdue", statuses: ["overdue_not_done"], color: "text-orange-400" },
   { label: "No-shows", statuses: ["no_show"], color: "text-red-400" },
   { label: "Rejected", statuses: ["done_rejected"], color: "text-red-400" },
-  { label: "Cancelled", statuses: ["cancelled"], color: "text-white/50" },
 ] as const;
 
 export function ShiftStatusSummary({ shifts }: ShiftStatusSummaryProps) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-7">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       {SUMMARY_ITEMS.map((item) => (
         <div key={item.label} className="glass rounded-2xl border border-white/5 p-4 text-center">
           <span className={`block text-2xl font-black ${item.color}`}>
