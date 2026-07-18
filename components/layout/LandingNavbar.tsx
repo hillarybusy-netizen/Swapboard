@@ -111,7 +111,7 @@ export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavba
 
           <div className="flex justify-end items-center gap-2 sm:gap-4 shrink-0">
             <div className="hidden sm:flex">
-              <AuthButtons />
+              <AuthButtons user={user} logoUrl={logoUrl} initials={initials} />
             </div>
 
             <button
