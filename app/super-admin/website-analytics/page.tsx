@@ -1,13 +1,4 @@
 import { Activity, ArrowUpRight, BarChart3, Eye, MousePointerClick } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { AnalyticsPasswordForm } from "./AnalyticsPasswordForm";
-import { lockWebsiteAnalytics } from "./actions";
-import {
-  isWebsiteAnalyticsSessionSecretConfigured,
-  isWebsiteAnalyticsSessionValid,
-  WEBSITE_ANALYTICS_COOKIE,
-} from "@/lib/website-analytics-access";
-import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -30,38 +21,9 @@ const trackedMetrics = [
 ];
 
 export default async function WebsiteAnalyticsPage() {
-  if (!isWebsiteAnalyticsSessionSecretConfigured()) {
-    return (
-      <div className="mx-auto max-w-4xl space-y-6">
-        <PageHeading />
-        <p role="alert" className="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5 text-sm text-amber-100">
-          Configure <code>WEBSITE_ANALYTICS_SESSION_SECRET</code> with a random value of at least 32 characters to enable the password gate.
-        </p>
-      </div>
-    );
-  }
-
-  const cookieStore = await cookies();
-  const session = cookieStore.get(WEBSITE_ANALYTICS_COOKIE)?.value;
-  if (!isWebsiteAnalyticsSessionValid(session)) {
-    return (
-      <div className="mx-auto max-w-4xl space-y-6">
-        <PageHeading />
-        <AnalyticsPasswordForm />
-      </div>
-    );
-  }
-
   return (
     <div className="mx-auto max-w-4xl space-y-8 pb-10">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <PageHeading />
-        <form action={lockWebsiteAnalytics}>
-          <Button type="submit" variant="outline" className="border-white/10 text-white/70 hover:text-white">
-            Lock page
-          </Button>
-        </form>
-      </div>
+      <PageHeading />
 
       <section className="rounded-3xl border border-gold/20 bg-gradient-to-br from-gold/[0.08] to-white/[0.02] p-6 md:p-8">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold/10 text-gold">
