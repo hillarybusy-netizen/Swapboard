@@ -69,11 +69,12 @@ export default function LoginPage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("organization_id")
+        .select("organization_id, user_role")
         .eq("id", currentUserId)
         .maybeSingle();
 
-      if (!profile?.organization_id) {
+      // Super admins don't belong to an org — let them through
+      if (!profile?.organization_id && profile?.user_role !== "super_admin") {
         await supabase.auth.signOut();
         setShowNoAccount(true);
         return;
