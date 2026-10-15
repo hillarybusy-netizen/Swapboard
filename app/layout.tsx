@@ -7,6 +7,7 @@ import { TimezoneInitializer } from "@/components/TimezoneInitializer";
 import { DEFAULT_TITLE, SITE_URL } from "@/lib/seo";
 import { rootMetadata } from "@/lib/metadata";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { BotpressChat } from "@/components/BotpressChat";
 
 // Plus Jakarta Sans — clean, precise fintech grotesque (Duitech substitute)
 // Used as the default body font across the entire site
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${plusJakartaSans.className}`}>
         <GoogleAnalytics />
+        <BotpressChat />
         <TimezoneInitializer />
         <RealtimeNotificationsProvider />
         {children}
