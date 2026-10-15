@@ -31,7 +31,16 @@ const NAV_ITEMS = [
   { href: "/admin/claims",    label: "Shift Claims", icon: UserPlus },
   { href: "/analytics",       label: "Analytics", icon: BarChart3 },
   { href: "/team",            label: "Team", icon: Users },
-  { href: "/admin/settings",      label: "Settings", icon: Settings },
+  { href: "/admin/settings",  label: "Settings", icon: Settings },
+];
+
+const SUPER_ADMIN_NAV_ITEMS = [
+  { href: "/super-admin/dashboard",          label: "Dashboard", icon: LayoutDashboard },
+  { href: "/super-admin/organizations",      label: "Organizations", icon: Users },
+  { href: "/super-admin/users",              label: "Users", icon: UserPlus },
+  { href: "/super-admin/analytics",          label: "Analytics", icon: BarChart3 },
+  { href: "/super-admin/settings",           label: "Settings", icon: Settings },
+  { href: "/super-admin/website-analytics",  label: "Website Analytics", icon: MousePointerClick },
 ];
 
 interface AdminSidebarProps {
@@ -41,9 +50,8 @@ interface AdminSidebarProps {
 
 function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const navItems = profile
-    ? NAV_ITEMS
-    : [...NAV_ITEMS, { href: "/super-admin/website-analytics", label: "Website Analytics", icon: MousePointerClick }];
+  // When no profile is passed we're in the super-admin layout — use super admin links
+  const navItems = profile ? NAV_ITEMS : SUPER_ADMIN_NAV_ITEMS;
 
   return (
     <div className="flex flex-col h-full min-h-0">
