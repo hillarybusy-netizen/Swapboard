@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
   UserPlus,
+  MousePointerClick,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/actions";
@@ -40,6 +41,9 @@ interface AdminSidebarProps {
 
 function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const navItems = profile
+    ? NAV_ITEMS
+    : [...NAV_ITEMS, { href: "/super-admin/website-analytics", label: "Website Analytics", icon: MousePointerClick }];
 
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -70,7 +74,7 @@ function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNaviga
 
       {/* Navigation — scrolls when items overflow */}
       <nav className="flex-1 min-h-0 overflow-y-auto px-4 space-y-2 py-2 no-scrollbar">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+        {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link key={href} href={href} prefetch onClick={onNavigate}>

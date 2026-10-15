@@ -25,6 +25,17 @@ Open [http://localhost:3000](http://localhost:3000).
 - **Stripe** — Subscription billing
 - **Tailwind CSS** + **shadcn/ui**
 
+## Website analytics
+
+Google Analytics tracks page views and link/button clicks with measurement ID
+`G-G0SKTBTDHP`. Platform super-admins can open Google Analytics from the
+password-protected page at `/super-admin/website-analytics`. Reports are viewed
+in Google Analytics; no Google Cloud credentials are required. The page
+password uses `WEBSITE_ANALYTICS_PASSWORD` and a random
+`WEBSITE_ANALYTICS_SESSION_SECRET` of at least 32 characters (generate one with
+`openssl rand -hex 32`). Set these only in the server environment, not in
+tracked files.
+
 ## Key routes
 
 | Route | Description |
