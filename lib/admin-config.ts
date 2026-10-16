@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export function getPlatformAdminEmails(): string[] {
   const fromEnv = process.env.PLATFORM_ADMIN_EMAILS;
@@ -8,28 +8,41 @@ export function getPlatformAdminEmails(): string[] {
   return [];
 }
 
-export async function isSuperAdmin(email: string | undefined) {
-  if (!email) return false;
+export async function isSuperAdmin(email: string | undefined | null, userId?: string | null) {
+  if (!email && !userId) return false;
 
-  const normalized = email.toLowerCase();
-  // 1) Check env var overrides for legacy support
-  if (getPlatformAdminEmails().includes(normalized)) return true;
+  const normalized = email ? email.trim().toLowerCase() : "";
+  // 1) Check env var overrides
+  if (normalized && getPlatformAdminEmails().includes(normalized)) return true;
 
-  // 2) Check database for super_admin role
+  // 2) Check database for super_admin role using admin client (bypasses RLS)
   try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("user_role")
-      .eq("email", normalized)
-      .maybeSingle();
+    const admin = createAdminClient();
+    if (userId) {
+      const { data, error } = await admin
+        .from("profiles")
+        .select("user_role")
+        .eq("id", userId)
+        .maybeSingle();
 
-    if (error) {
-      console.error("isSuperAdmin supabase error:", error.message || error);
-      return false;
+      if (!error && data?.user_role === "super_admin") {
+        return true;
+      }
     }
 
-    return data?.user_role === "super_admin";
+    if (normalized) {
+      const { data, error } = await admin
+        .from("profiles")
+        .select("user_role")
+        .ilike("email", normalized)
+        .maybeSingle();
+
+      if (!error && data?.user_role === "super_admin") {
+        return true;
+      }
+    }
+
+    return false;
   } catch (err) {
     console.error("isSuperAdmin error:", err);
     return false;
@@ -38,3 +51,4 @@ export async function isSuperAdmin(email: string | undefined) {
 
 // Alias for backward compatibility
 export const isPlatformAdmin = isSuperAdmin;
+

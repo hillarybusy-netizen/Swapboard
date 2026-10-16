@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -80,7 +81,7 @@ export default async function AdminOverview() {
         <div className="lg:col-span-2 glass rounded-[2.5rem] p-10 border-white/5">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black text-white uppercase tracking-tighter">Recent Sign-ups</h3>
-            <button className="text-[10px] font-black uppercase tracking-widest text-gold hover:text-gold/80 transition-colors">View All</button>
+            <Link href="/super-admin/organizations" className="text-[10px] font-black uppercase tracking-widest text-gold hover:text-gold/80 transition-colors">View All</Link>
           </div>
           
           <div className="space-y-6">
@@ -140,7 +141,7 @@ export default async function AdminOverview() {
             <h3 className="text-xl font-black text-white uppercase tracking-tighter">Recently Joined Members</h3>
             <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1">New signups and invited members</p>
           </div>
-          <a href="/admin/users" className="text-[10px] font-black uppercase tracking-widest text-gold hover:text-gold/80 transition-colors">View All</a>
+          <Link href="/super-admin/users" className="text-[10px] font-black uppercase tracking-widest text-gold hover:text-gold/80 transition-colors">View All</Link>
         </div>
         
         <div className="overflow-x-auto">

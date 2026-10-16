@@ -7,9 +7,10 @@ import { signOut } from "@/app/actions";
 
 interface AdminProfileDropdownProps {
   email: string;
+  isSuperAdmin?: boolean;
 }
 
-export function AdminProfileDropdown({ email }: AdminProfileDropdownProps) {
+export function AdminProfileDropdown({ email, isSuperAdmin }: AdminProfileDropdownProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -49,30 +50,22 @@ export function AdminProfileDropdown({ email }: AdminProfileDropdownProps) {
         <div className="absolute right-0 top-12 w-48 rounded-xl bg-[#080808] border border-white/10 shadow-xl z-50 overflow-hidden">
           {/* Header with Email */}
           <div className="px-4 py-3 border-b border-white/5 bg-white/[0.02]">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Admin Account</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">
+              {isSuperAdmin ? "Super Admin Account" : "Admin Account"}
+            </p>
             <p className="text-xs font-bold text-white mt-1 truncate">{email}</p>
           </div>
 
           {/* Menu Items */}
           <div className="py-2">
-            {/* Notifications */}
-            <Link
-              href="/admin/notifications"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white hover:bg-white/[0.03] transition-colors text-sm"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="font-semibold">Notifications</span>
-            </Link>
-
             {/* Settings */}
             <Link
-              href="/admin/settings"
+              href={isSuperAdmin ? "/super-admin/settings" : "/admin/settings"}
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white hover:bg-white/[0.03] transition-colors text-sm"
             >
               <Settings className="w-4 h-4" />
-              <span className="font-semibold">Settings</span>
+              <span className="font-semibold">Platform Settings</span>
             </Link>
 
             {/* Divider */}

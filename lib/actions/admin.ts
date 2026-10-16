@@ -11,8 +11,8 @@ import crypto from "crypto";
 async function ensureAdmin() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user || !(await isPlatformAdmin(user.email))) {
-    redirect("/dashboard");
+  if (!user || !(await isPlatformAdmin(user.email, user.id))) {
+    redirect("/login");
   }
   return { user };
 }
@@ -106,6 +106,7 @@ export async function deactivateUser(userId: string, isActive: boolean) {
 
   if (error) throw error;
   revalidatePath("/admin/users");
+  revalidatePath("/super-admin/users");
 }
 
 export async function assignUserRole(userId: string, role: string) {
@@ -118,6 +119,7 @@ export async function assignUserRole(userId: string, role: string) {
 
   if (error) throw error;
   revalidatePath("/admin/users");
+  revalidatePath("/super-admin/users");
 }
 
 export async function createApiKey(userId: string) {

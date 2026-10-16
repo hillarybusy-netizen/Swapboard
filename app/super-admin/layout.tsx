@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
 import { AdminProfileDropdown } from "@/components/layout/AdminProfileDropdown";
 
+import { isPlatformAdmin } from "@/lib/admin-config";
+import { createAdminClient } from "@/lib/supabase/admin";
+
 export default async function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
 
@@ -10,13 +13,16 @@ export default async function SuperAdminLayout({ children }: { children: React.R
   if (!user) redirect("/login");
 
   // Only super_admin users can access the platform admin dashboard
-  const { data: profile } = await supabase
+  const admin = createAdminClient();
+  const { data: profile } = await admin
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
-  if (!profile || profile.user_role !== "super_admin") {
+  const isSuper = profile?.user_role === "super_admin" || (await isPlatformAdmin(user.email, user.id));
+
+  if (!isSuper) {
     redirect("/dashboard");
   }
 
@@ -35,7 +41,7 @@ export default async function SuperAdminLayout({ children }: { children: React.R
           </div>
           <div className="flex items-center gap-4">
             <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/40 mt-0.5 hidden sm:inline">Logged in as {user.email}</span>
-            <AdminProfileDropdown email={user.email || ""} />
+            <AdminProfileDropdown email={user.email || ""} isSuperAdmin={true} />
           </div>
         </header>
         <main className="flex-1 px-10 py-12">

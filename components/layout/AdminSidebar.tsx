@@ -16,6 +16,7 @@ import {
   Menu,
   UserPlus,
   MousePointerClick,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/actions";
@@ -36,10 +37,10 @@ const NAV_ITEMS = [
 
 const SUPER_ADMIN_NAV_ITEMS = [
   { href: "/super-admin/dashboard",          label: "Dashboard", icon: LayoutDashboard },
-  { href: "/super-admin/organizations",      label: "Organizations", icon: Users },
-  { href: "/super-admin/users",              label: "Users", icon: UserPlus },
-  { href: "/super-admin/analytics",          label: "Analytics", icon: BarChart3 },
-  { href: "/super-admin/settings",           label: "Settings", icon: Settings },
+  { href: "/super-admin/organizations",      label: "Organizations", icon: Building2 },
+  { href: "/super-admin/users",              label: "All Users & Accounts", icon: Users },
+  { href: "/super-admin/analytics",          label: "Platform Analytics", icon: BarChart3 },
+  { href: "/super-admin/settings",           label: "Platform Settings", icon: Settings },
   { href: "/super-admin/website-analytics",  label: "Website Analytics", icon: MousePointerClick },
 ];
 

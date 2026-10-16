@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getOrganizations } from "@/lib/actions/admin";
 import { calculateBasicAnalytics, calculateAdvancedAnalytics, calculateEnterpriseAnalytics } from "@/lib/advanced-analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { HeatmapComponent } from "@/components/analytics/HeatmapComponent";
 export const dynamic = "force-dynamic";
 
 export default async function AdminAnalyticsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const orgs = await getOrganizations();
 
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
