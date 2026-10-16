@@ -46,12 +46,13 @@ const SUPER_ADMIN_NAV_ITEMS = [
 interface AdminSidebarProps {
   org?: Organization | null;
   profile?: Profile | null;
+  isSuperAdmin?: boolean;
 }
 
-function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNavigate?: () => void }) {
+function NavContent({ org, profile, isSuperAdmin, onNavigate }: AdminSidebarProps & { onNavigate?: () => void }) {
   const pathname = usePathname();
-  // When no profile is passed we're in the super-admin layout — use super admin links
-  const navItems = profile ? NAV_ITEMS : SUPER_ADMIN_NAV_ITEMS;
+  const isSuper = Boolean(isSuperAdmin || profile?.user_role === "super_admin" || (!org && !profile));
+  const navItems = isSuper ? SUPER_ADMIN_NAV_ITEMS : NAV_ITEMS;
 
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -75,7 +76,9 @@ function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNaviga
         <div className="px-8 mb-2">
           <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gold/10 border border-gold/20">
             <ShieldCheck className="w-3.5 h-3.5 text-gold shrink-0" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-gold">Admin</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gold">
+              {isSuper ? "Super Admin" : "Admin"}
+            </span>
           </div>
         </div>
       </div>
@@ -111,11 +114,13 @@ function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNaviga
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold text-sm font-black border border-gold/20 shrink-0 group-hover:scale-105 transition-transform">
-                {profile?.full_name?.charAt(0)?.toUpperCase() ?? "A"}
+                {profile?.full_name?.charAt(0)?.toUpperCase() ?? (isSuper ? "S" : "A")}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">{profile?.full_name ?? "Admin"}</p>
-                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">org_admin</p>
+                <p className="text-sm font-bold text-white truncate">{profile?.full_name ?? (isSuper ? "Super Admin" : "Admin")}</p>
+                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">
+                  {isSuper ? "super_admin" : (profile?.user_role ?? "org_admin")}
+                </p>
               </div>
               <LogOut className="w-4 h-4 text-white/20 group-hover:text-red-400 transition-colors shrink-0" />
             </div>
@@ -126,7 +131,7 @@ function NavContent({ org, profile, onNavigate }: AdminSidebarProps & { onNaviga
   );
 }
 
-export function AdminSidebar({ org, profile }: AdminSidebarProps = {}) {
+export function AdminSidebar({ org, profile, isSuperAdmin }: AdminSidebarProps = {}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -134,7 +139,7 @@ export function AdminSidebar({ org, profile }: AdminSidebarProps = {}) {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-[#050505] h-dvh sticky top-0 border-r border-white/5 relative">
         <div className="absolute inset-0 bg-mesh opacity-20 -z-10" />
-        <NavContent org={org} profile={profile} />
+        <NavContent org={org} profile={profile} isSuperAdmin={isSuperAdmin} />
       </aside>
 
       {/* Mobile Hamburger */}
@@ -145,7 +150,7 @@ export function AdminSidebar({ org, profile }: AdminSidebarProps = {}) {
           </button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0 bg-[#050505] border-white/5 h-full flex flex-col">
-          <NavContent org={org} profile={profile} onNavigate={() => setOpen(false)} />
+          <NavContent org={org} profile={profile} isSuperAdmin={isSuperAdmin} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </>

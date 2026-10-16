@@ -12,7 +12,7 @@ export default async function SuperAdminLayout({ children }: { children: React.R
   // Only super_admin users can access the platform admin dashboard
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_role")
+    .select("*")
     .eq("id", user.id)
     .single();
 
@@ -25,7 +25,7 @@ export default async function SuperAdminLayout({ children }: { children: React.R
       {/* Background Mesh */}
       <div className="absolute inset-0 bg-mesh opacity-10 -z-10 pointer-events-none" />
       
-      <AdminSidebar />
+      <AdminSidebar profile={profile as any} isSuperAdmin={true} />
       
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-30 h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-10 bg-black/20 backdrop-blur-md">
