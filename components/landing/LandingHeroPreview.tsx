@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { LandingWorkerDashboardMock } from "@/components/landing/LandingWorkerDashboardMock";
-
+import { Sparkles } from "lucide-react";
 
 export function LandingHeroPreview() {
   return (
@@ -14,16 +14,24 @@ export function LandingHeroPreview() {
     >
       <div className="absolute -inset-4 sm:-inset-6 bg-gold/8 blur-3xl rounded-[2rem] -z-10" />
 
-      {/* Scaled frame — interior is responsive worker dashboard */}
+      {/* Floating Interactive Badge */}
+      <div className="flex items-center justify-between mb-3 px-1">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-black uppercase tracking-widest text-gold shadow-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+          <span>Interactive Live Demo</span>
+        </div>
+        <span className="text-[10px] font-bold text-white/30 hidden sm:inline">
+          Click sidebar tabs & scroll up/down
+        </span>
+      </div>
+
+      {/* Scaled frame — interior is fully responsive, interactive worker dashboard */}
       <div
-        className="relative overflow-hidden rounded-[1.25rem] sm:rounded-[1.5rem] border border-white/10 shadow-2xl shadow-black/60 bg-[#050505] w-full h-auto md:h-[560px]"
+        className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-white/15 shadow-2xl shadow-black/80 bg-[#050505] w-full h-[580px] sm:h-[620px] md:h-[640px]"
       >
         <div className="w-full h-full">
           <LandingWorkerDashboardMock />
         </div>
-
-        {/* Subtle edge fade so crop feels intentional */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#050505] to-transparent" />
       </div>
     </motion.div>
   );
