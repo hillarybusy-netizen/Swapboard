@@ -21,15 +21,50 @@ export async function getAdminStats() {
   await ensureAdmin();
   const admin = createAdminClient();
 
-  const { count: orgCount } = await admin
-    .from("organizations")
-    .select("*", { count: "exact", head: true });
-
-  const { count: userCount } = await admin
-    .from("profiles")
-    .select("*", { count: "exact", head: true });
-
-  const { data: plansData } = await admin.from("organizations").select("plan");
+  const [
+    { count: orgCount },
+    { count: userCount },
+    { count: activeUserCount },
+    { count: shiftsCount },
+    { count: swapsCount },
+    { count: approvedSwapsCount },
+    { data: plansData },
+    { data: recentSwapsData },
+    { data: recentAuditData },
+  ] = await Promise.all([
+    admin.from("organizations").select("*", { count: "exact", head: true }),
+    admin.from("profiles").select("*", { count: "exact", head: true }),
+    admin.from("profiles").select("*", { count: "exact", head: true }).eq("is_active", true),
+    admin.from("shifts").select("*", { count: "exact", head: true }),
+    admin.from("swap_requests").select("*", { count: "exact", head: true }),
+    admin.from("swap_requests").select("*", { count: "exact", head: true }).eq("status", "manager_approved"),
+    admin.from("organizations").select("plan"),
+    admin
+      .from("swap_requests")
+      .select(`
+        id,
+        status,
+        created_at,
+        reason,
+        organization:organizations(name),
+        requester:profiles!requester_id(full_name, email)
+      `)
+      .order("created_at", { ascending: false })
+      .limit(6),
+    admin
+      .from("audit_logs")
+      .select(`
+        id,
+        entity_type,
+        action,
+        metadata,
+        created_at,
+        organization:organizations(name),
+        actor:profiles!actor_id(full_name, email)
+      `)
+      .order("created_at", { ascending: false })
+      .limit(6),
+  ]);
 
   const planCounts = (plansData ?? []).reduce((acc: Record<string, number>, org: { plan: string }) => {
     acc[org.plan] = (acc[org.plan] || 0) + 1;
@@ -43,9 +78,40 @@ export async function getAdminStats() {
   return {
     orgCount: orgCount || 0,
     userCount: userCount || 0,
+    activeUserCount: activeUserCount || 0,
+    shiftsCount: shiftsCount || 0,
+    swapsCount: swapsCount || 0,
+    approvedSwapsCount: approvedSwapsCount || 0,
     planCounts,
     estimatedMRR,
+    recentSwaps: recentSwapsData || [],
+    recentAudit: recentAuditData || [],
   };
+}
+
+export async function getPlatformAuditLogs(limit = 100) {
+  await ensureAdmin();
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("audit_logs")
+    .select(`
+      id,
+      entity_type,
+      entity_id,
+      action,
+      metadata,
+      created_at,
+      organization:organizations(id, name),
+      actor:profiles!actor_id(id, full_name, email, user_role)
+    `)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("Error fetching platform audit logs:", error);
+    return [];
+  }
+  return data || [];
 }
 
 export async function getOrganizations() {

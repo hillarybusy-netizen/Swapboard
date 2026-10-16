@@ -381,3 +381,47 @@
   display: none;
 }
 
+/* Modern Big-Tech SaaS Card Glow (Linear & Stripe inspired) */
+.glass {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+.glass:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.2),
+    0 16px 48px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Modern Shift Management live pulse indicator */
+.live-pulse-dot {
+  position: relative;
+  display: inline-flex;
+  height: 8px;
+  width: 8px;
+}
+.live-pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background-color: rgb(52, 211, 153);
+  opacity: 0.75;
+  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Subtle modern dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.3);
+}
+
