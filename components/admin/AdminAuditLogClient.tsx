@@ -5,15 +5,27 @@ import { Search, Filter, ShieldCheck, Clock, Building2, User, Activity, ChevronR
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-interface AuditLogItem {
+export interface AuditLogItem {
   id: string;
   entity_type: string;
   entity_id: string;
   action: string;
   metadata: any;
   created_at: string;
-  organization?: { id: string; name: string } | null;
-  actor?: { id: string; full_name: string | null; email: string | null; user_role: string } | null;
+  organization?: any;
+  actor?: any;
+}
+
+function getOrgName(org: any): string {
+  if (!org) return "";
+  if (Array.isArray(org)) return org[0]?.name || "";
+  return org.name || "";
+}
+
+function getActor(actor: any): { full_name?: string | null; email?: string | null; user_role?: string } | null {
+  if (!actor) return null;
+  if (Array.isArray(actor)) return actor[0] || null;
+  return actor;
 }
 
 export function AdminAuditLogClient({ logs }: { logs: AuditLogItem[] }) {
@@ -32,13 +44,16 @@ export function AdminAuditLogClient({ logs }: { logs: AuditLogItem[] }) {
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
       const q = searchQuery.toLowerCase().trim();
+      const orgName = getOrgName(log.organization);
+      const actor = getActor(log.actor);
+
       const matchesSearch =
         !q ||
         log.action?.toLowerCase().includes(q) ||
         log.entity_type?.toLowerCase().includes(q) ||
-        log.organization?.name?.toLowerCase().includes(q) ||
-        log.actor?.full_name?.toLowerCase().includes(q) ||
-        log.actor?.email?.toLowerCase().includes(q);
+        orgName.toLowerCase().includes(q) ||
+        actor?.full_name?.toLowerCase().includes(q) ||
+        actor?.email?.toLowerCase().includes(q);
 
       const matchesEntity = selectedEntity === "all" || log.entity_type === selectedEntity;
 
@@ -130,31 +145,37 @@ export function AdminAuditLogClient({ logs }: { logs: AuditLogItem[] }) {
 
                     {/* Actor */}
                     <td className="px-6 py-4">
-                      {log.actor ? (
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-white/40">
-                            {log.actor.full_name?.charAt(0) ?? "U"}
+                      {(() => {
+                        const actor = getActor(log.actor);
+                        return actor ? (
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-white/40">
+                              {actor.full_name?.charAt(0) ?? "U"}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-white truncate">{actor.full_name || "User"}</p>
+                              <p className="text-[9px] text-white/30">{actor.email}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-bold text-white truncate">{log.actor.full_name || "User"}</p>
-                            <p className="text-[9px] text-white/30">{log.actor.email}</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-white/20 italic">System / Anonymous</span>
-                      )}
+                        ) : (
+                          <span className="text-xs text-white/20 italic">System / Anonymous</span>
+                        );
+                      })()}
                     </td>
 
                     {/* Organization */}
                     <td className="px-6 py-4">
-                      {log.organization ? (
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-white/60">
-                          <Building2 className="w-3.5 h-3.5 text-white/20" />
-                          <span>{log.organization.name}</span>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-white/20">Platform-wide</span>
-                      )}
+                      {(() => {
+                        const orgName = getOrgName(log.organization);
+                        return orgName ? (
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-white/60">
+                            <Building2 className="w-3.5 h-3.5 text-white/20" />
+                            <span>{orgName}</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-white/20">Platform-wide</span>
+                        );
+                      })()}
                     </td>
 
                     {/* Timestamp */}
@@ -206,7 +227,7 @@ export function AdminAuditLogClient({ logs }: { logs: AuditLogItem[] }) {
                 </div>
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-white/30">Organization</p>
-                  <p className="font-bold text-white mt-0.5">{selectedLog.organization?.name || "Global"}</p>
+                  <p className="font-bold text-white mt-0.5">{getOrgName(selectedLog.organization) || "Global"}</p>
                 </div>
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-white/30">Timestamp</p>

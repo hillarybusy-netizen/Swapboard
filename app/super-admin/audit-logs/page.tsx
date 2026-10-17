@@ -31,7 +31,7 @@ export default async function SuperAdminAuditLogsPage() {
         </div>
       </div>
 
-      <AdminAuditLogClient logs={logs} />
+      <AdminAuditLogClient logs={logs as any} />
     </div>
   );
 }
