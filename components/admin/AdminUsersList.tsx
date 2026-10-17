@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Building2, Search, Filter, ShieldCheck, UserCheck, UserX } from "lucide-react";
-import { UserActions } from "@/app/admin/users/UserActions";
+import { UserActions } from "@/app/super-admin/users/UserActions";
 
 const ROLE_BADGES: Record<string, { label: string; className: string }> = {
   super_admin: { label: "Super Admin", className: "bg-gold/20 text-gold border-gold/40 shadow-sm shadow-gold/20" },

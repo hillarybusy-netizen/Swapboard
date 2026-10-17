@@ -1,11 +1,50 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { formatCurrency } from "@/lib/utils";
-import { Globe, ExternalLink, CalendarDays, Search, Building2, Sparkles, Filter } from "lucide-react";
+import {
+  Globe,
+  CalendarDays,
+  Search,
+  Building2,
+  Filter,
+  MoreVertical,
+  ArrowUpDown,
+  Clock,
+  Trash2,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react";
 import { Plan } from "@/lib/database.types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  updateOrganizationPlan,
+  extendOrganizationTrial,
+  superAdminDeleteOrganization,
+} from "@/lib/actions/admin";
+import { useToast } from "@/hooks/use-toast";
 
 const PLAN_BADGES: Record<string, { label: string; className: string }> = {
   trial: { label: "Trial", className: "bg-amber-500/10 text-amber-300 border-amber-500/20" },
@@ -14,6 +53,186 @@ const PLAN_BADGES: Record<string, { label: string; className: string }> = {
   pro: { label: "Pro", className: "bg-purple-500/10 text-purple-300 border-purple-500/20" },
   enterprise: { label: "Enterprise", className: "bg-gold/20 text-gold border-gold/30" },
 };
+
+const PLANS = ["trial", "starter", "growth", "pro", "enterprise"] as const;
+
+function OrgActions({ org }: { org: any }) {
+  const [isPending, startTransition] = useTransition();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleChangePlan = (plan: string) => {
+    startTransition(async () => {
+      try {
+        await updateOrganizationPlan(org.id, plan);
+        toast({
+          title: "Plan Updated",
+          description: `${org.name} has been moved to the ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan.`,
+        });
+      } catch (err: any) {
+        toast({
+          title: "Failed to update plan",
+          description: err?.message || "Something went wrong.",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
+  const handleExtendTrial = (days: number) => {
+    startTransition(async () => {
+      try {
+        await extendOrganizationTrial(org.id, days);
+        toast({
+          title: "Trial Extended",
+          description: `${org.name} trial extended by ${days} days.`,
+        });
+      } catch (err: any) {
+        toast({
+          title: "Failed to extend trial",
+          description: err?.message || "Something went wrong.",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        await superAdminDeleteOrganization(org.id);
+        toast({
+          title: "Organization Deleted",
+          description: `${org.name} and all its members have been permanently removed.`,
+        });
+        setDeleteDialogOpen(false);
+      } catch (err: any) {
+        toast({
+          title: "Failed to delete organization",
+          description: err?.message || "Something went wrong.",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="h-9 w-9 p-0 text-white/20 hover:text-white/60 hover:bg-white/5 rounded-xl"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <MoreVertical className="h-4 w-4" />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="bg-[#0f0f0f] border-white/10 text-white/70 min-w-[200px]"
+        >
+          {/* Change Plan submenu */}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer text-xs">
+              <ArrowUpDown className="w-3.5 h-3.5 text-blue-400/60" />
+              Change Plan
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="bg-[#0f0f0f] border-white/10 text-white/70">
+              {PLANS.map((plan) => (
+                <DropdownMenuItem
+                  key={plan}
+                  onClick={() => handleChangePlan(plan)}
+                  disabled={org.plan === plan}
+                  className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer text-xs"
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      org.plan === plan ? "bg-gold" : "bg-white/20"
+                    }`}
+                  />
+                  {plan.charAt(0).toUpperCase() + plan.slice(1)}
+                  {org.plan === plan && (
+                    <span className="ml-auto text-[9px] text-gold/60">Current</span>
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+
+          {/* Extend Trial submenu */}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer text-xs">
+              <Clock className="w-3.5 h-3.5 text-amber-400/60" />
+              Extend Trial
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="bg-[#0f0f0f] border-white/10 text-white/70">
+              {[7, 14, 30, 60, 90].map((days) => (
+                <DropdownMenuItem
+                  key={days}
+                  onClick={() => handleExtendTrial(days)}
+                  className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer text-xs"
+                >
+                  <Clock className="w-3 h-3 text-amber-300/40" />
+                  +{days} Days
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+
+          <DropdownMenuSeparator className="bg-white/5" />
+
+          {/* Delete Organization */}
+          <DropdownMenuItem
+            onClick={() => setDeleteDialogOpen(true)}
+            className="flex items-center gap-2 focus:bg-red-500/10 focus:text-red-400 text-red-400/60 cursor-pointer text-xs"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Delete Organization
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-[#0a0a0a] border-white/10 text-white max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-400">
+              <AlertTriangle className="w-5 h-5" />
+              Delete Organization
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white/50 text-sm leading-relaxed">
+              This will <span className="text-red-400 font-bold">permanently delete</span>{" "}
+              <span className="text-white font-semibold">{org.name}</span> and all associated
+              member accounts, shifts, swap requests, and data. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isPending}
+              className="bg-red-600 text-white hover:bg-red-700 border-red-500"
+            >
+              {isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Trash2 className="w-4 h-4 mr-2" />
+              )}
+              Delete Forever
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
 
 export function AdminOrgsList({ orgs }: { orgs: any[] }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,7 +345,7 @@ export function AdminOrgsList({ orgs }: { orgs: any[] }) {
                     </div>
                   </div>
 
-                  {/* Right: Metrics & Details */}
+                  {/* Right: Metrics & Actions */}
                   <div className="flex flex-wrap items-center gap-6 md:gap-8 justify-between lg:justify-end border-t border-white/5 pt-4 lg:border-t-0 lg:pt-0">
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-1 flex items-center gap-1">
@@ -158,6 +377,9 @@ export function AdminOrgsList({ orgs }: { orgs: any[] }) {
                         </p>
                       </div>
                     )}
+
+                    {/* Actions Button */}
+                    <OrgActions org={org} />
                   </div>
                 </div>
               </div>

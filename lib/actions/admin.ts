@@ -214,8 +214,200 @@ export async function createApiKey(userId: string) {
   return rawKey;
 }
 
+export async function updateOrganizationPlan(orgId: string, plan: string) {
+  const { user } = await ensureAdmin();
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from("organizations")
+    .update({ plan, updated_at: new Date().toISOString() })
+    .eq("id", orgId);
+
+  if (error) throw error;
+
+  await admin.from("audit_logs").insert({
+    organization_id: orgId,
+    entity_type: "organization",
+    entity_id: orgId,
+    action: `plan_changed_to_${plan}`,
+    actor_id: user.id,
+    metadata: { new_plan: plan },
+  });
+
+  revalidatePath("/super-admin/organizations");
+  revalidatePath("/super-admin/dashboard");
+  revalidatePath("/super-admin/audit-logs");
+}
+
+export async function extendOrganizationTrial(orgId: string, days: number) {
+  const { user } = await ensureAdmin();
+  const admin = createAdminClient();
+
+  const { data: org } = await admin
+    .from("organizations")
+    .select("trial_ends_at")
+    .eq("id", orgId)
+    .single();
+
+  const currentEnd = org?.trial_ends_at ? new Date(org.trial_ends_at) : new Date();
+  const baseTime = currentEnd.getTime() > Date.now() ? currentEnd.getTime() : Date.now();
+  const newEnd = new Date(baseTime + days * 24 * 60 * 60 * 1000).toISOString();
+
+  const { error } = await admin
+    .from("organizations")
+    .update({
+      plan: "trial",
+      trial_ends_at: newEnd,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", orgId);
+
+  if (error) throw error;
+
+  await admin.from("audit_logs").insert({
+    organization_id: orgId,
+    entity_type: "organization",
+    entity_id: orgId,
+    action: "trial_extended",
+    actor_id: user.id,
+    metadata: { extended_days: days, new_trial_end: newEnd },
+  });
+
+  revalidatePath("/super-admin/organizations");
+  revalidatePath("/super-admin/dashboard");
+  revalidatePath("/super-admin/audit-logs");
+}
+
+export async function superAdminDeleteOrganization(orgId: string) {
+  await ensureAdmin();
+  const admin = createAdminClient();
+
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("organization_id", orgId);
+
+  if (profiles && profiles.length > 0) {
+    await Promise.allSettled(
+      profiles.map((p) => admin.auth.admin.deleteUser(p.id))
+    );
+  }
+
+  const { error } = await admin.from("organizations").delete().eq("id", orgId);
+  if (error) throw error;
+
+  revalidatePath("/super-admin/organizations");
+  revalidatePath("/super-admin/dashboard");
+  revalidatePath("/super-admin/users");
+  revalidatePath("/super-admin/audit-logs");
+}
+
+export async function superAdminDeleteUser(userId: string) {
+  const { user } = await ensureAdmin();
+  const admin = createAdminClient();
+
+  const { data: target } = await admin
+    .from("profiles")
+    .select("organization_id, email")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const orgId = target?.organization_id;
+
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  if (error) {
+    await admin.from("profiles").delete().eq("id", userId);
+  }
+
+  if (orgId) {
+    await admin.from("audit_logs").insert({
+      organization_id: orgId,
+      entity_type: "user",
+      entity_id: userId,
+      action: "user_deleted",
+      actor_id: user.id,
+      metadata: { deleted_email: target?.email },
+    });
+  }
+
+  revalidatePath("/super-admin/users");
+  revalidatePath("/super-admin/dashboard");
+  revalidatePath("/super-admin/audit-logs");
+}
+
+export async function superAdminResetPassword(email: string) {
+  const { user } = await ensureAdmin();
+  const admin = createAdminClient();
+
+  // Generate a password reset link via admin API
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+  });
+
+  if (error) throw error;
+
+  // Also audit log it
+  const { data: target } = await admin
+    .from("profiles")
+    .select("id, organization_id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (target) {
+    await admin.from("audit_logs").insert({
+      organization_id: target.organization_id,
+      entity_type: "user",
+      entity_id: target.id,
+      action: "password_reset_sent",
+      actor_id: user.id,
+      metadata: { target_email: email },
+    });
+  }
+
+  revalidatePath("/super-admin/users");
+  revalidatePath("/super-admin/audit-logs");
+
+  return { success: true, email };
+}
+
+export async function superAdminUpdateUserRole(userId: string, role: string) {
+  const { user } = await ensureAdmin();
+  const admin = createAdminClient();
+
+  const { data: target } = await admin
+    .from("profiles")
+    .select("organization_id, email, user_role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const { error } = await admin
+    .from("profiles")
+    .update({ user_role: role })
+    .eq("id", userId);
+
+  if (error) throw error;
+
+  if (target?.organization_id) {
+    await admin.from("audit_logs").insert({
+      organization_id: target.organization_id,
+      entity_type: "user",
+      entity_id: userId,
+      action: "role_changed",
+      actor_id: user.id,
+      metadata: {
+        target_email: target.email,
+        old_role: target.user_role,
+        new_role: role,
+      },
+    });
+  }
+
+  revalidatePath("/super-admin/users");
+  revalidatePath("/super-admin/audit-logs");
+  revalidatePath("/admin/users");
+}
+
 export async function impersonateUser(userId: string) {
-  // Placeholder: implementing secure impersonation requires creating a temporary session token
-  // with the Supabase service role key and setting cookies. This is left as a TODO.
   throw new Error("Impersonation not implemented. Requires server session creation with SUPABASE_SERVICE_ROLE_KEY.");
 }
