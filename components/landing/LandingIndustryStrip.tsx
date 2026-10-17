@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { GlassTiltCard } from "@/components/landing/GlassTiltCard";
-import { StaggerContainer, StaggerItem } from "@/components/animations/ScrollAnimations";
 
 const INDUSTRIES = [
   {
@@ -28,9 +27,9 @@ const INDUSTRIES = [
 
 export function LandingIndustryStrip() {
   return (
-    <section className="py-12 sm:py-16 px-4 sm:px-6 bg-[#0a0a0e] border-b border-white/5 overflow-hidden">
+    <section className="py-14 sm:py-20 px-4 sm:px-6 bg-[#080808] border-b border-white/5 overflow-hidden">
       <div className="max-w-6xl mx-auto">
-        <p className="text-center text-[10px] font-black uppercase tracking-[0.25em] text-white/25 mb-6 sm:mb-8">
+        <p className="text-center text-[10px] font-black uppercase tracking-[0.28em] text-gold/60 mb-8 sm:mb-10">
           Built for every industry
         </p>
 
@@ -42,23 +41,22 @@ export function LandingIndustryStrip() {
             }}
             transition={{
               ease: "linear",
-              duration: 40,
+              duration: 35,
               repeat: Infinity,
             }}
           >
-            {/* Duplicate the array to ensure enough width for seamless 50% scroll.
-                12 items total -> 50% is 6 items -> perfectly loops back. */}
+            {/* 12 items total -> 50% is 6 items -> perfectly loops back. */}
             {[...INDUSTRIES, ...INDUSTRIES, ...INDUSTRIES, ...INDUSTRIES].map((photo, i) => (
               <IndustryCard
                 key={`${photo.src}-${i}`}
                 photo={photo}
-                className="w-[260px] sm:w-[300px] md:w-[360px] shrink-0"
+                className="w-[280px] sm:w-[330px] md:w-[380px] shrink-0"
               />
             ))}
           </motion.div>
-          {/* Fading edges to make the endless loop look cleaner */}
-          <div className="absolute inset-y-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-[#0a0a0e] to-transparent pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-[#0a0a0e] to-transparent pointer-events-none" />
+          {/* Fading edges to make the loop look seamless */}
+          <div className="absolute inset-y-0 left-0 w-12 sm:w-28 bg-gradient-to-r from-[#080808] to-transparent pointer-events-none z-20" />
+          <div className="absolute inset-y-0 right-0 w-12 sm:w-28 bg-gradient-to-l from-[#080808] to-transparent pointer-events-none z-20" />
         </div>
       </div>
     </section>
@@ -74,28 +72,46 @@ function IndustryCard({
 }) {
   return (
     <GlassTiltCard intensity={8} className={className}>
-      <div className="relative h-40 sm:h-48 md:h-52 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 group cursor-default">
+      <div className="relative h-48 sm:h-56 md:h-64 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 group cursor-default shadow-2xl">
         <Image
           src={photo.src}
           alt={photo.alt}
           fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          sizes="400px"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          sizes="450px"
+          priority={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-br from-gold/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-gold/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+        {/* Top Tag: Industry Operation Type */}
+        <div className="absolute top-3.5 left-3.5 sm:top-4 sm:left-4 z-10">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-black uppercase tracking-wider text-white/90 shadow-md">
+            {photo.alt}
+          </span>
+        </div>
+
+        {/* Top Right Live Indicator */}
+        <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse z-10" />
+
+        {/* Bottom Details */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 z-10">
           <motion.p
-            className="text-sm sm:text-base font-black uppercase tracking-widest text-white mb-1"
+            className="text-lg sm:text-xl font-black uppercase tracking-wider text-white mb-1 drop-shadow-sm"
             initial={false}
           >
             {photo.label}
           </motion.p>
-          <p className="text-[10px] font-bold text-gold/70 uppercase tracking-wider">{photo.stat}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-black text-gold uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              {photo.stat}
+            </p>
+            <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">
+              Verified Network
+            </span>
+          </div>
         </div>
-
-        <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse" />
       </div>
     </GlassTiltCard>
   );

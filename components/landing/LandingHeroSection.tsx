@@ -40,8 +40,8 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
 
       <div className="absolute inset-0 noise-overlay z-[2] pointer-events-none" />
 
-      <div className="relative z-[3] w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 pt-2 sm:pt-4">
-        <div className="flex-1 text-center lg:text-left lg:pl-4 xl:pl-12 w-full">
+      <div className="relative z-[3] w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 pt-2 sm:pt-4">
+        <div className="flex-1 text-center lg:text-left lg:pl-4 xl:pl-12 w-full max-w-2xl mx-auto lg:mx-0">
           <FadeUpOnScroll>
             <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-display font-bold tracking-tight mb-6 sm:mb-8 leading-[1.06] md:leading-[1.02]">
               <span className="text-white">24/7 </span>
@@ -116,7 +116,8 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
           </FadeUpOnScroll>
         </div>
 
-        <div className="flex-1 w-full lg:max-w-[600px] xl:max-w-[640px]">
+        {/* Demo — responsive right column */}
+        <div className="w-full lg:flex-1 lg:max-w-[580px] xl:max-w-[640px] shrink-0">
           <LandingHeroPreview />
         </div>
       </div>

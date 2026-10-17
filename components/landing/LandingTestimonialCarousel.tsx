@@ -13,7 +13,7 @@ const TESTIMONIALS = [
     name: "Marcus Chen",
     role: "Operations Director",
     company: "Harbor Kitchen Group",
-    image: "/landing/testimonial-portrait.jpg",
+    image: "/landing/testimonial-marcus.jpg",
   },
   {
     quote:
@@ -21,7 +21,7 @@ const TESTIMONIALS = [
     name: "Dr. Sarah Okonkwo",
     role: "Nursing Manager",
     company: "Northside Medical",
-    image: "/landing/healthcare-team.jpg",
+    image: "/landing/testimonial-sarah.jpg",
   },
   {
     quote:
@@ -29,7 +29,7 @@ const TESTIMONIALS = [
     name: "James Rivera",
     role: "Regional Ops Lead",
     company: "Urban Retail Co.",
-    image: "/landing/retail-floor.jpg",
+    image: "/landing/testimonial-james.jpg",
   },
 ];
 

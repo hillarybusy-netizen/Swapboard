@@ -89,7 +89,7 @@ export function LandingWorkerDashboardMock() {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row h-full min-h-[580px] max-h-[640px] bg-[#050505] text-left select-text relative overflow-hidden text-white font-sans">
+    <div className="flex h-full bg-[#050505] text-left select-text relative overflow-hidden text-white font-sans">
       {/* Toast Notification in Mock */}
       {toastMessage && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-gold text-[#050505] text-xs font-black shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -98,23 +98,23 @@ export function LandingWorkerDashboardMock() {
         </div>
       )}
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-52 lg:w-56 bg-[#050505] border-r border-white/5 relative shrink-0">
+      {/* Sidebar — always visible, icon-only on small frames, labeled on larger */}
+      <aside className="flex flex-col w-14 sm:w-48 lg:w-52 bg-[#050505] border-r border-white/5 relative shrink-0 transition-all duration-300">
         <div className="absolute inset-0 bg-mesh opacity-20 -z-10 pointer-events-none" />
 
         {/* Brand Header */}
-        <div className="py-5 px-6 border-b border-white/5 flex items-center gap-3">
-          <div className="w-9 h-9 relative flex items-center justify-center shrink-0">
-            <Image src="/logo.png" alt="Swapboard" fill className="object-contain" sizes="36px" />
+        <div className="py-4 px-2 sm:px-5 border-b border-white/5 flex items-center gap-2.5 justify-center sm:justify-start">
+          <div className="w-8 h-8 relative flex items-center justify-center shrink-0">
+            <Image src="/logo.png" alt="Swapboard" fill className="object-contain" sizes="32px" />
           </div>
-          <div>
+          <div className="hidden sm:block">
             <span className="text-sm font-black tracking-tight text-white block">SwapBoard</span>
-            <span className="text-[9px] font-bold uppercase tracking-wider text-gold/70 block">Demo Workspace</span>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-gold/70 block">Demo</span>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 px-3 space-y-1.5 mt-4 overflow-y-auto no-scrollbar">
+        <nav className="flex-1 px-1.5 sm:px-3 space-y-1 mt-3 overflow-y-auto no-scrollbar">
           {navItems.map(({ key, label, icon: Icon, badge }) => {
             const active = activeTab === key;
             return (
@@ -122,36 +122,40 @@ export function LandingWorkerDashboardMock() {
                 key={key}
                 onClick={() => setActiveTab(key)}
                 className={cn(
-                  "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left",
+                  "w-full flex items-center justify-center sm:justify-between px-2 sm:px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all",
                   active
                     ? "bg-gold/10 text-gold shadow-sm shadow-gold/5 border border-gold/20"
                     : "text-white/40 hover:text-white hover:bg-white/5 border border-transparent"
                 )}
+                title={label}
               >
                 <div className="flex items-center gap-2.5">
                   <Icon className={cn("w-4 h-4 shrink-0 transition-transform", active && "scale-110 text-gold")} />
-                  <span>{label}</span>
+                  <span className="hidden sm:inline">{label}</span>
                 </div>
                 {Boolean(badge && badge > 0) && (
-                  <span className="flex h-4 min-w-4 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[9px] font-black">
+                  <span className="hidden sm:flex h-4 min-w-4 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[9px] font-black">
                     {badge}
                   </span>
+                )}
+                {Boolean(badge && badge > 0) && (
+                  <span className="sm:hidden absolute top-0 right-0 w-2 h-2 rounded-full bg-gold" />
                 )}
               </button>
             );
           })}
         </nav>
 
-        {/* Worker Session Footprint */}
-        <div className="p-3 border-t border-white/5">
+        {/* Worker Session Footer */}
+        <div className="p-2 sm:p-3 border-t border-white/5">
           <button
             onClick={() => setActiveTab("profile")}
-            className="w-full rounded-2xl p-2.5 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all text-left flex items-center gap-2.5"
+            className="w-full rounded-xl p-2 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all flex items-center justify-center sm:justify-start gap-2.5"
           >
-            <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-black border border-gold/20 shrink-0">
+            <div className="w-7 h-7 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-black border border-gold/20 shrink-0">
               {PROFILE.initial}
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="hidden sm:block flex-1 min-w-0 text-left">
               <p className="text-xs font-bold text-white truncate">{PROFILE.name}</p>
               <p className="text-[9px] text-white/30 font-medium truncate">{PROFILE.role}</p>
             </div>
@@ -159,26 +163,11 @@ export function LandingWorkerDashboardMock() {
         </div>
       </aside>
 
-      {/* Main Content Area — Fully Scrollable */}
-      <div className="flex-1 relative flex flex-col min-w-0 h-full overflow-hidden">
-        {/* Mobile Mock Top Header */}
-        <div className="md:hidden flex items-center justify-between p-3.5 border-b border-white/5 bg-[#050505]/90 backdrop-blur-md shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 relative">
-              <Image src="/logo.png" alt="" fill className="object-contain" sizes="28px" />
-            </div>
-            <span className="text-xs font-black text-white">Harbor Kitchen</span>
-          </div>
-          <button
-            onClick={() => setActiveTab("profile")}
-            className="w-7 h-7 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-gold text-xs font-black"
-          >
-            {PROFILE.initial}
-          </button>
-        </div>
 
-        {/* Scrollable Viewport */}
-        <main className="flex-1 w-full px-4 sm:px-8 py-6 overflow-y-auto no-scrollbar">
+      {/* Main Content Area — Fully Responsive & Scrollable */}
+      <div className="flex-1 relative flex flex-col min-w-0 h-full overflow-hidden">
+        {/* Scrollable Viewport with Smooth Scrolling */}
+        <main className="flex-1 w-full px-3 sm:px-6 lg:px-7 py-4 sm:py-6 overflow-y-auto no-scrollbar">
           {activeTab === "home" && (
             <HomeView
               onNavigate={(tab) => setActiveTab(tab)}
@@ -226,30 +215,6 @@ export function LandingWorkerDashboardMock() {
 
           {activeTab === "profile" && <ProfileView onSaved={() => showToast("Profile preferences updated!")} />}
         </main>
-
-        {/* Mobile Bottom Navigation */}
-        <nav className="md:hidden shrink-0 bg-[#080808] border-t border-white/5 px-2 py-2 flex items-center justify-around">
-          {[
-            { key: "home" as TabType, label: "Home", icon: Home },
-            { key: "shifts" as TabType, label: "Shifts", icon: CalendarDays },
-            { key: "available" as TabType, label: "Available", icon: Zap },
-            { key: "swap" as TabType, label: "Swap", icon: RefreshCw },
-            { key: "team" as TabType, label: "Team", icon: Users },
-            { key: "profile" as TabType, label: "Profile", icon: User },
-          ].map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={cn(
-                "flex flex-col items-center gap-1 p-1 text-[10px] font-bold transition-colors",
-                activeTab === key ? "text-gold" : "text-white/40 hover:text-white"
-              )}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{label}</span>
-            </button>
-          ))}
-        </nav>
       </div>
 
       {/* Post Shift for Swap Mock Modal */}
