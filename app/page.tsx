@@ -19,61 +19,13 @@ import { LandingIndustryStrip } from "@/components/landing/LandingIndustryStrip"
 import { LandingTestimonialCarousel } from "@/components/landing/LandingTestimonialCarousel";
 import { LandingHowItWorks } from "@/components/landing/LandingHowItWorks";
 import { GlassTiltCard } from "@/components/landing/GlassTiltCard";
-import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
+
+
 
 import { createClient } from "@/lib/supabase/server";
 import { LandingNavbar } from "@/components/layout/LandingNavbar";
 
 
-const FeatureContent = ({ desc }: { desc: string }) => {
-  return (
-    <div className="glass glass-shine border border-white/10 p-8 md:p-12 rounded-[2rem] shadow-2xl relative overflow-hidden">
-      <div className="absolute inset-0 bg-mesh opacity-5 pointer-events-none" />
-      <p className="text-white/80 text-lg md:text-2xl font-sans max-w-3xl mx-auto leading-relaxed relative z-10 text-center font-medium">
-        {desc}
-      </p>
-    </div>
-  );
-};
-
-const CAROUSEL_FEATURES = [
-  {
-    category: "Operations",
-    title: "Instant swap requests",
-    iconKey: "RefreshCw",
-    content: <FeatureContent desc="Workers post swap requests in seconds. Eligible colleagues get notified immediately via push." />,
-  },
-  {
-    category: "Management",
-    title: "One-tap approvals",
-    iconKey: "Clock",
-    content: <FeatureContent desc="Managers approve or reject swaps from their lock screen. No back-and-forth calls needed." />,
-  },
-  {
-    category: "Insights",
-    title: "ROI analytics",
-    iconKey: "BarChart3",
-    content: <FeatureContent desc="See exactly how much you've saved in overtime costs and manager time every single week." />,
-  },
-  {
-    category: "Structure",
-    title: "Multi-department",
-    iconKey: "Users",
-    content: <FeatureContent desc="Restaurant, healthcare, retail — set up departments and roles that match your exact structure." />,
-  },
-  {
-    category: "Security",
-    title: "Compliance ready",
-    iconKey: "Shield",
-    content: <FeatureContent desc="Full audit trail of every swap. Stay compliant with labour regulations effortlessly." />,
-  },
-  {
-    category: "Growth",
-    title: "Trial tracking",
-    iconKey: "TrendingUp",
-    content: <FeatureContent desc="14-day trial with built-in feedback collection so you can prove ROI to leadership fast." />,
-  },
-];
 
 export default async function LandingPage() {
   // The middleware refreshes the Supabase token on every request, so
@@ -119,35 +71,99 @@ export default async function LandingPage() {
       <LandingAnimatedStats />
       <LandingIndustryStrip />
 
-      {/* Features */}
-      <section id="features" className="py-20 sm:py-32 bg-[#080808] relative section-glow-top">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gold/[0.03] blur-[150px] pointer-events-none" />
-        <FadeUpOnScroll>
-          <div className="text-center mb-12 sm:mb-16 relative">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold/50 mb-4">Platform capabilities</p>
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 tracking-tight px-2">
-              Built for <span className="text-gold-gradient">real operations</span>
-            </h2>
-            <p className="text-white/50 max-w-xl mx-auto text-base sm:text-lg px-4">
-              Whether you run a restaurant, hospital, or retail chain — SwapBoard adapts to your industry complexity.
-            </p>
-          </div>
-        </FadeUpOnScroll>
-        
-        <div className="w-full">
-          <Carousel items={CAROUSEL_FEATURES.map((card, index) => (
-            <Card 
-              key={card.title} 
-              card={{
-                title: card.title,
-                category: card.category,
-                iconKey: card.iconKey,
-                content: card.content
-              }} 
-              index={index} 
-              layout={true} 
-            />
-          ))} />
+      {/* Features — Bento Grid */}
+      <section id="features" className="py-20 sm:py-32 px-4 sm:px-6 bg-[#080808] relative section-glow-top overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-gold/[0.04] blur-[180px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto">
+          <FadeUpOnScroll>
+            <div className="text-center mb-14 sm:mb-20 relative">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold/50 mb-4">Platform capabilities</p>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-5 tracking-tight">
+                Built for <span className="text-gold-gradient">real operations</span>
+              </h2>
+              <p className="text-white/40 max-w-lg mx-auto text-base sm:text-lg font-medium px-4">
+                Whether you run a restaurant, hospital, or retail chain — SwapBoard adapts to your exact complexity.
+              </p>
+            </div>
+          </FadeUpOnScroll>
+
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {/* Card 1 — Large hero card */}
+            <StaggerItem className="lg:col-span-2">
+              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 sm:p-10 h-full min-h-[280px] flex flex-col justify-between hover:border-gold/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(212,175,55,0.06)]">
+                <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.04] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="absolute -top-20 -right-20 w-72 h-72 bg-gold/[0.06] rounded-full blur-[80px] group-hover:bg-gold/[0.1] transition-colors duration-700" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mb-6 group-hover:bg-gold/20 group-hover:scale-105 transition-all duration-300">
+                    <RefreshCw className="w-6 h-6 text-gold" />
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold/50 mb-2">Operations</p>
+                  <h3 className="text-2xl sm:text-3xl font-black text-white mb-3 tracking-tight">Instant swap requests</h3>
+                  <p className="text-white/40 text-sm sm:text-base leading-relaxed max-w-md font-medium">Workers post swap requests in seconds. Eligible colleagues are notified immediately. No group chats, no confusion — just clean, traceable requests.</p>
+                </div>
+                <div className="relative z-10 mt-6 flex items-center gap-2 text-gold/50 text-xs font-bold uppercase tracking-widest group-hover:text-gold transition-colors">
+                  <span>Reduce swap time by 85%</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </div>
+              </div>
+            </StaggerItem>
+
+            {/* Card 2 */}
+            <StaggerItem>
+              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 h-full min-h-[280px] flex flex-col justify-between hover:border-blue-500/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(59,130,246,0.05)]">
+                <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-blue-500/[0.08] rounded-full blur-[60px] group-hover:bg-blue-500/[0.15] transition-colors duration-700" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:bg-blue-500/20 group-hover:scale-105 transition-all duration-300">
+                    <Clock className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-blue-400/50 mb-2">Management</p>
+                  <h3 className="text-xl font-black text-white mb-3 tracking-tight">One-tap approvals</h3>
+                  <p className="text-white/40 text-sm leading-relaxed font-medium">Managers approve or reject swaps from their lock screen. No back-and-forth calls, no emails, no wasted time.</p>
+                </div>
+              </div>
+            </StaggerItem>
+
+            {/* Card 3 */}
+            <StaggerItem>
+              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 h-full min-h-[260px] flex flex-col justify-between hover:border-emerald-500/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(16,185,129,0.05)]">
+                <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/[0.08] rounded-full blur-[60px] group-hover:bg-emerald-500/[0.15] transition-colors duration-700" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 group-hover:bg-emerald-500/20 group-hover:scale-105 transition-all duration-300">
+                    <BarChart3 className="w-6 h-6 text-emerald-400" />
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400/50 mb-2">Insights</p>
+                  <h3 className="text-xl font-black text-white mb-3 tracking-tight">ROI analytics</h3>
+                  <p className="text-white/40 text-sm leading-relaxed font-medium">See exactly how much you've saved in overtime costs and manager hours — tracked automatically every week.</p>
+                </div>
+              </div>
+            </StaggerItem>
+
+            {/* Card 4 — Large hero card with two sub-features */}
+            <StaggerItem className="lg:col-span-2">
+              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 sm:p-10 h-full min-h-[260px] flex flex-col justify-between hover:border-purple-500/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(168,85,247,0.05)]">
+                <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-purple-500/[0.06] rounded-full blur-[100px] group-hover:bg-purple-500/[0.12] transition-colors duration-700" />
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-start gap-8">
+                  <div className="flex-1">
+                    <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 group-hover:bg-purple-500/20 group-hover:scale-105 transition-all duration-300">
+                      <Shield className="w-6 h-6 text-purple-400" />
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-400/50 mb-2">Security</p>
+                    <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Compliance ready</h3>
+                    <p className="text-white/40 text-sm leading-relaxed font-medium">Full audit trail for every swap. Certifications, role validation, and shift overlap detection — all automated. Stay compliant without lifting a finger.</p>
+                  </div>
+                  <div className="flex-1 sm:border-l sm:border-white/5 sm:pl-8">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-gold/10 group-hover:border-gold/20 group-hover:scale-105 transition-all duration-300">
+                      <Users className="w-6 h-6 text-white/50 group-hover:text-gold transition-colors" />
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/30 mb-2">Structure</p>
+                    <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Multi-department</h3>
+                    <p className="text-white/40 text-sm leading-relaxed font-medium">Set up departments, roles, and certifications that match your exact org structure — from restaurant to hospital ward.</p>
+                  </div>
+                </div>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
       </section>
 
