@@ -30,9 +30,9 @@ function swapStatusBadge(status: string) {
     worker_accepted: { label: "Cover Found", color: "text-blue-400 bg-blue-500/10 border-blue-500/20", icon: UserCheck },
     manager_approved: { label: "Approved ✓", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20", icon: CheckCircle2 },
     rejected: { label: "Rejected", color: "text-red-400 bg-red-500/10 border-red-500/20", icon: XCircle },
-    cancelled: { label: "Cancelled", color: "text-white/25 bg-white/5 border-white/10", icon: XCircle },
+    cancelled: { label: "Cancelled", color: "text-white/40 bg-white/5 border-white/10", icon: XCircle },
   };
-  return map[status] ?? { label: status, color: "text-white/40 bg-white/5 border-white/5", icon: Clock };
+  return map[status] ?? { label: status, color: "text-white/55 bg-white/5 border-white/5", icon: Clock };
 }
 
 export default async function SwapPage({
@@ -114,10 +114,10 @@ export default async function SwapPage({
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-white mb-1">
+          <h1 className="text-3xl font-semibold tracking-tight text-white mb-1">
             Swap Board
           </h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-white/45">
             Post shifts · Claim cover · Manage exchanges
           </p>
         </div>
@@ -125,7 +125,7 @@ export default async function SwapPage({
           href="/swap/history"
           className="relative flex items-center justify-center w-11 h-11 rounded-2xl glass border border-white/10 hover:border-gold/30 hover:bg-gold/5 transition-all duration-200 shrink-0 mt-1 group"
         >
-          <ClipboardList className="w-5 h-5 text-white/40 group-hover:text-gold transition-colors" />
+          <ClipboardList className="w-5 h-5 text-white/55 group-hover:text-gold transition-colors" />
           <SwapHistoryBadge historyItems={swapHistory} />
         </Link>
       </div>
@@ -133,15 +133,14 @@ export default async function SwapPage({
       {/* Post for Swap — pre-filled if ?post= is set */}
       {postShift && (
         <div className="glass rounded-2xl p-5 border border-gold/25 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gold/8 blur-3xl rounded-full" />
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center">
                 <PlusCircle className="w-4 h-4 text-gold" />
               </div>
               <div>
-                <p className="text-sm font-black text-gold">Post This Shift for Swap</p>
-                <p className="text-[11px] text-white/40 font-medium">
+                <p className="text-sm font-semibold text-gold">Post This Shift for Swap</p>
+                <p className="text-[11px] text-white/55 font-medium">
                   {postShift.title} · {formatShiftDate(postShift.start_time, tz)}
                 </p>
               </div>
@@ -159,10 +158,10 @@ export default async function SwapPage({
       {/* Section A: My Swap Requests */}
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-white/55 flex items-center gap-2">
             <RefreshCw className="w-3.5 h-3.5" /> Active Swaps
           </h2>
-          <span className="text-[10px] font-bold text-white/20 bg-white/5 px-2.5 py-1 rounded-full">
+          <span className="text-[11px] font-bold text-white/35 bg-white/5 px-2.5 py-1 rounded-full">
             {mySwaps.length}
           </span>
         </div>
@@ -170,8 +169,8 @@ export default async function SwapPage({
         {mySwaps.length === 0 ? (
           <div className="glass rounded-2xl p-8 text-center border border-white/5">
             <Inbox className="w-8 h-8 text-white/15 mx-auto mb-3" />
-            <p className="text-sm font-bold text-white/30">No swap requests yet</p>
-            <p className="text-[11px] text-white/20 mt-1">
+            <p className="text-sm font-bold text-white/45">No swap requests yet</p>
+            <p className="text-[11px] text-white/35 mt-1">
               Go to My Shifts and tap &ldquo;Post for Swap&rdquo; on any upcoming shift.
             </p>
           </div>
@@ -196,7 +195,7 @@ export default async function SwapPage({
                             className="w-1.5 h-1.5 rounded-full"
                             style={{ backgroundColor: swap.shift.department.color || "#d4af37" }}
                           />
-                          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                          <span className="text-[11px] font-bold text-white/45 uppercase tracking-wider">
                             {swap.shift.department.name}
                           </span>
                         </div>
@@ -204,7 +203,7 @@ export default async function SwapPage({
                     </div>
                     <span
                       className={cn(
-                        "shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                        "shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-wider border",
                         badge.color
                       )}
                     >
@@ -215,11 +214,11 @@ export default async function SwapPage({
 
                   {swap.shift && (
                     <div className="flex flex-wrap gap-3 mb-3">
-                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
+                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/55">
                         <Calendar className="w-3.5 h-3.5" />
                         {formatShiftDate(swap.shift.start_time, tz)}
                       </span>
-                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
+                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/55">
                         <Clock className="w-3.5 h-3.5" />
                         {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                       </span>
@@ -227,7 +226,7 @@ export default async function SwapPage({
                   )}
 
                   {swap.reason && (
-                    <p className="text-[11px] text-white/30 italic mb-3">
+                    <p className="text-[11px] text-white/45 italic mb-3">
                       &ldquo;{swap.reason}&rdquo;
                     </p>
                   )}
@@ -250,7 +249,7 @@ export default async function SwapPage({
                   )}
 
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                    <span className="text-[11px] font-bold text-white/35 uppercase tracking-wider">
                       {timeAgo(swap.requested_at)}
                     </span>
                     {swap.status === "pending" && (
@@ -270,10 +269,10 @@ export default async function SwapPage({
       {/* Section B: Available Swaps to Claim */}
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-gold/50 flex items-center gap-2">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-gold/50 flex items-center gap-2">
             <UserCheck className="w-3.5 h-3.5" /> Available to Cover
           </h2>
-          <span className="text-[10px] font-bold text-white/20 bg-white/5 px-2.5 py-1 rounded-full">
+          <span className="text-[11px] font-bold text-white/35 bg-white/5 px-2.5 py-1 rounded-full">
             {availableSwaps.length} open
           </span>
         </div>
@@ -281,8 +280,8 @@ export default async function SwapPage({
         {availableSwaps.length === 0 ? (
           <div className="glass rounded-2xl p-8 text-center border border-white/5">
             <ArrowLeftRight className="w-8 h-8 text-white/15 mx-auto mb-3" />
-            <p className="text-sm font-bold text-white/30">No swaps available</p>
-            <p className="text-[11px] text-white/20 mt-1">
+            <p className="text-sm font-bold text-white/45">No swaps available</p>
+            <p className="text-[11px] text-white/35 mt-1">
               No one in your department needs cover right now.
             </p>
           </div>
@@ -293,17 +292,16 @@ export default async function SwapPage({
                 key={swap.id}
                 className="glass rounded-2xl p-5 border border-gold/15 bg-gold/3 relative overflow-hidden group hover:border-gold/30 transition-all duration-300 scroll-item"
               >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gold/8 blur-3xl rounded-full -z-10 group-hover:bg-gold/15 transition-colors duration-500" />
 
                 {/* Requester */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold text-sm font-black border border-gold/20 shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold text-sm font-semibold border border-gold/20 shrink-0">
                     {swap.requester?.full_name?.charAt(0) ?? "?"}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white leading-tight">
                       {swap.requester?.full_name ?? "A teammate"}{" "}
-                      <span className="text-white/40 font-medium">needs cover</span>
+                      <span className="text-white/55 font-medium">needs cover</span>
                     </p>
                     {swap.reason && (
                       <p className="text-[11px] text-gold/50 font-medium italic mt-0.5">
@@ -318,11 +316,11 @@ export default async function SwapPage({
                   <div className="p-4 rounded-2xl bg-[#050505]/50 border border-white/5 space-y-2.5 mb-4">
                     <p className="text-sm font-bold text-white">{swap.shift.title}</p>
                     <div className="flex flex-wrap gap-3">
-                      <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
+                      <div className="flex items-center gap-2 text-[11px] font-bold text-white/55 uppercase tracking-wider">
                         <Calendar className="w-3.5 h-3.5" />
                         {formatShiftDate(swap.shift.start_time, tz)}
                       </div>
-                      <div className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase tracking-widest">
+                      <div className="flex items-center gap-2 text-[11px] font-bold text-white/55 uppercase tracking-wider">
                         <Clock className="w-3.5 h-3.5" />
                         {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                       </div>
@@ -333,7 +331,7 @@ export default async function SwapPage({
                           className="w-1.5 h-1.5 rounded-full"
                           style={{ backgroundColor: swap.shift.department.color || "#d4af37" }}
                         />
-                        <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">
+                        <span className="text-[11px] font-bold text-white/40 uppercase tracking-wider">
                           {swap.shift.department.name}
                         </span>
                       </div>

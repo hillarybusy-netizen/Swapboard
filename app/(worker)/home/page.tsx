@@ -51,19 +51,19 @@ function calcProfileCompletion(profile: any): {
 function shiftStatusBadge(status: string) {
   const map: Record<string, { label: string; color: string }> = {
     not_started: { label: "Upcoming", color: "text-white/50 bg-white/10" },
-    started: { label: "In Progress", color: "text-blue-400 bg-blue-500/15 shadow-[0_0_12px_rgba(59,130,246,0.2)]" },
+    started: { label: "In Progress", color: "text-blue-400 bg-blue-500/15" },
     up_for_swap: { label: "Up for Swap", color: "text-purple-400 bg-purple-500/15" },
     pending_approval_claim: { label: "Claim Pending", color: "text-yellow-400 bg-yellow-500/10" },
     pending_approval_swap: { label: "Swap Pending", color: "text-yellow-400 bg-yellow-500/10" },
-    swapped: { label: "Swapped", color: "text-white/30 bg-white/5" },
+    swapped: { label: "Swapped", color: "text-white/45 bg-white/5" },
     overdue_not_done: { label: "Overdue", color: "text-orange-400 bg-orange-500/15" },
     done_pending_approval: { label: "Awaiting Approval", color: "text-yellow-400 bg-yellow-500/10" },
     done_manager_approved: { label: "Completed ✓", color: "text-emerald-400 bg-emerald-500/15" },
     done_rejected: { label: "Rejected", color: "text-red-400 bg-red-500/15" },
     no_show: { label: "No-Show", color: "text-red-400 bg-red-500/15" },
-    cancelled: { label: "Cancelled", color: "text-white/20 bg-white/5" },
+    cancelled: { label: "Cancelled", color: "text-white/35 bg-white/5" },
   };
-  return map[status] ?? { label: status, color: "text-white/40 bg-white/5" };
+  return map[status] ?? { label: status, color: "text-white/55 bg-white/5" };
 }
 
 export default async function HomePage() {
@@ -184,13 +184,13 @@ export default async function HomePage() {
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
       {/* Header */}
       <div className="space-y-1">
-        <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-gold/50">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-gold/50">
           {orgName}
         </p>
-        <h1 className="text-3xl font-black tracking-tight text-white">
+        <h1 className="text-3xl font-semibold tracking-tight text-white">
           {greeting}, {firstName} 👋
         </h1>
-        <p className="text-sm text-white/40 font-medium">
+        <p className="text-sm text-white/55 font-medium">
           Here&apos;s what&apos;s happening with your shifts today.
         </p>
       </div>
@@ -199,23 +199,22 @@ export default async function HomePage() {
       {profilePct < 100 && (
         <Link href="/my-profile" className="block">
           <div className="glass rounded-2xl p-5 border border-gold/20 relative overflow-hidden group hover:border-gold/40 transition-all duration-300">
-            <div className="absolute right-0 top-0 w-40 h-40 bg-gold/5 blur-3xl group-hover:bg-gold/10 transition-all rounded-full" />
             <div className="flex items-start justify-between mb-3 relative z-10">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-3.5 h-3.5 text-gold" />
-                  <span className="text-xs font-black text-gold uppercase tracking-widest">
+                  <span className="text-xs font-semibold text-gold uppercase tracking-wider">
                     Complete Your Profile
                   </span>
                 </div>
-                <p className="text-[11px] text-white/40 font-medium">
+                <p className="text-[11px] text-white/55 font-medium">
                   {profileMissing.length > 0
                     ? `Missing: ${profileMissing.slice(0, 2).join(", ")}${profileMissing.length > 2 ? ` +${profileMissing.length - 2} more` : ""}`
                     : "All done!"}
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-black text-gold">{profilePct}%</span>
+                <span className="text-2xl font-semibold text-gold">{profilePct}%</span>
                 <ChevronRight className="w-4 h-4 text-gold/40" />
               </div>
             </div>
@@ -246,10 +245,10 @@ export default async function HomePage() {
             text-center group hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200
           "
         >
-          <div className="w-10 h-10 rounded-xl bg-[#050505]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-[#050505]/20 flex items-center justify-center transition-transform">
             <ArrowLeftRight className="w-5 h-5 text-[#050505]" strokeWidth={2.5} />
           </div>
-          <span className="text-[11px] font-black text-[#050505] uppercase tracking-widest leading-tight">
+          <span className="text-[11px] font-semibold text-[#050505] uppercase tracking-wider leading-tight">
             Post Shift for Swap
           </span>
         </Link>
@@ -264,15 +263,15 @@ export default async function HomePage() {
           "
         >
           {totalAvailableShifts > 0 && (
-            <span className="absolute top-3 right-3 flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[10px] font-black shadow-lg shadow-gold/20">
+            <span className="absolute top-3 right-3 flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[11px] font-semibold shadow-lg">
               {totalAvailableShifts}
             </span>
           )}
-          <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center transition-transform">
             <Zap className="w-5 h-5 text-gold" strokeWidth={2} />
           </div>
           <div className="space-y-0.5">
-            <span className="block text-[11px] font-black text-gold uppercase tracking-widest leading-tight">
+            <span className="block text-[11px] font-semibold text-gold uppercase tracking-wider leading-tight">
               Available Shifts
             </span>
           </div>
@@ -282,12 +281,12 @@ export default async function HomePage() {
       {/* Current & Upcoming Shifts */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-white/55">
             Current & Upcoming Shifts
           </h2>
           <Link
             href="/my-shifts"
-            className="text-[10px] font-bold text-gold/60 hover:text-gold transition-colors flex items-center gap-1"
+            className="text-[11px] font-bold text-gold/60 hover:text-gold transition-colors flex items-center gap-1"
           >
             View all <ChevronRight className="w-3 h-3" />
           </Link>
@@ -296,8 +295,8 @@ export default async function HomePage() {
         {upcomingShifts.length === 0 ? (
           <div className="glass rounded-2xl p-8 text-center border border-white/5">
             <Calendar className="w-8 h-8 text-white/15 mx-auto mb-3" />
-            <p className="text-sm font-bold text-white/30">No current or upcoming shifts</p>
-            <p className="text-[11px] text-white/20 mt-1">Check the swap board for available shifts</p>
+            <p className="text-sm font-bold text-white/45">No current or upcoming shifts</p>
+            <p className="text-[11px] text-white/35 mt-1">Check the swap board for available shifts</p>
           </div>
         ) : (
           <UpcomingShiftsList upcomingShifts={upcomingShifts} tz={tz} />
@@ -309,7 +308,7 @@ export default async function HomePage() {
         <div className="space-y-3">
           <div className="flex items-center gap-2 px-1">
             <Bell className="w-3.5 h-3.5 text-gold/60" />
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-white/55">
               Swap Activity
             </h2>
           </div>
@@ -330,13 +329,13 @@ export default async function HomePage() {
                   <p className="text-sm font-bold text-white leading-tight">
                     {swap.shift?.title ?? "Your shift"}
                   </p>
-                  <p className="text-[11px] text-white/40 font-medium mt-0.5">
+                  <p className="text-[11px] text-white/55 font-medium mt-0.5">
                     {swap.status === "pending" && "Awaiting someone to claim your swap"}
                     {swap.status === "worker_accepted" &&
                       `${swap.covering_worker?.full_name || "Someone"} offered to cover — awaiting manager`}
                   </p>
                   {swap.shift?.start_time && (
-                    <p className="text-[10px] text-white/25 font-bold uppercase tracking-widest mt-1">
+                    <p className="text-[11px] text-white/40 font-bold uppercase tracking-wider mt-1">
                       {formatShiftDate(swap.shift.start_time, tz)} · {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}
                     </p>
                   )}
@@ -345,7 +344,7 @@ export default async function HomePage() {
                   href="/swap"
                   className="shrink-0 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
                 >
-                  <ChevronRight className="w-4 h-4 text-white/30" />
+                  <ChevronRight className="w-4 h-4 text-white/45" />
                 </Link>
               </div>
             ))}

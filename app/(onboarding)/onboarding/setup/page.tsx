@@ -97,7 +97,7 @@ export default function SetupPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center gap-2 mb-4 md:mb-5 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+      <div className="flex items-center gap-2 mb-4 md:mb-5 text-[11px] md:text-[11px] font-semibold uppercase tracking-wider text-white/35">
         <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-1.5">
           <ChevronLeft className="w-3 h-3" /> Back
         </button>
@@ -108,21 +108,21 @@ export default function SetupPage() {
       </div>
 
       <div className="mb-5 md:mb-6">
-        <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-white mb-2 leading-tight">
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tighter text-white mb-2 leading-tight">
           Initialize{" "}
           <span className="text-gold-gradient">Your Workspace</span>
         </h1>
-        <p className="text-white/40 text-sm font-medium max-w-lg">
+        <p className="text-white/55 text-sm font-medium max-w-lg">
           Personalize your organization structure. We&apos;ve suggested a blueprint based on your industry selection.
         </p>
       </div>
 
       <form onSubmit={handleNext} className="space-y-4 md:space-y-5">
         {/* Org name */}
-        <div className="glass rounded-[1.25rem] md:rounded-[1.5rem] border border-white/5 p-5 md:p-6 space-y-4">
+        <div className="glass rounded-[1.25rem] md:rounded-2xl border border-white/5 p-5 md:p-6 space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-1 h-5 bg-gold rounded-full" />
-            <h2 className="font-black text-white uppercase tracking-widest text-[10px] md:text-[11px]">Identity</h2>
+            <h2 className="font-semibold text-white uppercase tracking-wider text-[11px] md:text-[11px]">Identity</h2>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="orgName" className="text-[11px] md:text-xs font-bold text-white/50 ml-1">
@@ -140,18 +140,18 @@ export default function SetupPage() {
         </div>
 
         {/* Departments */}
-        <div className="glass rounded-[1.25rem] md:rounded-[1.5rem] border border-white/5 p-5 md:p-6 space-y-4">
+        <div className="glass rounded-[1.25rem] md:rounded-2xl border border-white/5 p-5 md:p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-1 h-5 bg-gold rounded-full" />
-              <h2 className="font-black text-white uppercase tracking-widest text-[10px] md:text-[11px]">Departments</h2>
+              <h2 className="font-semibold text-white uppercase tracking-wider text-[11px] md:text-[11px]">Departments</h2>
             </div>
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={addDept}
-              className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[9px] md:text-[10px] uppercase tracking-widest px-2 md:px-3"
+              className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[11px] md:text-[11px] uppercase tracking-wider px-2 md:px-3"
             >
               <Plus className="w-3 h-3 mr-1.5" />
               <span className="hidden sm:inline">Add Department</span>
@@ -169,7 +169,7 @@ export default function SetupPage() {
                 )}
               >
                 <div
-                  className="w-4 h-4 rounded-full shrink-0 border border-white/10 shadow-[0_0_10px_rgba(0,0,0,0.4)]"
+                  className="w-4 h-4 rounded-full shrink-0 border border-white/10"
                   style={{ backgroundColor: dept.color }}
                 />
                 <Input
@@ -181,7 +181,7 @@ export default function SetupPage() {
                 <button
                   type="button"
                   onClick={() => removeDept(i)}
-                  className="text-white/20 hover:text-red-400 transition-colors p-1.5 shrink-0"
+                  className="text-white/35 hover:text-red-400 transition-colors p-1.5 shrink-0"
                   aria-label="Remove department"
                 >
                   <X className="w-4 h-4" />
@@ -190,7 +190,7 @@ export default function SetupPage() {
             ))}
           </div>
 
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest px-1">
+          <p className="text-[11px] font-bold text-white/35 uppercase tracking-wider px-1">
             Additional departments can be configured in Settings later.
           </p>
         </div>
@@ -200,13 +200,13 @@ export default function SetupPage() {
             type="button"
             variant="ghost"
             onClick={() => router.back()}
-            className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest"
+            className="text-white/55 hover:text-white font-bold text-xs uppercase tracking-wider"
           >
             Previous Step
           </Button>
           <Button
             type="submit"
-            className="h-12 px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 active:scale-95 transition-all"
+            className="h-12 px-8 btn-gold rounded-full text-sm font-semibold uppercase tracking-wider gap-3 shadow-2xl active:scale-95 transition-all"
           >
             Continue <ChevronRight className="w-4 h-4" />
           </Button>

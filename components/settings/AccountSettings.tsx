@@ -42,18 +42,18 @@ export function AccountSettings({ profile, userEmail }: AccountSettingsProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-black text-white tracking-tight">Your Account</h2>
-        <p className="text-sm text-white/40 mt-1">Manage your personal profile and login details</p>
+        <h2 className="text-xl font-semibold text-white tracking-tight">Your Account</h2>
+        <p className="text-sm text-white/55 mt-1">Manage your personal profile and login details</p>
       </div>
 
       <div className="glass rounded-2xl border border-white/5 p-5 space-y-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/20 flex items-center justify-center text-gold font-black">
+          <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/20 flex items-center justify-center text-gold font-semibold">
             {profile.full_name?.charAt(0)?.toUpperCase() ?? "?"}
           </div>
           <div>
             <p className="text-sm font-bold text-white">{profile.full_name ?? "Admin"}</p>
-            <p className="text-[10px] font-black uppercase tracking-widest text-gold/70">{profile.user_role}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-gold/70">{profile.user_role}</p>
           </div>
         </div>
         {userEmail && (
@@ -140,7 +140,7 @@ export function AccountSettings({ profile, userEmail }: AccountSettingsProps) {
         <Button
           type="submit"
           disabled={isPending}
-          className="btn-gold rounded-full px-8 h-11 text-xs font-black uppercase tracking-widest"
+          className="btn-gold rounded-full px-8 h-11 text-xs font-semibold uppercase tracking-wider"
         >
           {isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
           Save Account
@@ -150,11 +150,11 @@ export function AccountSettings({ profile, userEmail }: AccountSettingsProps) {
       <div className="glass rounded-2xl border border-white/5 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="text-sm font-bold text-white">Password</p>
-          <p className="text-xs text-white/40 mt-0.5">Reset your password via email</p>
+          <p className="text-xs text-white/55 mt-0.5">Reset your password via email</p>
         </div>
         <Link
           href="/forgot-password"
-          className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gold hover:text-gold-light transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold hover:text-gold-light transition-colors"
         >
           <Lock className="w-3.5 h-3.5" />
           Change password

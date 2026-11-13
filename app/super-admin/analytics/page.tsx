@@ -199,8 +199,8 @@ export default async function AdminAnalyticsPage() {
     <div className="space-y-8 max-w-full pb-10 px-2 md:px-4">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-black tracking-tight text-white mb-2">Platform Analytics</h1>
-        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">Comprehensive 30-Day Performance Dashboard</p>
+        <h1 className="text-4xl font-semibold tracking-tight text-white mb-2">Platform Analytics</h1>
+        <p className="text-white/55 text-[11px] font-semibold uppercase tracking-wider">Comprehensive 30-Day Performance Dashboard</p>
       </div>
 
       {/* Key Metrics */}
@@ -213,8 +213,8 @@ export default async function AdminAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl lg:text-4xl font-black">{analytics.totalSwaps}</p>
-            <p className="text-[10px] text-white/40 mt-1">30-day total</p>
+            <p className="text-3xl lg:text-4xl font-semibold">{analytics.totalSwaps}</p>
+            <p className="text-[11px] text-white/55 mt-1">30-day total</p>
           </CardContent>
         </Card>
 
@@ -226,8 +226,8 @@ export default async function AdminAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl lg:text-4xl font-black text-emerald-400">{analytics.fulfillmentRate}%</p>
-            <p className="text-[10px] text-white/40 mt-1">Success rate</p>
+            <p className="text-3xl lg:text-4xl font-semibold text-emerald-400">{analytics.fulfillmentRate}%</p>
+            <p className="text-[11px] text-white/55 mt-1">Success rate</p>
           </CardContent>
         </Card>
 
@@ -239,8 +239,8 @@ export default async function AdminAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl lg:text-4xl font-black text-orange-400">{analytics.activeSwaps}</p>
-            <p className="text-[10px] text-white/40 mt-1">In progress</p>
+            <p className="text-3xl lg:text-4xl font-semibold text-orange-400">{analytics.activeSwaps}</p>
+            <p className="text-[11px] text-white/55 mt-1">In progress</p>
           </CardContent>
         </Card>
 
@@ -252,8 +252,8 @@ export default async function AdminAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl lg:text-4xl font-black text-purple-400">{orgs.length}</p>
-            <p className="text-[10px] text-white/40 mt-1">Active customers</p>
+            <p className="text-3xl lg:text-4xl font-semibold text-purple-400">{orgs.length}</p>
+            <p className="text-[11px] text-white/55 mt-1">Active customers</p>
           </CardContent>
         </Card>
       </div>
@@ -268,8 +268,8 @@ export default async function AdminAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl lg:text-4xl font-black text-yellow-400">{growth7d}</p>
-            <p className="text-[10px] text-white/40 mt-1">Last week activity</p>
+            <p className="text-3xl lg:text-4xl font-semibold text-yellow-400">{growth7d}</p>
+            <p className="text-[11px] text-white/55 mt-1">Last week activity</p>
           </CardContent>
         </Card>
 
@@ -281,8 +281,8 @@ export default async function AdminAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl lg:text-4xl font-black text-green-400">${(analytics30d.costSavings / 1000).toFixed(1)}K</p>
-            <p className="text-[10px] text-white/40 mt-1">vs. agency & overtime</p>
+            <p className="text-3xl lg:text-4xl font-semibold text-green-400">${(analytics30d.costSavings / 1000).toFixed(1)}K</p>
+            <p className="text-[11px] text-white/55 mt-1">vs. agency & overtime</p>
           </CardContent>
         </Card>
 
@@ -294,8 +294,8 @@ export default async function AdminAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl lg:text-4xl font-black text-cyan-400">{analytics30d.managerHoursSaved.toFixed(1)}h</p>
-            <p className="text-[10px] text-white/40 mt-1">Manual coordination avoided</p>
+            <p className="text-3xl lg:text-4xl font-semibold text-cyan-400">{analytics30d.managerHoursSaved.toFixed(1)}h</p>
+            <p className="text-[11px] text-white/55 mt-1">Manual coordination avoided</p>
           </CardContent>
         </Card>
       </div>
@@ -369,11 +369,11 @@ export default async function AdminAnalyticsPage() {
                 <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
                   <div className="flex-1">
                     <p className="text-sm font-bold text-white truncate">{org.name}</p>
-                    <p className="text-[10px] text-white/40 capitalize">{org.plan} · {org.industry}</p>
+                    <p className="text-[11px] text-white/55 capitalize">{org.plan} · {org.industry}</p>
                   </div>
                   <div className="text-right ml-4">
-                    <p className="text-sm font-black text-gold">{org.totalSwaps}</p>
-                    <p className="text-[10px] text-white/40">{org.fulfillmentRate}%</p>
+                    <p className="text-sm font-semibold text-gold">{org.totalSwaps}</p>
+                    <p className="text-[11px] text-white/55">{org.fulfillmentRate}%</p>
                   </div>
                 </div>
               ))}
@@ -393,13 +393,13 @@ export default async function AdminAnalyticsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Organization</th>
-                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Total</th>
-                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">7-Day</th>
-                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Fulfillment</th>
-                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Cost Savings</th>
-                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Mgr Hours</th>
-                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[10px] uppercase tracking-wider">Plan</th>
+                    <th className="text-left py-3 px-4 font-bold text-white/60 text-[11px] uppercase tracking-wider">Organization</th>
+                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[11px] uppercase tracking-wider">Total</th>
+                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[11px] uppercase tracking-wider">7-Day</th>
+                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[11px] uppercase tracking-wider">Fulfillment</th>
+                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[11px] uppercase tracking-wider">Cost Savings</th>
+                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[11px] uppercase tracking-wider">Mgr Hours</th>
+                    <th className="text-right py-3 px-4 font-bold text-white/60 text-[11px] uppercase tracking-wider">Plan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -416,7 +416,7 @@ export default async function AdminAnalyticsPage() {
                       <td className="text-right py-4 px-4 text-green-400 font-bold">${(org.costSavings / 1000).toFixed(1)}K</td>
                       <td className="text-right py-4 px-4 text-cyan-400 font-bold">{org.managerHoursSaved.toFixed(1)}h</td>
                       <td className="text-right py-4 px-4">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-gold capitalize">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-gold capitalize">
                           {org.plan}
                         </span>
                       </td>
@@ -432,33 +432,33 @@ export default async function AdminAnalyticsPage() {
       {/* Summary Statistics Card */}
       <Card className="bg-gradient-to-r from-gold/10 to-blue-500/10 border-white/10">
         <CardHeader>
-          <CardTitle className="text-lg font-black">Platform Summary</CardTitle>
+          <CardTitle className="text-lg font-semibold">Platform Summary</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Avg Org Activity</p>
-              <p className="text-2xl font-black text-gold">
+              <p className="text-white/60 text-[11px] font-bold uppercase tracking-wider mb-1">Avg Org Activity</p>
+              <p className="text-2xl font-semibold text-gold">
                 {orgs.length > 0 ? (analytics.totalSwaps / orgs.length).toFixed(1) : 0}
               </p>
-              <p className="text-[10px] text-white/40">swaps/org/month</p>
+              <p className="text-[11px] text-white/55">swaps/org/month</p>
             </div>
             <div>
-              <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Cancellation Rate</p>
-              <p className="text-2xl font-black text-red-400">{analytics30d.cancellationRate}%</p>
-              <p className="text-[10px] text-white/40">of all swaps</p>
+              <p className="text-white/60 text-[11px] font-bold uppercase tracking-wider mb-1">Cancellation Rate</p>
+              <p className="text-2xl font-semibold text-red-400">{analytics30d.cancellationRate}%</p>
+              <p className="text-[11px] text-white/55">of all swaps</p>
             </div>
             <div>
-              <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Overtime Avoided</p>
-              <p className="text-2xl font-black text-yellow-400">{analytics30d.overtimeAvoided.toFixed(1)}h</p>
-              <p className="text-[10px] text-white/40">shift hours covered</p>
+              <p className="text-white/60 text-[11px] font-bold uppercase tracking-wider mb-1">Overtime Avoided</p>
+              <p className="text-2xl font-semibold text-yellow-400">{analytics30d.overtimeAvoided.toFixed(1)}h</p>
+              <p className="text-[11px] text-white/55">shift hours covered</p>
             </div>
             <div>
-              <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Growth (7d)</p>
-              <p className="text-2xl font-black text-emerald-400">
+              <p className="text-white/60 text-[11px] font-bold uppercase tracking-wider mb-1">Growth (7d)</p>
+              <p className="text-2xl font-semibold text-emerald-400">
                 {analytics.totalSwaps > 0 ? ((growth7d / (analytics.totalSwaps / 4)) * 100).toFixed(0) : 0}%
               </p>
-              <p className="text-[10px] text-white/40">week-over-week</p>
+              <p className="text-[11px] text-white/55">week-over-week</p>
             </div>
           </div>
         </CardContent>

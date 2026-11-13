@@ -63,7 +63,7 @@ export function ShiftManagerActions({ shiftId, shiftTitle, currentStatus }: Prop
             flex items-center justify-center gap-2 w-full
             h-10 px-5 rounded-xl
             bg-red-500/10 border border-red-500/20
-            text-red-400 text-[10px] font-black uppercase tracking-widest
+            text-red-400 text-[11px] font-semibold uppercase tracking-wider
             hover:bg-red-500/20 hover:border-red-500/40
             active:scale-95 transition-all duration-200
             disabled:opacity-50 disabled:cursor-not-allowed
@@ -86,7 +86,7 @@ export function ShiftManagerActions({ shiftId, shiftTitle, currentStatus }: Prop
             flex items-center justify-center gap-2 w-full
             h-10 px-5 rounded-xl
             bg-white/5 border border-white/10
-            text-white/40 text-[10px] font-black uppercase tracking-widest
+            text-white/55 text-[11px] font-semibold uppercase tracking-wider
             hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400
             active:scale-95 transition-all duration-200
           "
@@ -103,14 +103,14 @@ export function ShiftManagerActions({ shiftId, shiftTitle, currentStatus }: Prop
             <button
               onClick={handleDelete}
               disabled={loadingDelete}
-              className="flex-1 h-9 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 h-9 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-[11px] font-semibold uppercase tracking-wider hover:bg-red-500/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loadingDelete ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
               {loadingDelete ? "Cancelling..." : "Yes, Cancel"}
             </button>
             <button
               onClick={() => setShowConfirmDelete(false)}
-              className="flex-1 h-9 rounded-xl bg-white/5 border border-white/10 text-white/40 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+              className="flex-1 h-9 rounded-xl bg-white/5 border border-white/10 text-white/55 text-[11px] font-semibold uppercase tracking-wider hover:bg-white/10 transition-all"
             >
               Go Back
             </button>

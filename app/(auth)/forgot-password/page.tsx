@@ -30,17 +30,17 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl text-center animate-in fade-in zoom-in duration-500 w-full">
-        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-[0_0_30px_rgba(212,175,55,0.1)] shrink-0">
+      <div className="glass rounded-2xl md:rounded-2xl p-5 md:p-8 border-white/5 shadow-2xl text-center animate-in fade-in zoom-in duration-500 w-full">
+        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4 md:mb-6 shrink-0">
           <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-gold" />
         </div>
-        <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-2">Check your inbox</h2>
+        <h2 className="text-lg md:text-xl font-semibold tracking-tight text-white mb-2">Check your inbox</h2>
         <p className="text-white/50 text-xs md:text-sm font-medium leading-relaxed mb-4 md:mb-6 max-w-xs mx-auto">
           We sent a password reset link to <span className="text-white/80 font-bold">{email}</span>. It expires in 1 hour.
         </p>
         <Link
           href="/login"
-          className="inline-flex items-center justify-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-white/40 hover:text-gold transition-colors"
+          className="inline-flex items-center justify-center gap-2 text-[11px] md:text-xs font-semibold uppercase tracking-wider text-white/55 hover:text-gold transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to sign in
@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl w-full">
+    <div className="glass rounded-2xl md:rounded-2xl p-5 md:p-8 border-white/5 shadow-2xl w-full">
       <div className="text-center mb-4 md:mb-5">
         <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-3 md:mb-4 shrink-0">
           <Mail className="w-4 h-4 md:w-5 md:h-5 text-gold" />
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
         <div className="space-y-3 md:space-y-4 pt-1 md:pt-2">
           <Button
             type="submit"
-            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg shadow-gold/20"
+            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg"
             disabled={loading}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
@@ -88,7 +88,7 @@ export default function ForgotPasswordPage() {
 
           <Link
             href="/login"
-            className="flex items-center justify-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors"
+            className="flex items-center justify-center gap-2 text-[11px] md:text-xs font-semibold uppercase tracking-wider text-white/45 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to sign in

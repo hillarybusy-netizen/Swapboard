@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 const STATUS_BADGE: Record<string, string> = {
   not_started: "bg-white/10 text-white/50",
-  started: "bg-blue-500/20 text-blue-400 shadow-blue-500/10",
+  started: "bg-blue-500/20 text-blue-400",
   up_for_swap: "bg-purple-500/20 text-purple-400",
   pending_approval_claim: "bg-yellow-500/20 text-yellow-400",
   pending_approval_swap: "bg-yellow-500/20 text-yellow-400",
@@ -26,7 +26,7 @@ const STATUS_BADGE: Record<string, string> = {
   done_manager_approved: "bg-emerald-500/20 text-emerald-400",
   done_rejected: "bg-red-500/20 text-red-400",
   no_show: "bg-red-500/20 text-red-400",
-  cancelled: "bg-white/5 text-white/20",
+  cancelled: "bg-white/5 text-white/35",
 };
 
 export default async function ShiftsPage(props: {
@@ -140,8 +140,8 @@ export default async function ShiftsPage(props: {
     <div className="space-y-10 max-w-7xl mx-auto pb-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-2">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">Team Shifts</h1>
-          <p className="text-white/40 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-2">Team Shifts</h1>
+          <p className="text-white/55 text-[11px] md:text-[11px] font-semibold uppercase tracking-wider">
             Schedule Overview · <span className="text-gold/60">{shifts.length} Active Records</span>
           </p>
         </div>
@@ -160,8 +160,8 @@ export default async function ShiftsPage(props: {
           <Button
             variant="outline"
             className={cn(
-              "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
-              !searchParams.dept && !searchParams.status ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
+              "glass rounded-full text-[11px] md:text-[11px] font-semibold uppercase tracking-wider px-4 md:px-6 h-9 md:h-10 border-white/5",
+              !searchParams.dept && !searchParams.status ? "bg-gold text-[#050505] border-gold" : "text-white/55 hover:text-white"
             )}
             size="sm"
           >
@@ -173,12 +173,12 @@ export default async function ShiftsPage(props: {
             <Button
               variant="outline"
               className={cn(
-               "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
-                searchParams.dept === d.id ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
+               "glass rounded-full text-[11px] md:text-[11px] font-semibold uppercase tracking-wider px-4 md:px-6 h-9 md:h-10 border-white/5",
+                searchParams.dept === d.id ? "bg-gold text-[#050505] border-gold" : "text-white/55 hover:text-white"
               )}
               size="sm"
             >
-              <div className="w-1.5 h-1.5 rounded-full mr-2 shrink-0 shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: d.color }} />
+              <div className="w-1.5 h-1.5 rounded-full mr-2 shrink-0" style={{ backgroundColor: d.color }} />
               {d.name}
             </Button>
           </Link>
@@ -187,8 +187,8 @@ export default async function ShiftsPage(props: {
           <Button
             variant="outline"
             className={cn(
-              "glass rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-4 md:px-6 h-9 md:h-10 border-white/5",
-              searchParams.status === "not_started" ? "bg-gold text-[#050505] border-gold" : "text-white/40 hover:text-white"
+              "glass rounded-full text-[11px] md:text-[11px] font-semibold uppercase tracking-wider px-4 md:px-6 h-9 md:h-10 border-white/5",
+              searchParams.status === "not_started" ? "bg-gold text-[#050505] border-gold" : "text-white/55 hover:text-white"
             )}
             size="sm"
           >
@@ -210,7 +210,7 @@ export default async function ShiftsPage(props: {
       {/* Shift History */}
       {endedShifts.length > 0 && (
         <div className="space-y-4 pt-8 border-t border-white/10">
-          <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-3">
             <CheckCircle2 className="w-6 h-6 text-emerald-400" />
             Shift History
           </h2>
@@ -223,7 +223,7 @@ export default async function ShiftsPage(props: {
               >
                 <div>
                   <h3 className="font-bold text-white">{shift.title}</h3>
-                  <div className="flex items-center gap-4 mt-2 text-[11px] text-white/40">
+                  <div className="flex items-center gap-4 mt-2 text-[11px] text-white/55">
                     {shift.department && (
                       <div className="flex items-center gap-1.5">
                         <div
@@ -244,7 +244,7 @@ export default async function ShiftsPage(props: {
                   </div>
                 </div>
                 <Badge className={cn(
-                  "ml-4 whitespace-nowrap border-none group-hover:scale-105 transition-transform",
+                  "ml-4 whitespace-nowrap border-none transition-transform",
                   STATUS_BADGE[shift.status] ?? "bg-white/10 text-white/50"
                 )}>
                   {SHIFT_STATUS_LABELS[shift.status] ?? shift.status}

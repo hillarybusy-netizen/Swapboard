@@ -77,20 +77,19 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
       }}
     >
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3.5 py-2 text-[9px] font-black uppercase tracking-widest text-white/60 hover:bg-white/10 hover:text-white transition-colors">
+        <button className="flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wider text-white/60 hover:bg-white/10 hover:text-white transition-colors">
           <Eye className="w-3.5 h-3.5" />
           See Details
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md w-[calc(100vw-2rem)] bg-[#0a0a0a] border-white/10 rounded-[2rem] p-0 gap-0 max-h-[85vh] overflow-y-auto shadow-2xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[80px] pointer-events-none" />
+      <DialogContent className="sm:max-w-md w-[calc(100vw-2rem)] bg-[#0a0a0a] border-white/10 rounded-2xl p-0 gap-0 max-h-[85vh] overflow-y-auto shadow-2xl">
 
         <div className="p-5 sm:p-8">
           <DialogHeader className="mb-6">
-            <DialogTitle className="text-2xl font-black text-white">
+            <DialogTitle className="text-2xl font-semibold text-white">
               {isEditing ? "Edit Assignment" : "Staff Profile"}
             </DialogTitle>
-            <p className="text-sm text-white/40 font-medium">
+            <p className="text-sm text-white/55 font-medium">
               {isEditing
                 ? `Update department access for ${memberName}.`
                 : `Review ${memberName}'s assignment and access details.`}
@@ -104,17 +103,17 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                   <div className="rounded-3xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gold/80 mb-1">Member</p>
-                        <p className="text-base font-black text-white">{memberName}</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-gold/80 mb-1">Member</p>
+                        <p className="text-base font-semibold text-white">{memberName}</p>
                       </div>
-                      <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-gold">
+                      <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
                         {memberRole}
                       </span>
                     </div>
                   </div>
 
                   <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-4">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gold mb-2">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold mb-2">
                       <ShieldCheck className="w-3.5 h-3.5" />
                       Member Role
                     </div>
@@ -122,7 +121,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                   </div>
 
                   <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-4">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gold mb-2">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold mb-2">
                       <Building2 className="w-3.5 h-3.5" />
                       Department Access
                     </div>
@@ -131,7 +130,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                         {displayedDepartments.map((dept) => (
                           <span
                             key={dept.id}
-                            className="rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest"
+                            className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider"
                             style={{ backgroundColor: dept.color, color: "#050505" }}
                           >
                             {dept.name}
@@ -139,13 +138,13 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-white/40">No department assignment yet</p>
+                      <p className="text-sm text-white/55">No department assignment yet</p>
                     )}
                   </div>
 
                   {memberRole === "manager" && (
                     <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-4">
-                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gold mb-2">
+                      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold mb-2">
                         <ShieldCheck className="w-3.5 h-3.5" />
                         Access Type
                       </div>
@@ -156,7 +155,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
 
                 <Button
                   onClick={() => setIsEditing(true)}
-                  className="w-full btn-gold rounded-full h-12 text-xs font-black uppercase tracking-widest"
+                  className="w-full btn-gold rounded-full h-12 text-xs font-semibold uppercase tracking-wider"
                 >
                   <PencilLine className="w-4 h-4 mr-2" />
                   Edit Assignment
@@ -166,7 +165,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
               <>
                 {memberRole === "manager" && (
                   <div className="space-y-4">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-gold">Manager Type</Label>
+                    <Label className="text-[11px] font-semibold uppercase tracking-wider text-gold">Manager Type</Label>
                     <div className="grid gap-2">
                       {["general", "department"].map((type) => (
                         <button
@@ -199,7 +198,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                 )}
 
                 <div className="space-y-4">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-gold">
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider text-gold">
                     {memberRole === "manager" && managerType === "general"
                       ? "All Departments (General Access)"
                       : memberRole === "manager"
@@ -208,7 +207,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                   </Label>
                   <div className="grid gap-2 w-full max-w-sm mx-auto">
                     {memberRole === "manager" && managerType === "general" ? (
-                      <p className="text-xs text-white/40 italic text-center py-4">General Managers have access to all departments</p>
+                      <p className="text-xs text-white/55 italic text-center py-4">General Managers have access to all departments</p>
                     ) : (
                       departments.map((dept) => {
                         const isSelected = selectedDeptId === dept.id;
@@ -233,7 +232,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                           >
                             <div className="flex items-center gap-3">
                               <div
-                                className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+                                className="w-2 h-2 rounded-full"
                                 style={{ backgroundColor: dept.color }}
                               />
                               <span className={cn(
@@ -249,7 +248,7 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                       })
                     )}
                     {departments.length === 0 && (
-                      <p className="text-xs text-white/30 italic">No departments created yet.</p>
+                      <p className="text-xs text-white/45 italic">No departments created yet.</p>
                     )}
                   </div>
                 </div>
@@ -258,14 +257,14 @@ export function EditMemberDialog({ memberId, memberName, memberRole, currentDept
                   <Button
                     onClick={() => setIsEditing(false)}
                     variant="outline"
-                    className="flex-1 rounded-full h-12 text-xs font-black uppercase tracking-widest border-white/10 text-white/70"
+                    className="flex-1 rounded-full h-12 text-xs font-semibold uppercase tracking-wider border-white/10 text-white/70"
                   >
                     Back
                   </Button>
                   <Button
                     onClick={handleSave}
                     disabled={loading}
-                    className="flex-1 btn-gold rounded-full h-12 text-xs font-black uppercase tracking-widest"
+                    className="flex-1 btn-gold rounded-full h-12 text-xs font-semibold uppercase tracking-wider"
                   >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     {loading ? "Saving..." : "Save Changes"}

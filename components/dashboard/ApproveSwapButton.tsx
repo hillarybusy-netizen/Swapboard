@@ -66,7 +66,7 @@ export function ApproveSwapButton({ swapId, hasCoverage }: Props) {
               flex items-center justify-center gap-1.5 flex-1
               h-8 px-3 rounded-xl
               bg-emerald-500/10 border border-emerald-500/20
-              text-emerald-400 text-[9px] font-black uppercase tracking-widest
+              text-emerald-400 text-[11px] font-semibold uppercase tracking-wider
               hover:bg-emerald-500/20 hover:border-emerald-500/40
               active:scale-95 transition-all
               disabled:opacity-50 disabled:cursor-not-allowed
@@ -88,7 +88,7 @@ export function ApproveSwapButton({ swapId, hasCoverage }: Props) {
             flex items-center justify-center gap-1.5 flex-1
             h-8 px-3 rounded-xl
             bg-red-500/10 border border-red-500/20
-            text-red-400 text-[9px] font-black uppercase tracking-widest
+            text-red-400 text-[11px] font-semibold uppercase tracking-wider
             hover:bg-red-500/20 hover:border-red-500/40
             active:scale-95 transition-all
             disabled:opacity-50 disabled:cursor-not-allowed
@@ -106,7 +106,7 @@ export function ApproveSwapButton({ swapId, hasCoverage }: Props) {
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Optional rejection notes…"
             rows={2}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-xs text-white/70 placeholder:text-white/20 focus:outline-none focus:border-gold/30 resize-none"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-xs text-white/70 placeholder:text-white/35 focus:outline-none focus:border-gold/30 resize-none"
           />
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -115,14 +115,14 @@ export function ApproveSwapButton({ swapId, hasCoverage }: Props) {
               onChange={(e) => setBlockReswap(e.target.checked)}
               className="accent-gold"
             />
-            <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
+            <span className="text-[11px] font-bold text-white/55 uppercase tracking-wider">
               Block re-swap (return to original worker)
             </span>
           </label>
           <button
             onClick={handleReject}
             disabled={!!loading}
-            className="w-full h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+            className="w-full h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-semibold uppercase tracking-wider hover:bg-red-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
           >
             {loading === "reject" ? (
               <Loader2 className="w-3 h-3 animate-spin" />

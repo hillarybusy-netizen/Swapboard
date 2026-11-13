@@ -29,7 +29,7 @@ export function LandingIndustryStrip() {
   return (
     <section className="py-14 sm:py-20 px-4 sm:px-6 bg-[#080808] border-b border-white/5 overflow-hidden">
       <div className="max-w-6xl mx-auto">
-        <p className="text-center text-[10px] font-black uppercase tracking-[0.28em] text-gold/60 mb-8 sm:mb-10">
+        <p className="text-center text-sm font-medium text-white/55 mb-8 sm:mb-10">
           Built for every industry
         </p>
 
@@ -72,42 +72,41 @@ function IndustryCard({
 }) {
   return (
     <GlassTiltCard intensity={8} className={className}>
-      <div className="relative h-48 sm:h-56 md:h-64 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 group cursor-default shadow-2xl">
+      <div className="relative h-48 sm:h-56 md:h-64 rounded-2xl overflow-hidden border border-white/10 group cursor-default">
         <Image
           src={photo.src}
           alt={photo.alt}
           fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          className="object-cover transition-transform duration-700"
           sizes="450px"
           priority={false}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-br from-gold/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         {/* Top Tag: Industry Operation Type */}
         <div className="absolute top-3.5 left-3.5 sm:top-4 sm:left-4 z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-black uppercase tracking-wider text-white/90 shadow-md">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[11px] font-medium text-white/90">
             {photo.alt}
           </span>
         </div>
 
         {/* Top Right Live Indicator */}
-        <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse z-10" />
+        <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 w-1.5 h-1.5 rounded-full bg-emerald-400 z-10" />
 
         {/* Bottom Details */}
         <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 z-10">
           <motion.p
-            className="text-lg sm:text-xl font-black uppercase tracking-wider text-white mb-1 drop-shadow-sm"
+            className="text-lg sm:text-xl font-semibold tracking-tight text-white mb-1"
             initial={false}
           >
             {photo.label}
           </motion.p>
           <div className="flex items-center justify-between">
-            <p className="text-xs font-black text-gold uppercase tracking-wider flex items-center gap-1.5">
+            <p className="text-xs font-medium text-gold flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
               {photo.stat}
             </p>
-            <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
               Verified Network
             </span>
           </div>

@@ -16,7 +16,7 @@ export default function TermsPage() {
         <Link href="/" className="text-gold text-sm hover:underline font-medium inline-block mb-4">← Back to SwapBoard</Link>
         
         <div>
-          <h1 className="text-4xl font-black mb-2 tracking-tight">SwapBoard Terms of Service</h1>
+          <h1 className="text-4xl font-semibold mb-2 tracking-tight">SwapBoard Terms of Service</h1>
           <p className="text-white/60 text-sm">swapboard.ca<br/>Effective Date: June 15, 2026</p>
         </div>
 

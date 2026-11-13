@@ -29,9 +29,9 @@ export function EnterpriseMetrics({
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <p className="text-3xl font-black text-white tabular-nums">{workerEngagementScore}%</p>
+            <p className="text-3xl font-semibold text-white tabular-nums">{workerEngagementScore}%</p>
             <div>
-              <p className="text-[10px] text-white/40 uppercase font-bold">Score</p>
+              <p className="text-[11px] text-white/55 uppercase font-bold">Score</p>
               <p className="text-xs text-white/60">Based on swap participation</p>
             </div>
           </div>
@@ -45,9 +45,9 @@ export function EnterpriseMetrics({
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <p className="text-3xl font-black text-white tabular-nums">{shiftCoverageRate}%</p>
+            <p className="text-3xl font-semibold text-white tabular-nums">{shiftCoverageRate}%</p>
             <div>
-              <p className="text-[10px] text-white/40 uppercase font-bold">Rate</p>
+              <p className="text-[11px] text-white/55 uppercase font-bold">Rate</p>
               <p className="text-xs text-white/60">Swaps with coverage</p>
             </div>
           </div>
@@ -63,8 +63,8 @@ export function EnterpriseMetrics({
           <div className="flex items-center gap-4">
             <Zap className="w-7 h-7 text-yellow-400/60" strokeWidth={2.5} />
             <div>
-              <p className="text-2xl font-black">{overtimeAvoided.toFixed(1)}h</p>
-              <p className="text-[10px] text-white/40 uppercase font-bold">Shift hours</p>
+              <p className="text-2xl font-semibold">{overtimeAvoided.toFixed(1)}h</p>
+              <p className="text-[11px] text-white/55 uppercase font-bold">Shift hours</p>
             </div>
           </div>
         </CardContent>
@@ -84,7 +84,7 @@ export function EnterpriseMetrics({
                 </div>
               ))
             ) : (
-              <p className="text-[10px] text-white/40">No peak times data</p>
+              <p className="text-[11px] text-white/55">No peak times data</p>
             )}
           </div>
         </CardContent>
@@ -99,8 +99,8 @@ export function EnterpriseMetrics({
           <div className="flex items-center gap-4">
             <TrendingDown className="w-7 h-7 text-red-400/60" strokeWidth={2.5} />
             <div>
-              <p className="text-2xl font-black">{cancellationRate}%</p>
-              <p className="text-[10px] text-white/40 uppercase font-bold">Of requests</p>
+              <p className="text-2xl font-semibold">{cancellationRate}%</p>
+              <p className="text-[11px] text-white/55 uppercase font-bold">Of requests</p>
             </div>
           </div>
         </CardContent>
@@ -116,8 +116,8 @@ export function EnterpriseMetrics({
             <div className="flex items-center gap-4">
               <Clock className="w-7 h-7 text-purple-400/60" strokeWidth={2.5} />
               <div>
-                <p className="text-2xl font-black">{avgFulfillmentTime.toFixed(1)}h</p>
-                <p className="text-[10px] text-white/40 uppercase font-bold">To approve</p>
+                <p className="text-2xl font-semibold">{avgFulfillmentTime.toFixed(1)}h</p>
+                <p className="text-[11px] text-white/55 uppercase font-bold">To approve</p>
               </div>
             </div>
           </CardContent>

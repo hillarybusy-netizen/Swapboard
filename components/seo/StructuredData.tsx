@@ -13,9 +13,9 @@ export function LandingStructuredData() {
       name: SITE_NAME,
       url: SITE_URL,
       logo: absoluteUrl("/opengraph-image"),
-      email: "hello@swapboard.app",
+      email: "hello@swapboard.ca",
       description: DEFAULT_DESCRIPTION,
-      sameAs: [],
+      sameAs: ["https://www.tiktok.com/@swapboard"],
     },
     {
       "@type": "WebSite",

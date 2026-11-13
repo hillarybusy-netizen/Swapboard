@@ -29,7 +29,7 @@ const trialData = [
 function ImageLabel({ text }: { text: string }) {
   return (
     <div className="absolute top-2.5 left-2.5 z-10 px-2 py-1 rounded-lg bg-[#050505]/75 backdrop-blur-md border border-white/10">
-      <p className="text-[8px] font-black uppercase tracking-widest text-gold">{text}</p>
+      <p className="text-[8px] font-semibold uppercase tracking-wider text-gold">{text}</p>
     </div>
   );
 }
@@ -74,16 +74,16 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
               <Icon className="w-5 h-5 text-gold" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Pending approval</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/55">Pending approval</p>
               <p className="text-sm font-bold text-white">Kitchen · Sat 10am</p>
             </div>
           </div>
           <div className="flex gap-2">
             <div className="flex-1 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-center">
-              <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Approve</p>
+              <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-400">Approve</p>
             </div>
             <div className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
-              <p className="text-[9px] font-black uppercase tracking-widest text-white/30">Decline</p>
+              <p className="text-[9px] font-semibold uppercase tracking-wider text-white/45">Decline</p>
             </div>
           </div>
         </div>
@@ -98,8 +98,8 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/75 to-[#0a0a0a]/40" />
         <ImageLabel text={img.label} />
         <div className="relative flex items-center justify-between mb-1 px-1">
-          <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Weekly savings</p>
-          <p className="text-sm font-black text-gold tabular-nums">$4,200</p>
+          <p className="text-[8px] font-semibold uppercase tracking-wider text-white/45">Weekly savings</p>
+          <p className="text-sm font-semibold text-gold tabular-nums">$4,200</p>
         </div>
         <div className="relative h-[88px] w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -127,7 +127,7 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
         <div className="absolute bottom-3 left-3 right-3 grid grid-cols-3 gap-1.5">
           {["Restaurant", "Healthcare", "Retail"].map((dept) => (
             <div key={dept} className="px-2 py-1.5 rounded-lg bg-[#050505]/70 backdrop-blur-md border border-white/10 text-center">
-              <p className="text-[7px] font-black uppercase tracking-widest text-white/70">{dept}</p>
+              <p className="text-[7px] font-semibold uppercase tracking-wider text-white/70">{dept}</p>
             </div>
           ))}
         </div>
@@ -152,7 +152,7 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
               <div className="flex-1 min-w-0">
                 <p className="text-[9px] font-bold text-white/70 truncate">{log.action} · {log.user}</p>
               </div>
-              <span className="text-[7px] text-white/25 font-bold shrink-0">{log.time}</span>
+              <span className="text-[7px] text-white/40 font-bold shrink-0">{log.time}</span>
             </div>
           ))}
         </div>
@@ -167,8 +167,8 @@ export function FeatureCardVisual({ iconName }: FeatureCardVisualProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-[#0a0a0a]/45" />
         <ImageLabel text={img.label} />
         <div className="relative flex items-center justify-between mb-2 px-1">
-          <p className="text-[8px] font-black uppercase tracking-widest text-white/30">14-day trial progress</p>
-          <p className="text-[10px] font-black text-emerald-400">92%</p>
+          <p className="text-[8px] font-semibold uppercase tracking-wider text-white/45">14-day trial progress</p>
+          <p className="text-[10px] font-semibold text-emerald-400">92%</p>
         </div>
         <div className="relative h-[72px] w-full">
           <ResponsiveContainer width="100%" height="100%">

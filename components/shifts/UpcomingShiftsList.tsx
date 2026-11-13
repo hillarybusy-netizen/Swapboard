@@ -32,19 +32,19 @@ interface Props {
 function shiftStatusBadge(status: string) {
   const map: Record<string, { label: string; color: string }> = {
     not_started: { label: "Upcoming", color: "text-white/50 bg-white/10" },
-    started: { label: "In Progress", color: "text-blue-400 bg-blue-500/15 shadow-[0_0_12px_rgba(59,130,246,0.2)]" },
+    started: { label: "In Progress", color: "text-blue-400 bg-blue-500/15" },
     up_for_swap: { label: "Up for Swap", color: "text-purple-400 bg-purple-500/15" },
     pending_approval_claim: { label: "Claim Pending", color: "text-yellow-400 bg-yellow-500/10" },
     pending_approval_swap: { label: "Swap Pending", color: "text-yellow-400 bg-yellow-500/10" },
-    swapped: { label: "Swapped", color: "text-white/30 bg-white/5" },
+    swapped: { label: "Swapped", color: "text-white/45 bg-white/5" },
     overdue_not_done: { label: "Overdue", color: "text-orange-400 bg-orange-500/15" },
     done_pending_approval: { label: "Awaiting Approval", color: "text-yellow-400 bg-yellow-500/10" },
     done_manager_approved: { label: "Completed ✓", color: "text-emerald-400 bg-emerald-500/15" },
     done_rejected: { label: "Rejected", color: "text-red-400 bg-red-500/15" },
     no_show: { label: "No-Show", color: "text-red-400 bg-red-500/15" },
-    cancelled: { label: "Cancelled", color: "text-white/20 bg-white/5" },
+    cancelled: { label: "Cancelled", color: "text-white/35 bg-white/5" },
   };
-  return map[status] ?? { label: status, color: "text-white/40 bg-white/5" };
+  return map[status] ?? { label: status, color: "text-white/55 bg-white/5" };
 }
 
 export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
@@ -63,24 +63,24 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
             <div
               key={shift.id}
               onClick={() => setSelectedShift(shift)}
-              className="glass rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group"
+              className="glass rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-all duration-200 cursor-pointer group"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-white truncate group-hover:text-gold transition-colors">{shift.title}</p>
                     {activeSwap && (
-                      <Badge className="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5">
+                      <Badge className="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[11px] font-semibold uppercase tracking-wider px-1.5 py-0.5">
                         Swap Active
                       </Badge>
                     )}
                   </div>
                   <div className="flex items-center gap-3 mt-1.5">
-                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
+                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/55">
                       <Calendar className="w-3 h-3" />
                       {formatShiftDate(shift.start_time, tz)}
                     </span>
-                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/40">
+                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/55">
                       <Clock className="w-3 h-3" />
                       {formatShiftTime(shift.start_time, shift.end_time, tz)}
                     </span>
@@ -91,17 +91,17 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                         className="w-1.5 h-1.5 rounded-full"
                         style={{ backgroundColor: shift.department.color || "#d4af37" }}
                       />
-                      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                      <span className="text-[11px] font-bold text-white/45 uppercase tracking-wider">
                         {shift.department.name}
                       </span>
                     </div>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={cn("px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest shrink-0", badge.color)}>
+                  <span className={cn("px-2.5 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-wider shrink-0", badge.color)}>
                     {badge.label}
                   </span>
-                  <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-white/35 group-hover:text-white/55 transition-colors" />
                 </div>
               </div>
               <ShiftTimingBadges
@@ -140,12 +140,12 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                           className="w-1.5 h-1.5 rounded-full"
                           style={{ backgroundColor: selectedShift.department.color || "#d4af37" }}
                         />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/40">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-white/55">
                           {selectedShift.department.name}
                         </span>
                       </div>
                     )}
-                    <span className={cn("px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest", badge.color)}>
+                    <span className={cn("px-2.5 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-wider", badge.color)}>
                       {badge.label}
                     </span>
                   </div>
@@ -156,10 +156,10 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                     lateStartedAt={selectedShift.late_started_at}
                     lateSubmittedAt={selectedShift.late_submitted_at}
                   />
-                  <DialogTitle className="text-xl font-black tracking-tight text-left">
+                  <DialogTitle className="text-xl font-semibold tracking-tight text-left">
                     {selectedShift.title}
                   </DialogTitle>
-                  <DialogDescription className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-left">
+                  <DialogDescription className="text-white/55 text-[11px] font-bold uppercase tracking-wider text-left">
                     Detailed Shift Information
                   </DialogDescription>
                 </DialogHeader>
@@ -173,7 +173,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                         <p className="text-xs font-bold text-white">
                           {formatShiftDate(selectedShift.start_time, tz)}
                         </p>
-                        <p className="text-[8px] font-black uppercase tracking-widest text-white/20">Date</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-white/35">Date</p>
                       </div>
                     </div>
                     <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-3">
@@ -182,7 +182,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                         <p className="text-xs font-bold text-white">
                           {formatShiftTime(selectedShift.start_time, selectedShift.end_time, tz)}
                         </p>
-                        <p className="text-[8px] font-black uppercase tracking-widest text-white/20">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-white/35">
                           {formatShiftDuration(selectedShift.start_time, selectedShift.end_time)}
                         </p>
                       </div>
@@ -193,10 +193,10 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                   {activeSwap && (
                     <div className="p-4 rounded-2xl bg-purple-500/5 border border-purple-500/10 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-purple-400">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-purple-400">
                           Active Swap Request
                         </span>
-                        <span className="text-[9px] text-white/30">
+                        <span className="text-[11px] text-white/45">
                           {new Date(activeSwap.requested_at).toLocaleDateString()}
                         </span>
                       </div>
@@ -214,7 +214,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                         )}
                       </p>
                       {activeSwap.reason && (
-                        <p className="text-[11px] text-white/40 italic bg-white/[0.02] p-2 rounded-xl border border-white/5">
+                        <p className="text-[11px] text-white/55 italic bg-white/[0.02] p-2 rounded-xl border border-white/5">
                           &ldquo;{activeSwap.reason}&rdquo;
                         </p>
                       )}
@@ -224,7 +224,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                   {/* Notes / Instructions */}
                   {selectedShift.notes && (
                     <div className="p-4 rounded-2xl bg-white/[0.01] border border-white/5 border-dashed">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2 flex items-center gap-1.5">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-white/35 mb-2 flex items-center gap-1.5">
                         <FileText className="w-3.5 h-3.5" /> Notes & Instructions
                       </p>
                       <p className="text-xs text-white/60 font-medium leading-relaxed italic">
@@ -238,7 +238,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                 <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
                   {isPendingClaim && (
                     <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-2xl bg-yellow-500/5 border border-yellow-500/10">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-yellow-400">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-yellow-400">
                         Awaiting Manager
                       </span>
                       <CancelClaimButton shiftId={selectedShift.id} shiftTitle={selectedShift.title} />
@@ -266,7 +266,7 @@ export function UpcomingShiftsList({ upcomingShifts, tz }: Props) {
                             flex items-center justify-center gap-2
                             h-11 px-4 rounded-2xl flex-1
                             bg-purple-500/10 border border-purple-500/20
-                            text-purple-300 text-[10px] font-black uppercase tracking-widest
+                            text-purple-300 text-[11px] font-semibold uppercase tracking-wider
                             hover:bg-purple-500/20 hover:border-purple-500/40
                             transition-all duration-200
                           "

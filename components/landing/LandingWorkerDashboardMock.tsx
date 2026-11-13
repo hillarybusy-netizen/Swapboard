@@ -92,7 +92,7 @@ export function LandingWorkerDashboardMock() {
     <div className="flex h-full bg-[#050505] text-left select-text relative overflow-hidden text-white font-sans">
       {/* Toast Notification in Mock */}
       {toastMessage && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-gold text-[#050505] text-xs font-black shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-gold text-[#050505] text-xs font-semibold shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
           <CheckCircle2 className="w-4 h-4" />
           <span>{toastMessage}</span>
         </div>
@@ -108,7 +108,7 @@ export function LandingWorkerDashboardMock() {
             <Image src="/logo.png" alt="Swapboard" fill className="object-contain" sizes="32px" />
           </div>
           <div className="hidden sm:block">
-            <span className="text-sm font-black tracking-tight text-white block">SwapBoard</span>
+            <span className="text-sm font-semibold tracking-tight text-white block">SwapBoard</span>
             <span className="text-[9px] font-bold uppercase tracking-wider text-gold/70 block">Demo</span>
           </div>
         </div>
@@ -124,8 +124,8 @@ export function LandingWorkerDashboardMock() {
                 className={cn(
                   "w-full flex items-center justify-center sm:justify-between px-2 sm:px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all",
                   active
-                    ? "bg-gold/10 text-gold shadow-sm shadow-gold/5 border border-gold/20"
-                    : "text-white/40 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gold/10 text-gold shadow-sm border border-gold/20"
+                    : "text-white/55 hover:text-white hover:bg-white/5 border border-transparent"
                 )}
                 title={label}
               >
@@ -134,7 +134,7 @@ export function LandingWorkerDashboardMock() {
                   <span className="hidden sm:inline">{label}</span>
                 </div>
                 {Boolean(badge && badge > 0) && (
-                  <span className="hidden sm:flex h-4 min-w-4 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[9px] font-black">
+                  <span className="hidden sm:flex h-4 min-w-4 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[9px] font-semibold">
                     {badge}
                   </span>
                 )}
@@ -152,12 +152,12 @@ export function LandingWorkerDashboardMock() {
             onClick={() => setActiveTab("profile")}
             className="w-full rounded-xl p-2 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all flex items-center justify-center sm:justify-start gap-2.5"
           >
-            <div className="w-7 h-7 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-black border border-gold/20 shrink-0">
+            <div className="w-7 h-7 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-semibold border border-gold/20 shrink-0">
               {PROFILE.initial}
             </div>
             <div className="hidden sm:block flex-1 min-w-0 text-left">
               <p className="text-xs font-bold text-white truncate">{PROFILE.name}</p>
-              <p className="text-[9px] text-white/30 font-medium truncate">{PROFILE.role}</p>
+              <p className="text-[9px] text-white/45 font-medium truncate">{PROFILE.role}</p>
             </div>
           </button>
         </div>
@@ -220,26 +220,26 @@ export function LandingWorkerDashboardMock() {
       {/* Post Shift for Swap Mock Modal */}
       {showPostSwapModal && (
         <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass rounded-[2rem] p-6 max-w-sm w-full border border-white/10 space-y-4">
+          <div className="glass rounded-2xl p-6 max-w-sm w-full border border-white/10 space-y-4">
             <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <h3 className="text-sm font-black text-white">Post Shift for Swap</h3>
-              <button onClick={() => setShowPostSwapModal(false)} className="text-white/40 hover:text-white">
+              <h3 className="text-sm font-semibold text-white">Post Shift for Swap</h3>
+              <button onClick={() => setShowPostSwapModal(false)} className="text-white/55 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-[10px] font-black uppercase text-white/40 block mb-1">Select Shift</label>
+                <label className="text-[10px] font-semibold uppercase text-white/55 block mb-1">Select Shift</label>
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10 font-bold text-white">
                   Friday Dinner Floor (Jul 11 · 6 PM – 2 AM)
                 </div>
               </div>
               <div>
-                <label className="text-[10px] font-black uppercase text-white/40 block mb-1">Reason (Optional)</label>
+                <label className="text-[10px] font-semibold uppercase text-white/55 block mb-1">Reason (Optional)</label>
                 <input
                   type="text"
                   defaultValue="Need cover for personal appointment"
-                  className="w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-xs"
+                  className="w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/45 text-xs"
                 />
               </div>
             </div>
@@ -255,7 +255,7 @@ export function LandingWorkerDashboardMock() {
                   setShowPostSwapModal(false);
                   showToast("Swap posted to Harbor Kitchen team board!");
                 }}
-                className="flex-1 py-2 rounded-xl bg-gold text-black text-xs font-black"
+                className="flex-1 py-2 rounded-xl bg-gold text-black text-xs font-semibold"
               >
                 Post Swap
               </button>
@@ -283,9 +283,9 @@ function HomeView({
     <div className="space-y-6 pb-6">
       {/* Header */}
       <div className="space-y-1">
-        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold/60">{ORG_NAME}</p>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">Good afternoon, Alex 👋</h1>
-        <p className="text-xs text-white/40 font-medium">Here&apos;s what&apos;s happening with your shifts today.</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-gold/60">{ORG_NAME}</p>
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">Good afternoon, Alex 👋</h1>
+        <p className="text-xs text-white/55 font-medium">Here&apos;s what&apos;s happening with your shifts today.</p>
       </div>
 
       {/* Complete Profile Card */}
@@ -293,17 +293,16 @@ function HomeView({
         onClick={() => onNavigate("profile")}
         className="w-full text-left glass rounded-2xl p-4 sm:p-5 border border-gold/20 relative overflow-hidden group hover:border-gold/40 transition-all block"
       >
-        <div className="absolute right-0 top-0 w-36 h-36 bg-gold/5 blur-2xl rounded-full pointer-events-none" />
         <div className="flex items-start justify-between mb-3 relative z-10">
           <div>
             <div className="flex items-center gap-1.5 mb-1">
               <Sparkles className="w-3.5 h-3.5 text-gold" />
-              <span className="text-[11px] font-black text-gold uppercase tracking-widest">Complete Your Profile</span>
+              <span className="text-[11px] font-semibold text-gold uppercase tracking-wider">Complete Your Profile</span>
             </div>
-            <p className="text-[11px] text-white/40 font-medium">Missing: Phone number, Emergency contact +2 more</p>
+            <p className="text-[11px] text-white/55 font-medium">Missing: Phone number, Emergency contact +2 more</p>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-xl sm:text-2xl font-black text-gold">63%</span>
+            <span className="text-xl sm:text-2xl font-semibold text-gold">63%</span>
             <ChevronRight className="w-4 h-4 text-gold/50 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -326,7 +325,7 @@ function HomeView({
           <div className="w-9 h-9 rounded-xl bg-[#050505]/20 flex items-center justify-center">
             <ArrowLeftRight className="w-4 h-4 text-[#050505]" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] sm:text-[11px] font-black text-[#050505] uppercase tracking-wider leading-tight">
+          <span className="text-[10px] sm:text-[11px] font-semibold text-[#050505] uppercase tracking-wider leading-tight">
             Post Shift for Swap
           </span>
         </button>
@@ -336,14 +335,14 @@ function HomeView({
           className="glass rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center gap-2.5 border border-white/10 text-center relative hover:border-gold/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           {availableCount > 0 && (
-            <span className="absolute top-2.5 right-2.5 flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[9px] font-black shadow-md shadow-gold/20">
+            <span className="absolute top-2.5 right-2.5 flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-gold text-[#050505] text-[9px] font-semibold shadow-md">
               {availableCount}
             </span>
           )}
           <div className="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center">
             <Zap className="w-4 h-4 text-gold" strokeWidth={2} />
           </div>
-          <span className="block text-[10px] sm:text-[11px] font-black text-gold uppercase tracking-wider leading-tight">
+          <span className="block text-[10px] sm:text-[11px] font-semibold text-gold uppercase tracking-wider leading-tight">
             Available Shifts
           </span>
         </button>
@@ -352,7 +351,7 @@ function HomeView({
       {/* Upcoming Shifts List */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Upcoming Shifts</h2>
+          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-white/55">Upcoming Shifts</h2>
           <button
             onClick={() => onNavigate("shifts")}
             className="text-[10px] font-bold text-gold/70 hover:text-gold flex items-center gap-0.5"
@@ -366,7 +365,7 @@ function HomeView({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <p className="text-xs sm:text-sm font-bold text-white truncate">Evening Floor & Dining</p>
-                <div className="flex items-center gap-3 mt-1 text-[11px] font-medium text-white/40">
+                <div className="flex items-center gap-3 mt-1 text-[11px] font-medium text-white/55">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-gold/60" /> Fri, Jul 11
                   </span>
@@ -376,10 +375,10 @@ function HomeView({
                 </div>
                 <div className="flex items-center gap-1.5 mt-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-                  <span className="text-[9px] font-bold text-white/30 uppercase tracking-wider">Floor Team</span>
+                  <span className="text-[9px] font-bold text-white/45 uppercase tracking-wider">Floor Team</span>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider text-white/50 bg-white/10">
+              <span className="px-2 py-0.5 rounded-lg text-[9px] font-semibold uppercase tracking-wider text-white/50 bg-white/10">
                 Upcoming
               </span>
             </div>
@@ -389,7 +388,7 @@ function HomeView({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <p className="text-xs sm:text-sm font-bold text-white truncate">Saturday Brunch Rush</p>
-                <div className="flex items-center gap-3 mt-1 text-[11px] font-medium text-white/40">
+                <div className="flex items-center gap-3 mt-1 text-[11px] font-medium text-white/55">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-gold/60" /> Sat, Jul 12
                   </span>
@@ -399,10 +398,10 @@ function HomeView({
                 </div>
                 <div className="flex items-center gap-1.5 mt-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-gold" />
-                  <span className="text-[9px] font-bold text-white/30 uppercase tracking-wider">Kitchen Support</span>
+                  <span className="text-[9px] font-bold text-white/45 uppercase tracking-wider">Kitchen Support</span>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider text-purple-300 bg-purple-500/15 border border-purple-500/30">
+              <span className="px-2 py-0.5 rounded-lg text-[9px] font-semibold uppercase tracking-wider text-purple-300 bg-purple-500/15 border border-purple-500/30">
                 Up for Swap
               </span>
             </div>
@@ -415,7 +414,7 @@ function HomeView({
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-1.5">
             <Bell className="w-3.5 h-3.5 text-gold/60" />
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Swap Activity</h2>
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-white/55">Swap Activity</h2>
           </div>
           <button
             onClick={() => onNavigate("swap")}
@@ -433,7 +432,7 @@ function HomeView({
               </div>
               <div>
                 <p className="text-xs font-bold text-white">James K. offered to cover</p>
-                <p className="text-[10px] text-white/40">Sat, Jul 12 · Awaiting manager Dave approval</p>
+                <p className="text-[10px] text-white/55">Sat, Jul 12 · Awaiting manager Dave approval</p>
               </div>
             </div>
             <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider shrink-0">In Review</span>
@@ -446,7 +445,7 @@ function HomeView({
               </div>
               <div>
                 <p className="text-xs font-bold text-white">Friday Floor Shift Trade</p>
-                <p className="text-[10px] text-white/40">Awaiting someone from Dining to claim</p>
+                <p className="text-[10px] text-white/55">Awaiting someone from Dining to claim</p>
               </div>
             </div>
             <span className="text-[9px] font-bold text-amber-300 uppercase tracking-wider shrink-0">Pending</span>
@@ -518,7 +517,7 @@ function MyShiftsView({
       dept: "Floor",
       status: "swapped",
       badge: "Swapped with Sarah M.",
-      badgeColor: "bg-white/5 text-white/30 border border-white/5",
+      badgeColor: "bg-white/5 text-white/45 border border-white/5",
     },
   ];
 
@@ -531,8 +530,8 @@ function MyShiftsView({
     <div className="space-y-5 pb-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">My Scheduled Shifts</h1>
-          <p className="text-xs text-white/40">View your roster and request trades</p>
+          <h1 className="text-xl sm:text-2xl font-semibold text-white">My Scheduled Shifts</h1>
+          <p className="text-xs text-white/55">View your roster and request trades</p>
         </div>
       </div>
 
@@ -543,8 +542,8 @@ function MyShiftsView({
             key={t}
             onClick={() => onFilterChange(t)}
             className={cn(
-              "flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all",
-              filter === t ? "bg-gold text-black shadow-md shadow-gold/20" : "text-white/40 hover:text-white"
+              "flex-1 py-1.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all",
+              filter === t ? "bg-gold text-black shadow-md" : "text-white/55 hover:text-white"
             )}
           >
             {t}
@@ -560,18 +559,18 @@ function MyShiftsView({
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="text-sm font-bold text-white">{s.title}</h3>
-                  <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${s.badgeColor}`}>
+                  <span className={`px-2 py-0.5 rounded-md text-[9px] font-semibold uppercase tracking-wider ${s.badgeColor}`}>
                     {s.badge}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-xs text-white/40">
+                <div className="flex items-center gap-3 text-xs text-white/55">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-gold/60" /> {s.date}
                   </span>
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3 text-gold/60" /> {s.time}
                   </span>
-                  <span className="text-[10px] uppercase font-bold text-white/20">· {s.dept}</span>
+                  <span className="text-[10px] uppercase font-bold text-white/35">· {s.dept}</span>
                 </div>
               </div>
 
@@ -644,8 +643,8 @@ function AvailableShiftsView({
   return (
     <div className="space-y-5 pb-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-black text-white">Available Shifts & Open Coverage</h1>
-        <p className="text-xs text-white/40">Claim shifts to pick up extra hours in Harbor Kitchen</p>
+        <h1 className="text-xl sm:text-2xl font-semibold text-white">Available Shifts & Open Coverage</h1>
+        <p className="text-xs text-white/55">Claim shifts to pick up extra hours in Harbor Kitchen</p>
       </div>
 
       <div className="space-y-3">
@@ -664,11 +663,11 @@ function AvailableShiftsView({
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-sm font-bold text-white">{sh.title}</h3>
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30 bg-white/5 px-2 py-0.5 rounded-md">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/45 bg-white/5 px-2 py-0.5 rounded-md">
                       {sh.dept}
                     </span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-white/40">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-white/55">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3 text-gold/60" /> {sh.date}
                     </span>
@@ -677,19 +676,19 @@ function AvailableShiftsView({
                     </span>
                     <span className="text-gold font-bold">{sh.rate}</span>
                   </div>
-                  <p className="text-[10px] text-white/30 mt-1">Offered by: {sh.offeredBy}</p>
+                  <p className="text-[10px] text-white/45 mt-1">Offered by: {sh.offeredBy}</p>
                 </div>
 
                 <div>
                   {isClaimed ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-semibold uppercase tracking-wider">
                       <Check className="w-3.5 h-3.5" />
                       Claim Pending
                     </span>
                   ) : (
                     <button
                       onClick={() => onClaim(sh.id, sh.title)}
-                      className="px-4 py-2 rounded-xl bg-gold hover:bg-gold/90 text-black text-[11px] font-black uppercase tracking-wider shadow-md shadow-gold/20 transition-all active:scale-95 flex items-center gap-1.5"
+                      className="px-4 py-2 rounded-xl bg-gold hover:bg-gold/90 text-black text-[11px] font-semibold uppercase tracking-wider shadow-md transition-all active:scale-95 flex items-center gap-1.5"
                     >
                       <Zap className="w-3.5 h-3.5 fill-black" />
                       <span>Claim Shift</span>
@@ -721,12 +720,12 @@ function SwapBoardView({
     <div className="space-y-5 pb-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">Shift Swap Board</h1>
-          <p className="text-xs text-white/40">Active trades and shift swaps in Harbor Kitchen</p>
+          <h1 className="text-xl sm:text-2xl font-semibold text-white">Shift Swap Board</h1>
+          <p className="text-xs text-white/55">Active trades and shift swaps in Harbor Kitchen</p>
         </div>
         <button
           onClick={onOpenPostModal}
-          className="px-3.5 py-2 rounded-xl bg-gold text-black text-xs font-black uppercase tracking-wider shadow-lg shadow-gold/20 flex items-center gap-1.5 active:scale-95 transition-all"
+          className="px-3.5 py-2 rounded-xl bg-gold text-black text-xs font-semibold uppercase tracking-wider shadow-lg flex items-center gap-1.5 active:scale-95 transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>New Swap</span>
@@ -739,13 +738,13 @@ function SwapBoardView({
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-white">{s.title}</h3>
-                <p className="text-xs text-white/40 mt-0.5">{s.date}</p>
+                <p className="text-xs text-white/55 mt-0.5">{s.date}</p>
                 <p className="text-[11px] text-gold/80 font-medium mt-1">{s.message}</p>
               </div>
 
               <span
                 className={cn(
-                  "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border",
+                  "px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider border",
                   s.status === "worker_accepted"
                     ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
                     : "bg-amber-500/10 text-amber-300 border-amber-500/20"
@@ -771,7 +770,7 @@ function SwapBoardView({
         {/* Informational card */}
         <div className="p-4 rounded-2xl bg-white/[0.02] border border-dashed border-white/10 text-center space-y-1">
           <p className="text-xs font-bold text-white/60">Manager Approval Rules</p>
-          <p className="text-[11px] text-white/30 max-w-sm mx-auto">
+          <p className="text-[11px] text-white/45 max-w-sm mx-auto">
             Once a teammate agrees to take your shift, General Manager Dave receives an instant notification to approve the trade.
           </p>
         </div>
@@ -797,8 +796,8 @@ function TeamView() {
   return (
     <div className="space-y-5 pb-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-black text-white">Harbor Kitchen Team</h1>
-        <p className="text-xs text-white/40">Staff roster & live duty status</p>
+        <h1 className="text-xl sm:text-2xl font-semibold text-white">Harbor Kitchen Team</h1>
+        <p className="text-xs text-white/55">Staff roster & live duty status</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -812,18 +811,18 @@ function TeamView() {
                 <p className="text-xs font-bold text-white flex items-center gap-1.5">
                   {m.name}
                 </p>
-                <p className="text-[10px] text-white/40">{m.role} · {m.dept}</p>
+                <p className="text-[10px] text-white/55">{m.role} · {m.dept}</p>
               </div>
             </div>
 
             <div>
               {m.onDuty ? (
-                <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <div className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   On Duty
                 </div>
               ) : (
-                <span className="text-[9px] font-bold text-white/20 uppercase tracking-wider">Off</span>
+                <span className="text-[9px] font-bold text-white/35 uppercase tracking-wider">Off</span>
               )}
             </div>
           </div>
@@ -843,19 +842,19 @@ function ProfileView({ onSaved }: { onSaved: () => void }) {
   return (
     <div className="space-y-5 pb-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-black text-white">Worker Profile</h1>
-        <p className="text-xs text-white/40">Manage your contact, certifications, and notification alerts</p>
+        <h1 className="text-xl sm:text-2xl font-semibold text-white">Worker Profile</h1>
+        <p className="text-xs text-white/55">Manage your contact, certifications, and notification alerts</p>
       </div>
 
       <div className="glass rounded-2xl p-5 border border-white/5 space-y-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gold/20 border border-gold/30 text-gold flex items-center justify-center text-xl font-black">
+          <div className="w-14 h-14 rounded-2xl bg-gold/20 border border-gold/30 text-gold flex items-center justify-center text-xl font-semibold">
             {PROFILE.initial}
           </div>
           <div>
-            <h2 className="text-base font-black text-white">{PROFILE.name}</h2>
-            <p className="text-xs text-white/40">{PROFILE.role} · {ORG_NAME}</p>
-            <span className="inline-block mt-1 text-[9px] font-black uppercase text-gold bg-gold/10 px-2 py-0.5 rounded-md border border-gold/20">
+            <h2 className="text-base font-semibold text-white">{PROFILE.name}</h2>
+            <p className="text-xs text-white/55">{PROFILE.role} · {ORG_NAME}</p>
+            <span className="inline-block mt-1 text-[9px] font-semibold uppercase text-gold bg-gold/10 px-2 py-0.5 rounded-md border border-gold/20">
               63% Profile Completed
             </span>
           </div>
@@ -863,19 +862,19 @@ function ProfileView({ onSaved }: { onSaved: () => void }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/30 block mb-1">Email</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-white/45 block mb-1">Email</span>
             <span className="font-mono text-white/80">{PROFILE.email}</span>
           </div>
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/30 block mb-1">Phone</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-white/45 block mb-1">Phone</span>
             <span className="font-mono text-white/80">{PROFILE.phone}</span>
           </div>
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/30 block mb-1">Hourly Base Rate</span>
-            <span className="font-black text-gold">{PROFILE.hourlyRate} / hr</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-white/45 block mb-1">Hourly Base Rate</span>
+            <span className="font-semibold text-gold">{PROFILE.hourlyRate} / hr</span>
           </div>
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/30 block mb-1">Timezone</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-white/45 block mb-1">Timezone</span>
             <span className="text-white/80">{PROFILE.timezone}</span>
           </div>
         </div>

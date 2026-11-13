@@ -130,7 +130,7 @@ export function UserActions({ user }: { user: any }) {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="h-8 w-8 p-0 text-white/20 hover:text-white/60 hover:bg-white/5"
+            className="h-8 w-8 p-0 text-white/35 hover:text-white/60 hover:bg-white/5"
             disabled={isPending}
           >
             {isPending ? (
@@ -175,10 +175,10 @@ export function UserActions({ user }: { user: any }) {
                   disabled={user.user_role === value}
                   className="flex items-center gap-2 focus:bg-white/5 focus:text-white cursor-pointer text-xs"
                 >
-                  <Icon className="w-3.5 h-3.5 text-white/30" />
+                  <Icon className="w-3.5 h-3.5 text-white/45" />
                   {label}
                   {user.user_role === value && (
-                    <span className="ml-auto text-[9px] text-gold/60">Current</span>
+                    <span className="ml-auto text-[11px] text-gold/60">Current</span>
                   )}
                 </DropdownMenuItem>
               ))}

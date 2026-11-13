@@ -77,8 +77,8 @@ export function NotificationSettings({ preferences }: { preferences: Json | null
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-black text-white tracking-tight">Notifications</h2>
-        <p className="text-sm text-white/40 mt-1">Control how you receive updates about your workspace</p>
+        <h2 className="text-xl font-semibold text-white tracking-tight">Notifications</h2>
+        <p className="text-sm text-white/55 mt-1">Control how you receive updates about your workspace</p>
       </div>
 
       <div className="space-y-3">
@@ -92,7 +92,7 @@ export function NotificationSettings({ preferences }: { preferences: Json | null
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-white">{toggle.label}</p>
-              <p className="text-xs text-white/40 mt-0.5">{toggle.description}</p>
+              <p className="text-xs text-white/55 mt-0.5">{toggle.description}</p>
             </div>
             <input
               type="checkbox"
@@ -107,7 +107,7 @@ export function NotificationSettings({ preferences }: { preferences: Json | null
       <Button
         onClick={handleSave}
         disabled={isPending}
-        className="btn-gold rounded-full px-8 h-11 text-xs font-black uppercase tracking-widest"
+        className="btn-gold rounded-full px-8 h-11 text-xs font-semibold uppercase tracking-wider"
       >
         {isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
         Save Preferences

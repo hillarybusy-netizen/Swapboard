@@ -127,7 +127,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
     <div ref={dropdownRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/10 hover:bg-gold/20 border border-gold/30 text-gold text-xs font-black uppercase tracking-widest transition-all"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/10 hover:bg-gold/20 border border-gold/30 text-gold text-xs font-semibold uppercase tracking-wider transition-all"
       >
         <Download className="w-4 h-4" />
         Export Report
@@ -155,7 +155,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id === activeTab ? null : tab.id)}
-                className={`min-w-0 px-2 py-3 text-[10px] font-black uppercase tracking-wide transition-all border-b-2 sm:px-3 sm:text-xs sm:tracking-widest ${
+                className={`min-w-0 px-2 py-3 text-[11px] font-semibold uppercase tracking-wide transition-all border-b-2 sm:px-3 sm:text-xs sm:tracking-wider ${
                   activeTab === tab.id
                     ? "border-gold text-gold bg-gold/5"
                     : "border-transparent text-white/50 hover:text-white/70"
@@ -187,7 +187,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
                 <p className="text-sm text-white/60">Select a month to export</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-bold text-white/40 uppercase">Month</label>
+                    <label className="text-xs font-bold text-white/55 uppercase">Month</label>
                     <select
                       value={selectedMonth}
                       onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
@@ -201,7 +201,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-white/40 uppercase">Year</label>
+                    <label className="text-xs font-bold text-white/55 uppercase">Year</label>
                     <select
                       value={selectedYear}
                       onChange={(e) => setSelectedYear(parseInt(e.target.value))}
@@ -262,7 +262,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
                 {/* Date Range */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-bold text-white/40 uppercase">Start Date</label>
+                    <label className="text-xs font-bold text-white/55 uppercase">Start Date</label>
                     <input
                       type="date"
                       value={startDate}
@@ -271,7 +271,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-white/40 uppercase">End Date</label>
+                    <label className="text-xs font-bold text-white/55 uppercase">End Date</label>
                     <input
                       type="date"
                       value={endDate}
@@ -283,7 +283,7 @@ export function ExportReportDropdown({ data }: ExportReportDropdownProps) {
 
                 {/* Field Selection */}
                 <div>
-                  <label className="text-xs font-bold text-white/40 uppercase block mb-2">Fields to Include</label>
+                  <label className="text-xs font-bold text-white/55 uppercase block mb-2">Fields to Include</label>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {allFields.map((field) => (
                       <label key={field.key} className="flex items-center gap-2 cursor-pointer">

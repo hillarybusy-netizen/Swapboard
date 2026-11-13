@@ -7,7 +7,7 @@ import { Building2, Search, Filter, ShieldCheck, UserCheck, UserX } from "lucide
 import { UserActions } from "@/app/super-admin/users/UserActions";
 
 const ROLE_BADGES: Record<string, { label: string; className: string }> = {
-  super_admin: { label: "Super Admin", className: "bg-gold/20 text-gold border-gold/40 shadow-sm shadow-gold/20" },
+  super_admin: { label: "Super Admin", className: "bg-gold/20 text-gold border-gold/40 shadow-sm" },
   org_admin: { label: "Admin", className: "bg-purple-500/10 text-purple-300 border-purple-500/20" },
   manager: { label: "Manager", className: "bg-blue-500/10 text-blue-300 border-blue-500/20" },
   worker: { label: "Worker", className: "bg-white/5 text-white/50 border-white/10" },
@@ -44,13 +44,13 @@ export function AdminUsersList({ users }: { users: any[] }) {
       {/* Search and Filters */}
       <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/45" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by name, email, or organization..."
-            className="w-full pl-11 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-xs md:text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-gold/50 transition-all font-medium"
+            className="w-full pl-11 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-xs md:text-sm text-white placeholder:text-white/45 focus:outline-none focus:border-gold/50 transition-all font-medium"
           />
         </div>
 
@@ -58,17 +58,17 @@ export function AdminUsersList({ users }: { users: any[] }) {
         <div className="flex flex-wrap items-center gap-2">
           {/* Role Filters */}
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/30 shrink-0 flex items-center gap-1">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-white/45 shrink-0 flex items-center gap-1">
               <Filter className="w-3 h-3" /> Role:
             </span>
             {roles.map((role) => (
               <button
                 key={role}
                 onClick={() => setSelectedRole(role)}
-                className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${
+                className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold uppercase tracking-wider transition-all shrink-0 ${
                   selectedRole === role
-                    ? "bg-gold text-black shadow-lg shadow-gold/20"
-                    : "bg-white/5 text-white/40 hover:text-white hover:bg-white/10"
+                    ? "bg-gold text-black shadow-lg"
+                    : "bg-white/5 text-white/55 hover:text-white hover:bg-white/10"
                 }`}
               >
                 {role.replace("_", " ")}
@@ -80,20 +80,20 @@ export function AdminUsersList({ users }: { users: any[] }) {
           <div className="flex items-center gap-1 border-l border-white/10 pl-2">
             <button
               onClick={() => setSelectedStatus(selectedStatus === "active" ? "all" : "active")}
-              className={`px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`px-2.5 py-1.5 rounded-xl text-[11px] font-semibold uppercase tracking-wider transition-all ${
                 selectedStatus === "active"
                   ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                  : "bg-white/5 text-white/40 hover:text-white"
+                  : "bg-white/5 text-white/55 hover:text-white"
               }`}
             >
               Active
             </button>
             <button
               onClick={() => setSelectedStatus(selectedStatus === "disabled" ? "all" : "disabled")}
-              className={`px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`px-2.5 py-1.5 rounded-xl text-[11px] font-semibold uppercase tracking-wider transition-all ${
                 selectedStatus === "disabled"
                   ? "bg-red-500/20 text-red-300 border border-red-500/30"
-                  : "bg-white/5 text-white/40 hover:text-white"
+                  : "bg-white/5 text-white/55 hover:text-white"
               }`}
             >
               Disabled
@@ -103,28 +103,28 @@ export function AdminUsersList({ users }: { users: any[] }) {
       </div>
 
       {/* Users Table */}
-      <div className="glass rounded-[2rem] overflow-hidden border-white/5">
+      <div className="glass rounded-2xl overflow-hidden border-white/5">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.01]">
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/30">User</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/30">Organization</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/30">Platform Role</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/30">Status</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/30 text-right">Actions</th>
+                <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wider text-white/45">User</th>
+                <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wider text-white/45">Organization</th>
+                <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wider text-white/45">Platform Role</th>
+                <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wider text-white/45">Status</th>
+                <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wider text-white/45 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.03]">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-16 text-center text-xs text-white/40">
+                  <td colSpan={5} className="py-16 text-center text-xs text-white/55">
                     No users found matching your search or filters.
                   </td>
                 </tr>
               ) : (
                 filtered.map((user: any) => {
-                  const roleBadge = ROLE_BADGES[user.user_role] || { label: user.user_role, className: "bg-white/5 text-white/40 border-white/10" };
+                  const roleBadge = ROLE_BADGES[user.user_role] || { label: user.user_role, className: "bg-white/5 text-white/55 border-white/10" };
 
                   return (
                     <tr key={user.id} className="group hover:bg-white/[0.015] transition-colors">
@@ -140,7 +140,7 @@ export function AdminUsersList({ users }: { users: any[] }) {
                             <p className="text-xs md:text-sm font-bold text-white tracking-tight group-hover:text-gold transition-colors">
                               {user.full_name || "Anonymous User"}
                             </p>
-                            <p className="text-[10px] text-white/30 font-mono">{user.email}</p>
+                            <p className="text-[11px] text-white/45 font-mono">{user.email}</p>
                           </div>
                         </div>
                       </td>
@@ -149,17 +149,17 @@ export function AdminUsersList({ users }: { users: any[] }) {
                       <td className="px-6 py-4">
                         {user.organization ? (
                           <div className="flex items-center gap-2">
-                            <Building2 className="w-3.5 h-3.5 text-white/20 shrink-0" />
+                            <Building2 className="w-3.5 h-3.5 text-white/35 shrink-0" />
                             <span className="text-xs font-semibold text-white/70">{user.organization.name}</span>
                           </div>
                         ) : (
-                          <span className="text-xs text-white/20 italic">No Organization (Platform)</span>
+                          <span className="text-xs text-white/35 italic">No Organization (Platform)</span>
                         )}
                       </td>
 
                       {/* Role */}
                       <td className="px-6 py-4">
-                        <Badge className={`rounded-full px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider border ${roleBadge.className}`}>
+                        <Badge className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider border ${roleBadge.className}`}>
                           {roleBadge.label}
                         </Badge>
                       </td>
@@ -167,12 +167,12 @@ export function AdminUsersList({ users }: { users: any[] }) {
                       {/* Status */}
                       <td className="px-6 py-4">
                         {user.is_active ? (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase tracking-wider">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold uppercase tracking-wider">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                             Active
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase tracking-wider">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-semibold uppercase tracking-wider">
                             <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
                             Disabled
                           </div>

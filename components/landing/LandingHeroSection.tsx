@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Gift } from "lucide-react";
-import { LandingHeroPreview } from "@/components/landing/LandingHeroPreview";
+import { Gift, CalendarDays } from "lucide-react";
+import { DEMO_HREF } from "@/lib/contact";
 import { FadeUpOnScroll } from "@/components/animations/ScrollAnimations";
 
 interface LandingHeroSectionProps {
@@ -18,7 +17,7 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
   return (
     <section
       data-hero-section
-      className="relative pt-20 sm:pt-24 md:pt-28 pb-16 sm:pb-20 md:pb-32 lg:min-h-screen lg:flex lg:items-center px-4 sm:px-6 overflow-hidden"
+      className="relative min-h-[88svh] flex items-center pt-28 sm:pt-32 pb-20 sm:pb-24 px-4 sm:px-6 overflow-hidden"
     >
       <div className="absolute inset-0 z-0">
         <Image
@@ -26,52 +25,38 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
           alt="Workers together"
           fill
           priority
-          className="object-cover opacity-70 scale-110 animate-ken-burns"
+          className="object-cover opacity-50"
           sizes="100vw"
         />
       </div>
 
-      <div className="absolute inset-0 bg-[#050505]/55 z-[1]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-[#050505]/70 z-[1]" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-transparent to-[#050505]/40 z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/85 via-[#050505]/65 to-[#050505] z-[1]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_45%,transparent_0%,#050505_100%)] opacity-70 z-[1]" />
 
-      <div className="absolute top-20 left-[10%] w-72 h-72 bg-gold/15 rounded-full blur-[100px] animate-aurora z-[2]" />
-      <div className="absolute bottom-32 right-[5%] w-96 h-96 bg-gold/8 rounded-full blur-[120px] animate-aurora-delayed z-[2]" />
-
-      <div className="absolute inset-0 noise-overlay z-[2] pointer-events-none" />
-
-      <div className="relative z-[3] w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 pt-2 sm:pt-4">
-        <div className="flex-1 text-center lg:text-left lg:pl-4 xl:pl-12 w-full max-w-2xl mx-auto lg:mx-0">
+      <div className="relative z-[3] w-full max-w-4xl mx-auto">
+        <div className="text-center w-full">
           <FadeUpOnScroll>
-            <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-display font-bold tracking-tight mb-6 sm:mb-8 leading-[1.06] md:leading-[1.02]">
+            <h1 className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.5rem] font-display font-bold tracking-tight mb-6 sm:mb-7 leading-[1.04]">
               <span className="text-white">24/7 </span>
-              <span className="text-white/40 font-light">shift coverage </span>
-              <span className="inline-flex items-center justify-center mx-2 sm:mx-3 align-middle">
-                <Image
-                  src="/logo.png"
-                  alt="SwapBoard logo"
-                  width={80}
-                  height={80}
-                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-[88px] lg:h-[88px] object-contain"
-                />
-              </span>
+              <span className="text-white/55 font-light">shift coverage </span>
+              <br className="hidden sm:block" />
               <span className="text-white">on </span>
-              <span className="text-gold-gradient block sm:inline mt-1 sm:mt-0">autopilot.</span>
+              <span className="text-gold-gradient">autopilot.</span>
             </h1>
           </FadeUpOnScroll>
 
           <FadeUpOnScroll delay={0.1}>
-            <p className="text-sm md:text-base text-white/50 max-w-xl mx-auto lg:mx-0 mb-8 sm:mb-10 leading-relaxed font-body font-medium">
+            <p className="text-base md:text-lg text-white/60 max-w-xl mx-auto mb-9 sm:mb-10 leading-relaxed font-body">
               Get started in under 3 minutes. Eliminate last-minute callouts and let your team trade shifts instantly without any coordination chaos.
             </p>
           </FadeUpOnScroll>
 
           <FadeUpOnScroll delay={0.2}>
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8 sm:mb-10">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
               {user ? (
                 <Link
                   href="/dashboard"
-                  className="btn-gold btn-shine flex items-center justify-center gap-2 px-8 sm:px-12 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20"
+                  className="btn-gold flex items-center justify-center gap-2 px-8 sm:px-12 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold w-full sm:w-auto"
                 >
                   Log back into {orgName || "your"} dashboard
                 </Link>
@@ -79,10 +64,17 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
                 <>
                   <Link
                     href="/onboarding/industry"
-                    className="btn-gold btn-shine flex items-center justify-center gap-2 px-8 sm:px-12 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold w-full sm:w-auto shadow-2xl shadow-gold/20"
+                    className="btn-gold flex items-center justify-center gap-2 px-8 sm:px-12 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold w-full sm:w-auto"
                   >
                     Get started instantly
                   </Link>
+                  <a
+                    href={DEMO_HREF}
+                    className="flex items-center justify-center gap-2 px-7 sm:px-8 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-semibold w-full sm:w-auto border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] hover:border-white/25 transition-colors backdrop-blur-sm"
+                  >
+                    <CalendarDays className="w-4 h-4 text-gold" />
+                    Book a demo
+                  </a>
                   <Link
                     href="/onboarding/industry"
                     className="flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-gold/80 hover:text-gold transition-colors py-2"
@@ -102,12 +94,12 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
           </FadeUpOnScroll>
 
           <FadeUpOnScroll delay={0.3}>
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-white/25">Trusted by</span>
+            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Trusted by</span>
               {TRUST_BADGES.map((badge) => (
                 <span
                   key={badge}
-                  className="px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/8 text-[10px] font-semibold text-white/40"
+                  className="px-3 py-1 rounded-full border border-white/10 text-xs font-medium text-white/60"
                 >
                   {badge}
                 </span>
@@ -115,28 +107,7 @@ export function LandingHeroSection({ user, orgName }: LandingHeroSectionProps) {
             </div>
           </FadeUpOnScroll>
         </div>
-
-        {/* Demo — responsive right column */}
-        <div className="w-full lg:flex-1 lg:max-w-[580px] xl:max-w-[640px] shrink-0">
-          <LandingHeroPreview />
-        </div>
       </div>
-
-      <motion.div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[3] hidden lg:flex flex-col items-center gap-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-      >
-        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/25">Scroll</span>
-        <motion.div
-          className="w-5 h-8 rounded-full border border-white/15 flex justify-center pt-1.5"
-          animate={{ y: [0, 4, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <div className="w-1 h-2 rounded-full bg-gold/60" />
-        </motion.div>
-      </motion.div>
     </section>
   );
 }

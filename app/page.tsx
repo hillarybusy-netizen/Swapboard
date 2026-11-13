@@ -6,19 +6,21 @@ import { LandingStructuredData } from "@/components/seo/StructuredData";
 import { LandingFaq } from "@/components/seo/LandingFaq";
 
 export const metadata: Metadata = landingMetadata;
-import { ArrowRight, RefreshCw, Clock, TrendingUp, Shield, Users, BarChart3, Twitter, Linkedin, Github } from "lucide-react";
+import { ArrowRight, RefreshCw, Clock, Shield, Users, BarChart3, MapPin, CalendarDays } from "lucide-react";
+import { IconBrandTiktok, IconBrandLinkedin } from "@tabler/icons-react";
+import { DEMO_HREF, DEMO_SECTION_HREF, GENERAL_EMAIL, ONBOARD_EMAIL, COMPANY_LOCATION, SOCIAL_LINKS } from "@/lib/contact";
 import { AnimatedLogo } from "@/components/layout/AnimatedLogo";
 import { LandingSmoothScroll } from "@/components/layout/LandingSmoothScroll";
 import { LandingCoverageVisual, LandingVerificationVisual, LandingAnalyticsVisual } from "@/components/landing/LandingShowcaseCards";
 
-import { FadeUpOnScroll, StaggerContainer, StaggerItem, ParallaxOnScroll } from "@/components/animations/ScrollAnimations";
+import { FadeUpOnScroll, StaggerContainer, StaggerItem } from "@/components/animations/ScrollAnimations";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
+import { LandingLiveDemoSection } from "@/components/landing/LandingLiveDemoSection";
 import { LandingAnimatedStats } from "@/components/landing/LandingAnimatedStats";
 import { LandingIndustryStrip } from "@/components/landing/LandingIndustryStrip";
 import { LandingTestimonialCarousel } from "@/components/landing/LandingTestimonialCarousel";
 import { LandingHowItWorks } from "@/components/landing/LandingHowItWorks";
-import { GlassTiltCard } from "@/components/landing/GlassTiltCard";
 
 
 
@@ -68,21 +70,21 @@ export default async function LandingPage() {
       <LandingNavbar user={user} logoUrl={logoUrl} initials={user ? initials : ""} orgName={org?.name ?? null} />
 
       <LandingHeroSection user={user} orgName={org?.name} />
+      <LandingLiveDemoSection />
       <LandingAnimatedStats />
       <LandingIndustryStrip />
 
       {/* Features — Bento Grid */}
-      <section id="features" className="py-20 sm:py-32 px-4 sm:px-6 bg-[#080808] relative section-glow-top overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-gold/[0.04] blur-[180px] pointer-events-none" />
+      <section id="features" className="py-20 sm:py-32 px-4 sm:px-6 bg-[#080808] relative overflow-hidden">
 
         <div className="max-w-7xl mx-auto">
           <FadeUpOnScroll>
             <div className="text-center mb-14 sm:mb-20 relative">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold/50 mb-4">Platform capabilities</p>
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-5 tracking-tight">
+              <p className="text-sm font-medium text-gold mb-3">Platform capabilities</p>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-5 tracking-tight">
                 Built for <span className="text-gold-gradient">real operations</span>
               </h2>
-              <p className="text-white/40 max-w-lg mx-auto text-base sm:text-lg font-medium px-4">
+              <p className="text-white/55 max-w-lg mx-auto text-base sm:text-lg font-medium px-4">
                 Whether you run a restaurant, hospital, or retail chain — SwapBoard adapts to your exact complexity.
               </p>
             </div>
@@ -91,74 +93,69 @@ export default async function LandingPage() {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {/* Card 1 — Large hero card */}
             <StaggerItem className="lg:col-span-2">
-              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 sm:p-10 h-full min-h-[280px] flex flex-col justify-between hover:border-gold/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(212,175,55,0.06)]">
-                <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.04] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                <div className="absolute -top-20 -right-20 w-72 h-72 bg-gold/[0.06] rounded-full blur-[80px] group-hover:bg-gold/[0.1] transition-colors duration-700" />
+              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-8 sm:p-10 h-full min-h-[280px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
                 <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mb-6 group-hover:bg-gold/20 group-hover:scale-105 transition-all duration-300">
-                    <RefreshCw className="w-6 h-6 text-gold" />
+                  <div className="w-11 h-11 rounded-xl bg-gold/[0.08] border border-gold/20 flex items-center justify-center mb-6">
+                    <RefreshCw className="w-5 h-5 text-gold" />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold/50 mb-2">Operations</p>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white mb-3 tracking-tight">Instant swap requests</h3>
-                  <p className="text-white/40 text-sm sm:text-base leading-relaxed max-w-md font-medium">Workers post swap requests in seconds. Eligible colleagues are notified immediately. No group chats, no confusion — just clean, traceable requests.</p>
+                  <p className="text-xs font-medium text-gold/80 mb-2">Operations</p>
+                  <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3 tracking-tight">Instant swap requests</h3>
+                  <p className="text-white/55 text-sm sm:text-base leading-relaxed max-w-md font-medium">Workers post swap requests in seconds. Eligible colleagues are notified immediately. No group chats, no confusion — just clean, traceable requests.</p>
                 </div>
-                <div className="relative z-10 mt-6 flex items-center gap-2 text-gold/50 text-xs font-bold uppercase tracking-widest group-hover:text-gold transition-colors">
+                <div className="relative z-10 mt-6 flex items-center gap-2 text-gold/70 text-sm font-medium group-hover:text-gold transition-colors">
                   <span>Reduce swap time by 85%</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </div>
             </StaggerItem>
 
             {/* Card 2 */}
             <StaggerItem>
-              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 h-full min-h-[280px] flex flex-col justify-between hover:border-blue-500/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(59,130,246,0.05)]">
-                <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-blue-500/[0.08] rounded-full blur-[60px] group-hover:bg-blue-500/[0.15] transition-colors duration-700" />
+              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-8 h-full min-h-[280px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
                 <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:bg-blue-500/20 group-hover:scale-105 transition-all duration-300">
-                    <Clock className="w-6 h-6 text-blue-400" />
+                  <div className="w-11 h-11 rounded-xl bg-gold/[0.08] border border-gold/20 flex items-center justify-center mb-6">
+                    <Clock className="w-5 h-5 text-gold" />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-blue-400/50 mb-2">Management</p>
-                  <h3 className="text-xl font-black text-white mb-3 tracking-tight">One-tap approvals</h3>
-                  <p className="text-white/40 text-sm leading-relaxed font-medium">Managers approve or reject swaps from their lock screen. No back-and-forth calls, no emails, no wasted time.</p>
+                  <p className="text-xs font-medium text-gold/80 mb-2">Management</p>
+                  <h3 className="text-xl font-semibold text-white mb-3 tracking-tight">One-tap approvals</h3>
+                  <p className="text-white/55 text-sm leading-relaxed font-medium">Managers approve or reject swaps from their lock screen. No back-and-forth calls, no emails, no wasted time.</p>
                 </div>
               </div>
             </StaggerItem>
 
             {/* Card 3 */}
             <StaggerItem>
-              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 h-full min-h-[260px] flex flex-col justify-between hover:border-emerald-500/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(16,185,129,0.05)]">
-                <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/[0.08] rounded-full blur-[60px] group-hover:bg-emerald-500/[0.15] transition-colors duration-700" />
+              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-8 h-full min-h-[260px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
                 <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 group-hover:bg-emerald-500/20 group-hover:scale-105 transition-all duration-300">
-                    <BarChart3 className="w-6 h-6 text-emerald-400" />
+                  <div className="w-11 h-11 rounded-xl bg-gold/[0.08] border border-gold/20 flex items-center justify-center mb-6">
+                    <BarChart3 className="w-5 h-5 text-gold" />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400/50 mb-2">Insights</p>
-                  <h3 className="text-xl font-black text-white mb-3 tracking-tight">ROI analytics</h3>
-                  <p className="text-white/40 text-sm leading-relaxed font-medium">See exactly how much you've saved in overtime costs and manager hours — tracked automatically every week.</p>
+                  <p className="text-xs font-medium text-gold/80 mb-2">Insights</p>
+                  <h3 className="text-xl font-semibold text-white mb-3 tracking-tight">ROI analytics</h3>
+                  <p className="text-white/55 text-sm leading-relaxed font-medium">See exactly how much you've saved in overtime costs and manager hours — tracked automatically every week.</p>
                 </div>
               </div>
             </StaggerItem>
 
             {/* Card 4 — Large hero card with two sub-features */}
             <StaggerItem className="lg:col-span-2">
-              <div className="group relative rounded-[2rem] overflow-hidden border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-8 sm:p-10 h-full min-h-[260px] flex flex-col justify-between hover:border-purple-500/20 transition-all duration-500 hover:shadow-[0_0_60px_rgba(168,85,247,0.05)]">
-                <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-purple-500/[0.06] rounded-full blur-[100px] group-hover:bg-purple-500/[0.12] transition-colors duration-700" />
+              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-8 sm:p-10 h-full min-h-[260px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
                 <div className="relative z-10 flex flex-col sm:flex-row sm:items-start gap-8">
                   <div className="flex-1">
-                    <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 group-hover:bg-purple-500/20 group-hover:scale-105 transition-all duration-300">
-                      <Shield className="w-6 h-6 text-purple-400" />
+                    <div className="w-11 h-11 rounded-xl bg-gold/[0.08] border border-gold/20 flex items-center justify-center mb-6">
+                      <Shield className="w-5 h-5 text-gold" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-400/50 mb-2">Security</p>
-                    <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Compliance ready</h3>
-                    <p className="text-white/40 text-sm leading-relaxed font-medium">Full audit trail for every swap. Certifications, role validation, and shift overlap detection — all automated. Stay compliant without lifting a finger.</p>
+                    <p className="text-xs font-medium text-gold/80 mb-2">Security</p>
+                    <h3 className="text-2xl font-semibold text-white mb-3 tracking-tight">Compliance ready</h3>
+                    <p className="text-white/55 text-sm leading-relaxed font-medium">Full audit trail for every swap. Certifications, role validation, and shift overlap detection — all automated. Stay compliant without lifting a finger.</p>
                   </div>
                   <div className="flex-1 sm:border-l sm:border-white/5 sm:pl-8">
-                    <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-gold/10 group-hover:border-gold/20 group-hover:scale-105 transition-all duration-300">
-                      <Users className="w-6 h-6 text-white/50 group-hover:text-gold transition-colors" />
+                    <div className="w-11 h-11 rounded-xl bg-gold/[0.08] border border-gold/20 flex items-center justify-center mb-6">
+                      <Users className="w-5 h-5 text-gold" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/30 mb-2">Structure</p>
-                    <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Multi-department</h3>
-                    <p className="text-white/40 text-sm leading-relaxed font-medium">Set up departments, roles, and certifications that match your exact org structure — from restaurant to hospital ward.</p>
+                    <p className="text-xs font-medium text-gold/80 mb-2">Structure</p>
+                    <h3 className="text-2xl font-semibold text-white mb-3 tracking-tight">Multi-department</h3>
+                    <p className="text-white/55 text-sm leading-relaxed font-medium">Set up departments, roles, and certifications that match your exact org structure — from restaurant to hospital ward.</p>
                   </div>
                 </div>
               </div>
@@ -174,14 +171,14 @@ export default async function LandingPage() {
         <FadeUpOnScroll className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 mb-12 sm:mb-20">
             <div className="max-w-2xl">
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold/50 mb-4">Why SwapBoard</p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-4">
+              <p className="text-sm font-medium text-gold mb-3">Why SwapBoard</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white mb-4">
                 The new standard for <br />
                 <span className="text-gold-gradient">schedule operations</span>
               </h2>
             </div>
             <div className="max-w-sm">
-              <p className="text-sm text-white/40 leading-relaxed font-semibold">
+              <p className="text-base text-white/55 leading-relaxed">
                 Our automated routing engines ensure complete compliance, certified coverage, and immediate notifications without managers lifting a finger.
               </p>
             </div>
@@ -194,18 +191,13 @@ export default async function LandingPage() {
               { Visual: LandingAnalyticsVisual, title: "Unparalleled performance", desc: "Gain instant insight into schedule health, cost-benefit savings, and manager time recovery on a unified dashboard." },
             ].map(({ Visual, title, desc }) => (
               <StaggerItem key={title}>
-                <ParallaxOnScroll offset={20}>
-                  <GlassTiltCard intensity={8}>
-                    <div className="card-premium p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] flex flex-col min-h-[360px] sm:h-[400px] justify-between relative overflow-hidden group">
-                      <div className="absolute -top-12 -right-12 w-64 h-64 bg-gold/5 rounded-full blur-[60px] group-hover:bg-gold/10 transition-all duration-700" />
+                    <div className="card-premium p-6 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col min-h-[360px] sm:h-[400px] justify-between relative overflow-hidden group">
                       <Visual />
                       <div>
-                        <h3 className="font-black text-lg sm:text-xl text-white mb-2">{title}</h3>
-                        <p className="text-xs text-white/40 leading-relaxed font-semibold">{desc}</p>
+                        <h3 className="font-semibold text-lg sm:text-xl text-white mb-2">{title}</h3>
+                        <p className="text-sm text-white/55 leading-relaxed">{desc}</p>
                       </div>
                     </div>
-                  </GlassTiltCard>
-                </ParallaxOnScroll>
               </StaggerItem>
             ))}
           </StaggerContainer>
@@ -215,15 +207,61 @@ export default async function LandingPage() {
       <LandingHowItWorks />
 
       {/* Pricing */}
-      <section id="pricing" className="py-20 sm:py-32 px-4 sm:px-6 relative bg-gradient-to-b from-[#18140e] to-[#080808] border-t border-white/5 section-glow-top">
+      <section id="pricing" className="py-20 sm:py-32 px-4 sm:px-6 relative bg-gradient-to-b from-[#0f0d09] to-[#080808] border-t border-white/5">
         <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
         <FadeUpOnScroll className="max-w-6xl mx-auto relative">
           <div className="text-center mb-12 sm:mb-24">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold/50 mb-4">Pricing</p>
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 tracking-tight">Simple, honest pricing</h2>
+            <p className="text-sm font-medium text-gold mb-3">Pricing</p>
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold mb-4 sm:mb-6 tracking-tight">Simple, honest pricing</h2>
             <p className="text-white/50 text-base sm:text-lg">Start free. Scale as you grow. No hidden fees.</p>
           </div>
           <LandingPricing />
+        </FadeUpOnScroll>
+      </section>
+
+      {/* Book a demo */}
+      <section id="demo" className="scroll-mt-24 py-20 sm:py-28 px-4 sm:px-6 bg-[#080808] border-t border-white/5">
+        <FadeUpOnScroll className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 items-center">
+            <div>
+              <p className="text-sm font-medium text-gold mb-3">Book a demo</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white mb-5">
+                See SwapBoard with your own shifts in mind
+              </h2>
+              <p className="text-base sm:text-lg text-white/60 leading-relaxed mb-4">
+                Book a free 15-minute demo with the founder. We&apos;ll walk through how a call-in works on SwapBoard — post the shift, eligible staff get notified, someone claims it, you approve — using healthcare shifts like the ones your team actually covers.
+              </p>
+              <p className="text-base text-white/45">
+                No slides, no pressure, and no obligation to start a pilot.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6 sm:p-8">
+              <ol className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
+                {["Post the shift", "Staff notified", "Someone claims", "You approve"].map((step, i) => (
+                  <li key={step} className="rounded-xl border border-white/[0.07] bg-black/30 px-3 py-3">
+                    <span className="block text-xs font-medium text-gold tabular-nums mb-1">0{i + 1}</span>
+                    <span className="block text-sm font-medium text-white/85 leading-snug">{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <a
+                href={DEMO_HREF}
+                className="btn-gold flex items-center justify-center gap-2 w-full px-6 py-4 rounded-full text-base"
+              >
+                <CalendarDays className="w-4 h-4" />
+                Book my demo
+              </a>
+              <p className="mt-2 text-center text-xs text-white/45">{ONBOARD_EMAIL}</p>
+              <div className="mt-6 pt-6 border-t border-white/[0.07] text-sm text-white/55 leading-relaxed">
+                Prefer to write first? Email{" "}
+                <a href={`mailto:${ONBOARD_EMAIL}`} className="font-semibold text-white hover:text-gold transition-colors">
+                  {ONBOARD_EMAIL}
+                </a>{" "}
+                with your facility name and roughly how many staff you schedule — we&apos;ll reply within one business day with times.
+              </div>
+            </div>
+          </div>
         </FadeUpOnScroll>
       </section>
 
@@ -232,15 +270,13 @@ export default async function LandingPage() {
       {/* CTA */}
       <section className="py-20 sm:py-32 px-4 sm:px-6 bg-gradient-to-b from-[#080808] to-[#141008]">
         <FadeUpOnScroll>
-          <div className="max-w-4xl mx-auto rounded-[2rem] sm:rounded-[3rem] glass glass-shine p-10 sm:p-16 md:p-24 text-center relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] rounded-full group-hover:bg-gold/20 transition-all duration-700" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full" />
+          <div className="max-w-4xl mx-auto rounded-2xl sm:rounded-3xl border border-white/10 p-10 sm:p-16 md:p-24 text-center relative overflow-hidden group">
             <div className="absolute inset-0 overflow-hidden">
-              <Image src="/landing/restaurant-team.jpg" alt="" fill className="object-cover opacity-30 scale-105 group-hover:scale-110 transition-transform duration-[2s]" sizes="800px" />
+              <Image src="/landing/restaurant-team.jpg" alt="" fill className="object-cover opacity-30 scale-105 transition-transform duration-[2s]" sizes="800px" />
               <div className="absolute inset-0 bg-[#060606]/60" />
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-7xl font-black mb-6 sm:mb-8 tracking-tight relative z-10">
+            <h2 className="text-3xl sm:text-4xl md:text-7xl font-semibold mb-6 sm:mb-8 tracking-tight relative z-10">
               Fix your <br /><span className="text-gold-gradient">shift chaos.</span>
             </h2>
             <p className="text-white/60 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 max-w-xl mx-auto font-medium relative z-10 px-2">
@@ -248,7 +284,7 @@ export default async function LandingPage() {
             </p>
             <Link
               href="/onboarding/industry"
-              className="btn-gold btn-shine inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg relative z-10 group"
+              className="btn-gold inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg relative z-10 group"
             >
               Start your free trial
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -260,45 +296,61 @@ export default async function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-white/5 py-12 sm:py-16 px-4 sm:px-6 bg-[#050505]">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-start justify-between gap-10 sm:gap-12 mb-12 sm:mb-16">
-            <div className="flex flex-col gap-4 sm:gap-6">
+          <div className="grid gap-10 lg:grid-cols-[1.3fr_2fr] mb-12 sm:mb-16">
+            <div className="flex flex-col gap-4">
               <AnimatedLogo size="md" showText={true} />
-              <p className="text-white/40 max-w-xs text-sm leading-relaxed font-medium">
+              <p className="text-white/80 max-w-xs text-sm leading-relaxed font-medium">
+                Shift swapping for healthcare teams — post, claim, approve, done.
+              </p>
+              <p className="text-white/45 max-w-xs text-sm leading-relaxed">
                 The modern standard for shift management and team coordination. Built for scale, designed for simplicity.
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-10 sm:gap-16 w-full md:w-auto">
-              <div className="flex flex-col gap-3 sm:gap-4">
-                <h4 className="text-white font-bold text-sm tracking-wider uppercase">Product</h4>
-                <a href="#features" className="text-white/40 text-sm hover:text-gold transition-colors">Features</a>
-                <a href="#how-it-works" className="text-white/40 text-sm hover:text-gold transition-colors">How it works</a>
-                <a href="#pricing" className="text-white/40 text-sm hover:text-gold transition-colors">Pricing</a>
-                <a href="#faq" className="text-white/40 text-sm hover:text-gold transition-colors">FAQ</a>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-10">
+              <div className="flex flex-col gap-3">
+                <h4 className="text-white text-sm font-semibold">Product</h4>
+                <a href="#features" className="text-white/55 text-sm hover:text-white transition-colors">Features</a>
+                <a href="#how-it-works" className="text-white/55 text-sm hover:text-white transition-colors">How it works</a>
+                <a href="#pricing" className="text-white/55 text-sm hover:text-white transition-colors">Pricing</a>
+                <a href="#faq" className="text-white/55 text-sm hover:text-white transition-colors">FAQ</a>
               </div>
-              <div className="flex flex-col gap-3 sm:gap-4">
-                <h4 className="text-white font-bold text-sm tracking-wider uppercase">Company</h4>
-                <a href="mailto:hello@swapboard.app" className="text-white/40 text-sm hover:text-gold transition-colors">About</a>
-                <a href="mailto:hello@swapboard.app?subject=Careers" className="text-white/40 text-sm hover:text-gold transition-colors">Careers</a>
-                <a href="mailto:hello@swapboard.app" className="text-white/40 text-sm hover:text-gold transition-colors">Contact</a>
+              <div className="flex flex-col gap-3">
+                <h4 className="text-white text-sm font-semibold">Company</h4>
+                <a href={DEMO_SECTION_HREF} className="text-white/55 text-sm hover:text-white transition-colors">Demo</a>
+                <a href={DEMO_SECTION_HREF} className="text-white/55 text-sm hover:text-white transition-colors">About</a>
+                <a href={`mailto:${GENERAL_EMAIL}?subject=Careers`} className="text-white/55 text-sm hover:text-white transition-colors">Careers</a>
+                <a href={DEMO_SECTION_HREF} className="text-white/55 text-sm hover:text-white transition-colors">Contact</a>
               </div>
-              <div className="flex flex-col gap-3 sm:gap-4 col-span-2 sm:col-span-1">
-                <h4 className="text-white font-bold text-sm tracking-wider uppercase">Legal</h4>
-                <a href="/privacy" className="text-white/40 text-sm hover:text-gold transition-colors">Privacy</a>
-                <a href="/terms" className="text-white/40 text-sm hover:text-gold transition-colors">Terms</a>
+              <div className="flex flex-col gap-3">
+                <h4 className="text-white text-sm font-semibold">Legal</h4>
+                <a href="/privacy" className="text-white/55 text-sm hover:text-white transition-colors">Privacy</a>
+                <a href="/terms" className="text-white/55 text-sm hover:text-white transition-colors">Terms</a>
+              </div>
+              <div className="flex flex-col gap-3 col-span-2 sm:col-span-1">
+                <h4 className="text-white text-sm font-semibold">Contact</h4>
+                <div>
+                  <p className="text-xs text-white/40 mb-0.5">General</p>
+                  <a href={`mailto:${GENERAL_EMAIL}`} className="text-sm text-white/70 hover:text-gold transition-colors break-all">{GENERAL_EMAIL}</a>
+                </div>
+                <div>
+                  <p className="text-xs text-white/40 mb-0.5">Book a demo / onboarding</p>
+                  <a href={`mailto:${ONBOARD_EMAIL}`} className="text-sm text-white/70 hover:text-gold transition-colors break-all">{ONBOARD_EMAIL}</a>
+                </div>
+                <p className="flex items-start gap-1.5 text-sm text-white/55">
+                  <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-white/40" />
+                  <span>SwapBoard — {COMPANY_LOCATION}</span>
+                </p>
               </div>
             </div>
           </div>
           <div className="pt-6 sm:pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-            <p className="text-xs text-white/20 font-medium text-center sm:text-left">© 2026 SwapBoard Inc. All rights reserved.</p>
-            <div className="flex gap-6 sm:gap-8">
-              <a href="#" className="w-8 h-8 rounded-full bg-white/5 hover:bg-gold/10 border border-white/5 hover:border-gold/20 transition-all cursor-pointer flex items-center justify-center text-white/30 hover:text-gold" title="Twitter">
-                <Twitter className="w-3.5 h-3.5" />
+            <p className="text-xs text-white/40 text-center sm:text-left">© 2026 SwapBoard Inc. All rights reserved.</p>
+            <div className="flex gap-3">
+              <a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noopener noreferrer" aria-label="SwapBoard on TikTok (@swapboard)" className="w-9 h-9 rounded-full border border-white/10 hover:border-white/25 transition-colors flex items-center justify-center text-white/55 hover:text-white">
+                <IconBrandTiktok className="w-4 h-4" stroke={1.75} />
               </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-white/5 hover:bg-gold/10 border border-white/5 hover:border-gold/20 transition-all cursor-pointer flex items-center justify-center text-white/30 hover:text-gold" title="LinkedIn">
-                <Linkedin className="w-3.5 h-3.5" />
-              </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-white/5 hover:bg-gold/10 border border-white/5 hover:border-gold/20 transition-all cursor-pointer flex items-center justify-center text-white/30 hover:text-gold" title="GitHub">
-                <Github className="w-3.5 h-3.5" />
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="SwapBoard on LinkedIn" className="w-9 h-9 rounded-full border border-white/10 hover:border-white/25 transition-colors flex items-center justify-center text-white/55 hover:text-white">
+                <IconBrandLinkedin className="w-4 h-4" stroke={1.75} />
               </a>
             </div>
           </div>

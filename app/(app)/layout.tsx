@@ -52,12 +52,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Top bar with sign out */}
         <header className="w-full flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5">
           <div className="flex items-center gap-2">
-            <span className="text-[#FFD700] font-black text-xl tracking-tight">SwapBoard</span>
+            <span className="text-[#FFD700] font-semibold text-xl tracking-tight">SwapBoard</span>
           </div>
           <form action={signOut}>
             <button
               type="submit"
-              className="flex items-center gap-2 text-white/40 hover:text-red-400 bg-white/5 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest border border-white/5"
+              className="flex items-center gap-2 text-white/55 hover:text-red-400 bg-white/5 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider border border-white/5"
             >
               <LogOut className="w-3.5 h-3.5" />
               Sign Out
@@ -70,10 +70,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="w-full max-w-5xl space-y-10">
             {/* Headline */}
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-semibold uppercase tracking-wider">
                 Access Suspended
               </div>
-              <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+              <h1 className="text-3xl md:text-5xl font-semibold text-white tracking-tight">
                 {wasOnTrial ? "Your free trial has expired" : "Your subscription has expired"}
               </h1>
               <p className="text-white/50 text-base leading-relaxed max-w-xl mx-auto">

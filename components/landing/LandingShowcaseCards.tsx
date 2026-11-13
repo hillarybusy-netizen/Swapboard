@@ -22,17 +22,16 @@ export function LandingCoverageVisual() {
   return (
     <div className="h-44 w-full rounded-2xl bg-gradient-to-b from-[#121216] to-[#09090b] border border-white/10 p-3.5 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
       {/* Subtle ambient lighting */}
-      <div className="absolute -top-10 -right-10 w-36 h-36 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/15 transition-all" />
 
       {/* Header Bar */}
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-1.5">
           <Activity className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Live Shift Board</span>
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-white/70">Live Shift Board</span>
         </div>
         <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
           <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-          <span className="text-[8px] font-black uppercase tracking-wider text-emerald-400">94% Active Swaps</span>
+          <span className="text-[8px] font-semibold uppercase tracking-wider text-emerald-400">94% Active Swaps</span>
         </div>
       </div>
 
@@ -46,9 +45,9 @@ export function LandingCoverageVisual() {
             <div className="flex items-center gap-2 min-w-0">
               <span className={`w-1.5 h-1.5 rounded-full ${item.color} shrink-0`} />
               <span className="text-[11px] font-bold text-white tracking-tight truncate">{item.team}</span>
-              <span className="text-[9px] text-white/30 font-medium hidden sm:inline">· {item.location}</span>
+              <span className="text-[9px] text-white/45 font-medium hidden sm:inline">· {item.location}</span>
             </div>
-            <span className="text-[10px] font-black text-gold tabular-nums shrink-0">{item.swaps} swaps</span>
+            <span className="text-[10px] font-semibold text-gold tabular-nums shrink-0">{item.swaps} swaps</span>
           </div>
         ))}
       </div>
@@ -66,15 +65,14 @@ export function LandingVerificationVisual() {
   return (
     <div className="h-44 w-full rounded-2xl bg-gradient-to-b from-[#121216] to-[#09090b] border border-white/10 p-3.5 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
       {/* Subtle ambient lighting */}
-      <div className="absolute -top-10 -right-10 w-36 h-36 bg-gold/10 rounded-full blur-2xl pointer-events-none group-hover:bg-gold/15 transition-all" />
 
       {/* Header Bar */}
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-gold" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Automated Verification</span>
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-white/70">Automated Verification</span>
         </div>
-        <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+        <span className="text-[8px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
           Auto Passed
         </span>
       </div>
@@ -87,7 +85,7 @@ export function LandingVerificationVisual() {
             className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-gold/[0.04] border border-gold/15"
           >
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-wider text-white/90">{label}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/90">{label}</p>
               <p className="text-[8px] text-emerald-400 font-bold">{status}</p>
             </div>
             <div className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
@@ -103,13 +101,13 @@ export function LandingVerificationVisual() {
           {["RN", "LPN", "CNA", "Barista"].map((role) => (
             <span
               key={role}
-              className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[8px] font-black text-white/60 uppercase"
+              className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[8px] font-semibold text-white/60 uppercase"
             >
               {role}
             </span>
           ))}
         </div>
-        <span className="text-[8px] font-bold text-white/40 uppercase tracking-wider">Zero Violations</span>
+        <span className="text-[8px] font-bold text-white/55 uppercase tracking-wider">Zero Violations</span>
       </div>
     </div>
   );
@@ -119,20 +117,19 @@ export function LandingAnalyticsVisual() {
   return (
     <div className="h-44 w-full rounded-2xl bg-gradient-to-b from-[#121216] to-[#09090b] border border-white/10 p-3.5 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
       {/* Subtle ambient lighting */}
-      <div className="absolute -top-10 -right-10 w-36 h-36 bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/15 transition-all" />
 
       {/* Header Metric */}
       <div className="flex items-start justify-between relative z-10">
         <div>
           <div className="flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-gold" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Fulfillment Ascend</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-white/70">Fulfillment Ascend</span>
           </div>
-          <p className="text-xl font-black text-gold tabular-nums mt-0.5">+22%</p>
+          <p className="text-xl font-semibold text-gold tabular-nums mt-0.5">+22%</p>
         </div>
         <div className="text-right">
-          <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest">This quarter</p>
-          <p className="text-[10px] font-black text-emerald-400">↑ 94% peak</p>
+          <p className="text-[8px] font-bold text-white/45 uppercase tracking-wider">This quarter</p>
+          <p className="text-[10px] font-semibold text-emerald-400">↑ 94% peak</p>
         </div>
       </div>
 
@@ -156,9 +153,9 @@ export function LandingAnalyticsVisual() {
       </div>
 
       {/* Footer Values */}
-      <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-white/30 border-t border-white/5 pt-1 relative z-10">
+      <div className="flex justify-between text-[8px] font-semibold uppercase tracking-wider text-white/45 border-t border-white/5 pt-1 relative z-10">
         {fulfillmentData.map((d) => (
-          <span key={d.month} className={d.rate === 94 ? "text-gold font-black" : ""}>{d.rate}%</span>
+          <span key={d.month} className={d.rate === 94 ? "text-gold font-semibold" : ""}>{d.rate}%</span>
         ))}
       </div>
     </div>

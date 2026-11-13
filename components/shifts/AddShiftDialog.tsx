@@ -109,25 +109,25 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="btn-gold rounded-full px-6 h-10 text-[10px] font-black uppercase tracking-widest gap-2 shadow-xl shadow-gold/20 active:scale-95 transition-all">
+        <Button className="btn-gold rounded-full px-6 h-10 text-[11px] font-semibold uppercase tracking-wider gap-2 shadow-xl active:scale-95 transition-all">
           <Plus className="w-4 h-4" /> Add shift
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-[#0a0a0a] border-white/5 rounded-[2.5rem] shadow-2xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md bg-[#0a0a0a] border-white/5 rounded-3xl shadow-2xl p-0 overflow-hidden">
         <div className="absolute inset-0 bg-mesh opacity-10 pointer-events-none" />
         
         <DialogHeader className="p-8 pb-0">
-          <DialogTitle className="text-2xl font-black tracking-tight text-white mb-1">Create Shift</DialogTitle>
-          <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">New Deployment Details</p>
+          <DialogTitle className="text-2xl font-semibold tracking-tight text-white mb-1">Create Shift</DialogTitle>
+          <p className="text-[11px] text-white/45 font-bold uppercase tracking-wider">New Deployment Details</p>
           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
             <Globe className="w-3.5 h-3.5 text-gold" />
-            <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Timezone: {userTimezone} • 24 Hour Clock</span>
+            <span className="text-[11px] font-semibold text-white/55 uppercase tracking-wider">Timezone: {userTimezone} • 24 Hour Clock</span>
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6 relative">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Shift Title <span className="text-red-400">*</span></Label>
+            <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Shift Title <span className="text-red-400">*</span></Label>
             <Input 
               placeholder="e.g. Morning service, Day shift" 
               className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all placeholder:text-white/10"
@@ -139,7 +139,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Start Time <span className="text-red-400">*</span></Label>
+              <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Start Time <span className="text-red-400">*</span></Label>
               <Input
                 type="datetime-local"
                 className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all [color-scheme:dark]"
@@ -149,7 +149,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">End Time <span className="text-red-400">*</span></Label>
+              <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">End Time <span className="text-red-400">*</span></Label>
               <Input
                 type="datetime-local"
                 className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 focus:border-gold/30 transition-all [color-scheme:dark]"
@@ -162,18 +162,18 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Department <span className="text-red-400">*</span></Label>
+              <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Department <span className="text-red-400">*</span></Label>
               <Select value={form.department_id} onValueChange={(v) => set("department_id", v)}>
                 <SelectTrigger className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 transition-all">
                   <SelectValue placeholder="- select -" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-2xl p-1 shadow-2xl">
                   <SelectItem value="general" className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
-                    <span className="uppercase tracking-widest">General</span>
+                    <span className="uppercase tracking-wider">General</span>
                   </SelectItem>
                   {departments.filter(d => d.name.toLowerCase() !== 'general').map((d) => (
                     <SelectItem key={d.id} value={d.id} className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
-                      <div className="flex items-center gap-2 uppercase tracking-widest scale-90 origin-left">
+                      <div className="flex items-center gap-2 uppercase tracking-wider scale-90 origin-left">
                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: d.color }} />
                          {d.name}
                       </div>
@@ -183,7 +183,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Assignment</Label>
+              <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Assignment</Label>
               <Select
                 value={form.assigned_to}
                 onValueChange={(v) => set("assigned_to", v)}
@@ -197,21 +197,21 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
                 </SelectTrigger>
                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-2xl p-1 shadow-2xl">
                   <SelectItem value="none" className="rounded-xl text-xs font-bold py-3 text-red-400 focus:bg-red-400/10 focus:text-red-400">
-                    <span className="uppercase tracking-widest scale-90 origin-left">
+                    <span className="uppercase tracking-wider scale-90 origin-left">
                       Unassigned ({isGeneralDept ? "General" : form.department_id ? "Dept" : "All"})
                     </span>
                   </SelectItem>
                   {!form.department_id && (
-                    <div className="px-3 py-2 text-[10px] text-white/30">Select a department first</div>
+                    <div className="px-3 py-2 text-[11px] text-white/45">Select a department first</div>
                   )}
                   {isGeneralDept && (
-                    <div className="px-3 py-2 text-[10px] text-white/50 font-medium italic">
+                    <div className="px-3 py-2 text-[11px] text-white/50 font-medium italic">
                       General department allows only open shifts
                     </div>
                   )}
                   {!isGeneralDept && filteredProfiles.map((p) => (
                     <SelectItem key={p.id} value={p.id} className="rounded-xl text-xs font-bold py-3 focus:bg-gold/10 focus:text-gold">
-                      <span className="uppercase tracking-widest scale-90 origin-left">{p.full_name}</span>
+                      <span className="uppercase tracking-wider scale-90 origin-left">{p.full_name}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -220,7 +220,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Notes (Optional)</Label>
+            <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Notes (Optional)</Label>
             <Input 
               placeholder="Any special instructions..." 
               className="glass border-white/5 rounded-2xl h-12 px-5 text-sm font-medium focus:ring-gold/30 transition-all placeholder:text-white/10"
@@ -230,10 +230,10 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5 -mx-8 px-8 bg-white/[0.01]">
-            <Button type="button" variant="ghost" className="text-white/40 hover:text-white rounded-full px-6 font-bold text-xs" onClick={() => setOpen(false)}>
+            <Button type="button" variant="ghost" className="text-white/55 hover:text-white rounded-full px-6 font-bold text-xs" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" className="btn-gold rounded-full px-8 h-12 text-xs font-black uppercase tracking-widest flex items-center gap-2" disabled={loading}>
+            <Button type="submit" className="btn-gold rounded-full px-8 h-12 text-xs font-semibold uppercase tracking-wider flex items-center gap-2" disabled={loading}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Create Deployment
             </Button>
           </div>

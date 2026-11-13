@@ -22,7 +22,7 @@ export function AnalyticsTable({
     <Card className="bg-white/[0.02] border-white/10">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
-          <CardTitle className="text-lg font-black">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold">{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </div>
         {onExport && (
@@ -40,7 +40,7 @@ export function AnalyticsTable({
             <thead>
               <tr className="border-b border-white/10">
                 {columns.map((col) => (
-                  <th key={col.key} className="text-left py-3 px-4 font-bold text-white/60 text-[10px] uppercase">
+                  <th key={col.key} className="text-left py-3 px-4 font-bold text-white/60 text-[11px] uppercase">
                     {col.label}
                   </th>
                 ))}

@@ -97,7 +97,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl w-full">
+    <div className="glass rounded-2xl md:rounded-2xl p-5 md:p-8 border-white/5 shadow-2xl w-full">
       <div className="text-center mb-4 md:mb-5">
         <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-0.5">Welcome back</h1>
         <p className="text-white/50 text-[12px] md:text-sm font-medium">Sign in to your SwapBoard account</p>
@@ -110,8 +110,8 @@ export default function LoginPage() {
             type="button"
             onClick={() => setLoginMode("email")}
             className={cn(
-              "flex-1 py-1.5 md:py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
-              loginMode === "email" ? "bg-gold text-[#050505] shadow-lg shadow-gold/20" : "text-white/40 hover:text-white"
+              "flex-1 py-1.5 md:py-2 text-[11px] font-semibold uppercase tracking-wider rounded-full transition-all",
+              loginMode === "email" ? "bg-gold text-[#050505] shadow-lg" : "text-white/55 hover:text-white"
             )}
           >
             Email
@@ -120,8 +120,8 @@ export default function LoginPage() {
             type="button"
             onClick={() => setLoginMode("member")}
             className={cn(
-              "flex-1 py-1.5 md:py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
-              loginMode === "member" ? "bg-gold text-[#050505] shadow-lg shadow-gold/20" : "text-white/40 hover:text-white"
+              "flex-1 py-1.5 md:py-2 text-[11px] font-semibold uppercase tracking-wider rounded-full transition-all",
+              loginMode === "member" ? "bg-gold text-[#050505] shadow-lg" : "text-white/55 hover:text-white"
             )}
           >
             Member ID
@@ -163,7 +163,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/45 hover:text-white/70 transition-colors"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -189,7 +189,7 @@ export default function LoginPage() {
         <div className="space-y-3 md:space-y-4 pt-1 md:pt-2">
           <Button
             type="submit"
-            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg shadow-gold/20"
+            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg"
             disabled={loading}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
@@ -210,7 +210,7 @@ export default function LoginPage() {
               <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-xs md:text-sm font-semibold text-red-300 mb-1">No registered account found</p>
-                <p className="text-[10px] md:text-xs text-red-200/80 mb-2">We couldn&apos;t find an account with this email. Create a new account to get started.</p>
+                <p className="text-[11px] md:text-xs text-red-200/80 mb-2">We couldn&apos;t find an account with this email. Create a new account to get started.</p>
                 <Link href="/onboarding/industry" className="text-xs font-bold text-red-300 hover:text-red-200 transition-colors underline">
                   Sign up now →
                 </Link>
@@ -218,7 +218,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <p className="text-xs text-white/40 text-center font-medium">
+          <p className="text-xs text-white/55 text-center font-medium">
             Don&apos;t have an account?{" "}
             <Link href="/onboarding/industry" className="text-gold hover:text-gold-light transition-colors font-bold">
               Start free trial

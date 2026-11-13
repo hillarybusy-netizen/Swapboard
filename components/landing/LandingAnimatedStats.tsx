@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/animations/ScrollAnimations";
 
 const STATS = [
@@ -52,20 +52,14 @@ function AnimatedNumber({
 
 export function LandingAnimatedStats() {
   return (
-    <section className="py-16 sm:py-24 px-4 sm:px-6 relative border-y border-gold/10 bg-gradient-to-r from-[#1c1810] via-[#12100c] to-[#1c1810] overflow-hidden">
-      <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
+    <section className="py-16 sm:py-24 px-4 sm:px-6 relative border-y border-white/5 bg-[#0a0907] overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
 
       <StaggerContainer className="max-w-5xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 text-center relative">
         {STATS.map((stat) => (
           <StaggerItem key={stat.label}>
-            <motion.div
-              className="flex flex-col items-center gap-2 p-4 sm:p-0"
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-gold mb-1">
+            <div className="flex flex-col items-center gap-2 p-4 sm:p-0">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-gold mb-1 font-display">
                 <AnimatedNumber
                   value={stat.value}
                   prefix={stat.prefix}
@@ -73,10 +67,10 @@ export function LandingAnimatedStats() {
                   format={stat.format}
                 />
               </div>
-              <div className="text-[10px] sm:text-[12px] font-bold uppercase tracking-widest text-white/30 leading-snug max-w-[140px]">
+              <div className="text-sm text-white/55 leading-snug max-w-[160px]">
                 {stat.label}
               </div>
-            </motion.div>
+            </div>
           </StaggerItem>
         ))}
       </StaggerContainer>

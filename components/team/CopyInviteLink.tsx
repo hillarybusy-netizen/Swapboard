@@ -31,7 +31,7 @@ export function CopyInviteLink({ token }: { token: string }) {
     <Button
       variant="ghost"
       size="sm"
-      className="h-8 px-3 rounded-full hover:bg-gold/10 hover:text-gold transition-all gap-2 text-[10px] font-black uppercase tracking-widest"
+      className="h-8 px-3 rounded-full hover:bg-gold/10 hover:text-gold transition-all gap-2 text-[11px] font-semibold uppercase tracking-wider"
       onClick={copyToClipboard}
     >
       {copied ? (

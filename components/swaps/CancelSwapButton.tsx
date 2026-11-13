@@ -36,7 +36,7 @@ export function CancelSwapButton({ swapId }: Props) {
         flex items-center justify-center gap-2
         h-9 px-4 rounded-xl
         bg-red-500/10 border border-red-500/20
-        text-red-400 text-[10px] font-black uppercase tracking-widest
+        text-red-400 text-[11px] font-semibold uppercase tracking-wider
         hover:bg-red-500/20 hover:border-red-500/40
         active:scale-95 transition-all duration-200
         disabled:opacity-50 disabled:cursor-not-allowed

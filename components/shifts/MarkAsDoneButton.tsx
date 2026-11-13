@@ -37,7 +37,7 @@ export function MarkAsDoneButton({ shiftId, shiftTitle }: Props) {
         w-full flex items-center justify-center gap-2 
         h-11 px-6 rounded-2xl 
         bg-emerald-500/10 border border-emerald-500/20 
-        text-emerald-400 text-[10px] font-black uppercase tracking-widest
+        text-emerald-400 text-[11px] font-semibold uppercase tracking-wider
         hover:bg-emerald-500/20 hover:border-emerald-500/40
         active:scale-95 transition-all duration-200
         disabled:opacity-50 disabled:cursor-not-allowed

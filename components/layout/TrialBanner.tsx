@@ -18,15 +18,15 @@ export function TrialBanner({ org }: { org: Organization | null }) {
         </div>
         <div className="flex flex-col">
           <span className="text-xs font-bold text-white tracking-tight">{getTrialBannerMessage(status)}</span>
-          <span className="text-[10px] text-white/40 font-medium uppercase tracking-widest">{status.daysRemaining} days remaining</span>
+          <span className="text-[11px] text-white/55 font-medium uppercase tracking-wider">{status.daysRemaining} days remaining</span>
         </div>
       </div>
       <Link
         href="/settings?tab=billing"
-        className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+        className={`px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all ${
           isUrgent 
             ? "bg-red-500 text-white hover:bg-red-600" 
-            : "bg-gold text-[#050505] hover:shadow-lg hover:shadow-gold/20"
+            : "bg-gold text-[#050505] hover:shadow-lg"
         }`}
       >
         Upgrade

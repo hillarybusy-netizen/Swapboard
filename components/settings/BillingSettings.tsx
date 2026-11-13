@@ -110,14 +110,13 @@ export function BillingSettings({ org }: { org: Organization | null }) {
     <div className="space-y-6">
       {trial.isOnTrial && (
         <Card className="border-amber-500/20 bg-amber-500/5 shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-2xl -z-10" />
           <CardHeader>
             <CardTitle className="text-base text-amber-400 font-bold">Trial Period</CardTitle>
             <CardDescription className="text-amber-300/60">{trial.daysRemaining} days remaining</CardDescription>
           </CardHeader>
           <CardContent>
             <Progress value={trial.percentUsed} className="h-2 bg-amber-950/50 [&>div]:bg-amber-500" />
-            <p className="text-[10px] text-amber-400/80 mt-2 font-black uppercase tracking-widest">Previewing Growth Features</p>
+            <p className="text-[11px] text-amber-400/80 mt-2 font-semibold uppercase tracking-wider">Previewing Growth Features</p>
           </CardContent>
         </Card>
       )}
@@ -129,19 +128,19 @@ export function BillingSettings({ org }: { org: Organization | null }) {
             <Card
               key={plan.id}
               className={plan.highlight
-                ? "border-gold/40 bg-gold/5 shadow-2xl shadow-gold/5 relative overflow-hidden rounded-3xl"
+                ? "border-gold/40 bg-gold/5 shadow-2xl relative overflow-hidden rounded-3xl"
                 : "border-white/5 bg-white/[0.02] relative overflow-hidden rounded-3xl"
               }
             >
-              {plan.highlight && <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-2xl -z-10" />}
+              
               <CardHeader className="pb-4">
                 {plan.highlight && (
-                  <Badge className="w-fit mb-2 bg-gold text-[#050505] font-black uppercase tracking-widest text-[9px] hover:bg-gold/90">Most popular</Badge>
+                  <Badge className="w-fit mb-2 bg-gold text-[#050505] font-semibold uppercase tracking-wider text-[11px] hover:bg-gold/90">Most popular</Badge>
                 )}
-                <CardTitle className="text-lg font-black text-white">{plan.name}</CardTitle>
+                <CardTitle className="text-lg font-semibold text-white">{plan.name}</CardTitle>
                 <div className="flex items-baseline gap-1 mt-1">
-                  <span className="text-3xl font-black text-white">{plan.price}</span>
-                  <span className="text-white/40 text-xs font-medium">{plan.period}</span>
+                  <span className="text-3xl font-semibold text-white">{plan.price}</span>
+                  <span className="text-white/55 text-xs font-medium">{plan.period}</span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -155,8 +154,8 @@ export function BillingSettings({ org }: { org: Organization | null }) {
                 </ul>
                 <Button
                   className={plan.highlight
-                    ? "w-full rounded-full bg-gold text-[#050505] font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all h-11"
-                    : "w-full rounded-full bg-white/5 text-white border-white/5 font-black text-xs uppercase tracking-widest hover:bg-white/10 active:scale-[0.98] transition-all h-11"
+                    ? "w-full rounded-full bg-gold text-[#050505] font-semibold text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all h-11"
+                    : "w-full rounded-full bg-white/5 text-white border-white/5 font-semibold text-xs uppercase tracking-wider hover:bg-white/10 active:scale-[0.98] transition-all h-11"
                   }
                   variant={plan.highlight ? "default" : "outline"}
                   disabled={isCurrent || !!loading}
@@ -174,7 +173,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
       <AlertDialog open={!!confirmUpgrade} onOpenChange={() => setConfirmUpgrade(null)}>
         <AlertDialogContent className="bg-[#0a0a0a]/95 border-gold/20 backdrop-blur-xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-gold font-black uppercase tracking-wider text-base">
+            <AlertDialogTitle className="flex items-center gap-2 text-gold font-semibold uppercase tracking-wider text-base">
               <Zap className="w-5 h-5 text-gold" />
               Confirm Plan Upgrade
             </AlertDialogTitle>
@@ -197,7 +196,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
                   payWithStripe(targetPlan);
                 }
               }}
-              className="bg-gold hover:bg-gold/90 text-[#050505] font-black uppercase tracking-widest text-[10px] rounded-full px-6"
+              className="bg-gold hover:bg-gold/90 text-[#050505] font-semibold uppercase tracking-wider text-[11px] rounded-full px-6"
             >
               Proceed to Payment
             </AlertDialogAction>
@@ -208,7 +207,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
       <AlertDialog open={!!confirmDowngrade} onOpenChange={() => setConfirmDowngrade(null)}>
         <AlertDialogContent className="bg-[#0a0a0a]/95 border-red-500/20 backdrop-blur-xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-red-500 font-black uppercase tracking-wider text-base">
+            <AlertDialogTitle className="flex items-center gap-2 text-red-500 font-semibold uppercase tracking-wider text-base">
               <AlertTriangle className="w-5 h-5 text-red-500" />
               Confirm Plan Downgrade
             </AlertDialogTitle>
@@ -230,7 +229,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
                   executeDowngrade(confirmDowngrade.id);
                 }
               }}
-              className="bg-red-500 hover:bg-red-600 text-white rounded-full px-6 font-black uppercase tracking-widest text-[10px]"
+              className="bg-red-500 hover:bg-red-600 text-white rounded-full px-6 font-semibold uppercase tracking-wider text-[11px]"
             >
               Yes, Downgrade
             </AlertDialogAction>
@@ -239,7 +238,7 @@ export function BillingSettings({ org }: { org: Organization | null }) {
       </AlertDialog>
 
       <p className="text-xs text-center text-muted-foreground">
-        Need help choosing? Email us at <span className="font-medium">hello@swapboard.app</span>
+        Need help choosing? Email us at <a href="mailto:onboard@swapboard.ca" className="font-medium hover:text-gold transition-colors">onboard@swapboard.ca</a>
       </p>
     </div>
   );

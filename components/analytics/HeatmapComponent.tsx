@@ -24,14 +24,14 @@ export function HeatmapComponent({ data, title }: HeatmapComponentProps) {
 
   return (
     <div className="card-premium p-6 rounded-2xl">
-      <h3 className="text-lg font-black mb-4">{title}</h3>
+      <h3 className="text-lg font-semibold mb-4">{title}</h3>
       <div className="overflow-x-auto">
-        <table className="w-full text-[10px]">
+        <table className="w-full text-[11px]">
           <thead>
             <tr>
-              <th className="p-1 text-right text-white/40">Hour</th>
+              <th className="p-1 text-right text-white/55">Hour</th>
               {days.map((day) => (
-                <th key={day} className="p-1 text-center text-white/40">
+                <th key={day} className="p-1 text-center text-white/55">
                   {day}
                 </th>
               ))}
@@ -40,7 +40,7 @@ export function HeatmapComponent({ data, title }: HeatmapComponentProps) {
           <tbody>
             {hours.map((hour) => (
               <tr key={hour}>
-                <td className="p-1 text-right text-white/40 font-bold">{String(hour).padStart(2, "0")}:00</td>
+                <td className="p-1 text-right text-white/55 font-bold">{String(hour).padStart(2, "0")}:00</td>
                 {days.map((day) => {
                   const value = dataMap.get(`${day}-${hour}`) || 0;
                   return (

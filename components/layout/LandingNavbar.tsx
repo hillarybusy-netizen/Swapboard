@@ -37,7 +37,7 @@ function AuthButtons({
 }) {
   if (user?.id && initials) {
     return (
-      <div className="flex items-center hover:scale-105 transition-transform cursor-pointer">
+      <div className="flex items-center transition-transform cursor-pointer">
         <LandingProfileDropdown logoUrl={logoUrl} initials={initials} />
       </div>
     );
@@ -177,14 +177,14 @@ export function LandingNavbar({ user, logoUrl, initials, orgName }: LandingNavba
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3 glass rounded-2xl p-4 border border-white/10 hover:border-gold/30 hover:bg-white/5 transition-all group"
                     >
-                      <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/20 flex items-center justify-center text-gold text-sm font-black shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/20 flex items-center justify-center text-gold text-sm font-semibold shrink-0">
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-white truncate">
                           {orgName || "My account"}
                         </p>
-                        <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Go to dashboard →</p>
+                        <p className="text-[11px] font-bold text-white/45 uppercase tracking-wider">Go to dashboard →</p>
                       </div>
                     </Link>
                     <form action={signOut}>

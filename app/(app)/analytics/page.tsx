@@ -86,8 +86,8 @@ export default async function AnalyticsPage() {
             <ArrowLeft className="w-5 h-5 text-white/60" />
           </Link>
           <div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white">Analytics</h1>
-            <p className="text-white/40 text-[10px] md:text-sm font-medium tracking-wide uppercase">
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">Analytics</h1>
+            <p className="text-white/55 text-[11px] md:text-sm font-medium tracking-wide uppercase">
               30-Day Performance Report
             </p>
           </div>
@@ -102,7 +102,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-bold">Total Swaps</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-black">{analytics.totalSwaps}</p>
+            <p className="text-4xl font-semibold">{analytics.totalSwaps}</p>
           </CardContent>
         </Card>
         <Card className="bg-white/[0.02] border-white/10">
@@ -110,7 +110,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-bold">Fulfillment Rate</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-black text-emerald-400">{analytics.fulfillmentRate}%</p>
+            <p className="text-4xl font-semibold text-emerald-400">{analytics.fulfillmentRate}%</p>
           </CardContent>
         </Card>
         <Card className="bg-white/[0.02] border-white/10">
@@ -118,7 +118,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-bold">Active Swaps</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-black text-orange-400">{analytics.activeSwaps}</p>
+            <p className="text-4xl font-semibold text-orange-400">{analytics.activeSwaps}</p>
           </CardContent>
         </Card>
       </div>
@@ -126,17 +126,17 @@ export default async function AnalyticsPage() {
       {/* Advanced Analytics */}
       {hasAdvancedAnalytics && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-black">Advanced Metrics</h2>
+          <h2 className="text-2xl font-semibold">Advanced Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="bg-white/[0.02] border-white/10">
               <CardHeader>
                 <CardTitle className="text-base font-bold">Cost Savings</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-black text-blue-400">
+                <p className="text-3xl font-semibold text-blue-400">
                   ${((analytics as any).costSavings || 0).toLocaleString()}
                 </p>
-                <p className="text-[10px] text-white/40 mt-2">vs. overtime & agency fees</p>
+                <p className="text-[11px] text-white/55 mt-2">vs. overtime & agency fees</p>
               </CardContent>
             </Card>
 
@@ -145,10 +145,10 @@ export default async function AnalyticsPage() {
                 <CardTitle className="text-base font-bold">Manager Time Saved</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-black text-purple-400">
+                <p className="text-3xl font-semibold text-purple-400">
                   {((analytics as any).managerHoursSaved || 0).toFixed(1)}h
                 </p>
-                <p className="text-[10px] text-white/40 mt-2">manual coordination hours</p>
+                <p className="text-[11px] text-white/55 mt-2">manual coordination hours</p>
               </CardContent>
             </Card>
 
@@ -157,10 +157,10 @@ export default async function AnalyticsPage() {
                 <CardTitle className="text-base font-bold">Overtime Avoided</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-black text-yellow-400">
+                <p className="text-3xl font-semibold text-yellow-400">
                   {((analytics as any).overtimeAvoided || 0).toFixed(1)}h
                 </p>
-                <p className="text-[10px] text-white/40 mt-2">shift hours covered</p>
+                <p className="text-[11px] text-white/55 mt-2">shift hours covered</p>
               </CardContent>
             </Card>
 
@@ -169,10 +169,10 @@ export default async function AnalyticsPage() {
                 <CardTitle className="text-base font-bold">Cancellation Rate</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-black text-red-400">
+                <p className="text-3xl font-semibold text-red-400">
                   {((analytics as any).cancellationRate || 0)}%
                 </p>
-                <p className="text-[10px] text-white/40 mt-2">of swap requests</p>
+                <p className="text-[11px] text-white/55 mt-2">of swap requests</p>
               </CardContent>
             </Card>
           </div>
@@ -201,7 +201,7 @@ export default async function AnalyticsPage() {
       {/* Enterprise Analytics */}
       {hasEnterpriseAnalytics && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-black">Enterprise Insights</h2>
+          <h2 className="text-2xl font-semibold">Enterprise Insights</h2>
 
           <EnterpriseMetrics
             workerEngagementScore={(analytics as any).workerEngagementScore || 0}
@@ -238,11 +238,10 @@ export default async function AnalyticsPage() {
       {/* Locked Features */}
       {!hasAdvancedAnalytics && (
         <div className="glass rounded-2xl p-8 border-gold/20 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
           <div className="flex items-start gap-4">
             <Lock className="w-6 h-6 text-gold flex-shrink-0 mt-1" />
             <div>
-              <h3 className="text-xl font-black text-white mb-2">Unlock Advanced Analytics</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">Unlock Advanced Analytics</h3>
               <p className="text-white/60 mb-4">
                 Upgrade to Growth plan to access cost savings tracking, worker performance metrics, and more detailed insights.
               </p>

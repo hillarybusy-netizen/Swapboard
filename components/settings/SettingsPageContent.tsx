@@ -58,8 +58,8 @@ export async function SettingsPageContent({
     <div className="space-y-10 max-w-5xl mx-auto pb-10">
       <div className="px-1 md:px-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">Settings</h1>
-          <p className="text-white/40 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-2">Settings</h1>
+          <p className="text-white/55 text-[11px] md:text-[11px] font-semibold uppercase tracking-wider">
             Manage your organization, account, team, and billing
           </p>
         </div>
@@ -67,7 +67,7 @@ export async function SettingsPageContent({
           <form action={signOut} className="self-end md:self-auto">
             <button
               type="submit"
-              className="flex items-center gap-2 text-white/40 hover:text-red-400 bg-white/5 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest border border-white/5"
+              className="flex items-center gap-2 text-white/55 hover:text-red-400 bg-white/5 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider border border-white/5"
             >
               <LogOut className="w-3.5 h-3.5" />
               Sign Out
@@ -77,8 +77,7 @@ export async function SettingsPageContent({
       </div>
 
       {expired && (
-        <div className="mx-1 md:mx-2 bg-red-500/10 border border-red-500/20 rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 text-center md:text-left relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-3xl -z-10" />
+        <div className="mx-1 md:mx-2 bg-red-500/10 border border-red-500/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 text-center md:text-left relative overflow-hidden">
           <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
             <AlertTriangle className="w-7 h-7 text-red-500" />
           </div>
@@ -114,7 +113,7 @@ export async function SettingsPageContent({
           <form action={signOut}>
             <button
               type="submit"
-              className="flex items-center gap-2 text-red-500 hover:text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest"
+              className="flex items-center gap-2 text-red-500 hover:text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider"
             >
               <LogOut className="w-4 h-4" />
               Sign Out

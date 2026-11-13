@@ -167,15 +167,15 @@ export function InviteTeam({
   return (
     <Card className="glass border-white/5 overflow-hidden">
       <CardHeader className="pb-0">
-        <CardTitle className="text-xl font-black uppercase tracking-tight text-white">Invite Team</CardTitle>
-        <CardDescription className="text-white/40 text-xs font-medium">Add members to your organization</CardDescription>
+        <CardTitle className="text-xl font-semibold uppercase tracking-tight text-white">Invite Team</CardTitle>
+        <CardDescription className="text-white/55 text-xs font-medium">Add members to your organization</CardDescription>
       </CardHeader>
 
       <Tabs defaultValue="email" className="w-full">
         <div className="px-6 pt-6">
           <TabsList className="bg-white/5 border border-white/10 w-full md:w-auto">
-            <TabsTrigger value="email" className="data-[state=active]:bg-gold data-[state=active]:text-[#050505] text-[10px] font-black uppercase tracking-widest px-6">Email Invites</TabsTrigger>
-            <TabsTrigger value="link" className="data-[state=active]:bg-gold data-[state=active]:text-[#050505] text-[10px] font-black uppercase tracking-widest px-6">Invitation Link</TabsTrigger>
+            <TabsTrigger value="email" className="data-[state=active]:bg-gold data-[state=active]:text-[#050505] text-[11px] font-semibold uppercase tracking-wider px-6">Email Invites</TabsTrigger>
+            <TabsTrigger value="link" className="data-[state=active]:bg-gold data-[state=active]:text-[#050505] text-[11px] font-semibold uppercase tracking-wider px-6">Invitation Link</TabsTrigger>
           </TabsList>
         </div>
 
@@ -184,9 +184,9 @@ export function InviteTeam({
           <div className="space-y-4">
             {/* Column headers */}
             <div className="hidden md:grid grid-cols-[1fr_120px_160px_32px] gap-2 px-1">
-              <span className="text-[9px] font-black uppercase tracking-widest text-white/20">Email</span>
-              <span className="text-[9px] font-black uppercase tracking-widest text-white/20">Role</span>
-              <span className="text-[9px] font-black uppercase tracking-widest text-white/20">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/35">Email</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/35">Role</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/35">
                 Department <span className="text-red-400">*</span>
               </span>
               <span />
@@ -248,14 +248,14 @@ export function InviteTeam({
                           </SelectTrigger>
                           <SelectContent className="bg-[#050505] border-white/10">
                             {departments.length === 0 ? (
-                              <div className="px-3 py-2 text-xs text-white/30">No departments yet</div>
+                              <div className="px-3 py-2 text-xs text-white/45">No departments yet</div>
                             ) : (
                               departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)
                             )}
                           </SelectContent>
                         </Select>
                       ) : (
-                        <div className="h-10 bg-white/[0.02] border border-white/5 rounded-xl flex items-center px-3 text-[10px] font-bold text-white/30 uppercase tracking-wider select-none cursor-not-allowed">
+                        <div className="h-10 bg-white/[0.02] border border-white/5 rounded-xl flex items-center px-3 text-[11px] font-bold text-white/45 uppercase tracking-wider select-none cursor-not-allowed">
                           All Access (N/A)
                         </div>
                       )}
@@ -263,7 +263,7 @@ export function InviteTeam({
                       <button
                         onClick={() => removeRow(i)}
                         disabled={invites.length === 1}
-                        className="text-white/20 hover:text-red-500 disabled:opacity-30 flex justify-center"
+                        className="text-white/35 hover:text-red-500 disabled:opacity-30 flex justify-center"
                       >
                         <X className="w-5 h-5" />
                       </button>
@@ -278,7 +278,7 @@ export function InviteTeam({
                           </SelectTrigger>
                           <SelectContent className="bg-[#050505] border-white/10">
                             {departments.length === 0 ? (
-                              <div className="px-3 py-2 text-xs text-white/30">No departments yet</div>
+                              <div className="px-3 py-2 text-xs text-white/45">No departments yet</div>
                             ) : (
                               departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)
                             )}
@@ -300,13 +300,13 @@ export function InviteTeam({
             )}
 
             <div className="flex flex-col sm:flex-row justify-between gap-4 pt-2">
-              <Button type="button" variant="ghost" size="sm" onClick={addRow} className="text-white/40 hover:text-gold hover:bg-gold/10 text-[9px] font-black uppercase tracking-widest">
+              <Button type="button" variant="ghost" size="sm" onClick={addRow} className="text-white/55 hover:text-gold hover:bg-gold/10 text-[11px] font-semibold uppercase tracking-wider">
                 <Plus className="w-4 h-4 mr-2" /> Add another person
               </Button>
               <Button
                 onClick={sendInvites}
                 disabled={loading || invites.every((i) => !i.email.trim())}
-                className="btn-gold rounded-full px-8 text-xs font-black uppercase tracking-widest h-12"
+                className="btn-gold rounded-full px-8 text-xs font-semibold uppercase tracking-wider h-12"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
                 Send Invitations
@@ -321,7 +321,7 @@ export function InviteTeam({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Role selector */}
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Target Access</Label>
+                <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/45">Target Access</Label>
                 <Select
                   value={linkRole}
                   onValueChange={(v) => {
@@ -347,7 +347,7 @@ export function InviteTeam({
               <div className="space-y-2">
                 {linkRole === "manager" ? (
                   <>
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Manager Type</Label>
+                    <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/45">Manager Type</Label>
                     <Select value={linkManagerType} onValueChange={(v) => {
                       setLinkManagerType(v);
                       if (v === "general") {
@@ -366,12 +366,12 @@ export function InviteTeam({
                   </>
                 ) : (
                   <>
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">
+                    <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/45">
                       Target Department
                       {linkRole === "worker" && <span className="text-red-400 ml-1">*</span>}
                     </Label>
                     {linkRole === "org_admin" ? (
-                      <div className="h-10 bg-white/[0.02] border border-white/5 rounded-xl flex items-center px-4 text-[10px] font-bold text-white/30 uppercase tracking-wider select-none cursor-not-allowed">
+                      <div className="h-10 bg-white/[0.02] border border-white/5 rounded-xl flex items-center px-4 text-[11px] font-bold text-white/45 uppercase tracking-wider select-none cursor-not-allowed">
                         All Access (N/A)
                       </div>
                     ) : (
@@ -382,7 +382,7 @@ export function InviteTeam({
                           </SelectTrigger>
                           <SelectContent className="bg-[#050505] border-white/10">
                             {departments.length === 0 ? (
-                              <div className="px-3 py-2 text-xs text-white/30">No departments yet</div>
+                              <div className="px-3 py-2 text-xs text-white/45">No departments yet</div>
                             ) : (
                               departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)
                             )}
@@ -404,8 +404,8 @@ export function InviteTeam({
             {generatedLink ? (
               <div className="space-y-3 p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-gold">Link Generated</span>
-                  <span className="text-[9px] font-black text-red-500/60 uppercase">Expires in 30 minutes</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gold">Link Generated</span>
+                  <span className="text-[11px] font-semibold text-red-500/60 uppercase">Expires in 30 minutes</span>
                 </div>
                 <div className="flex gap-2">
                   <Input value={generatedLink} readOnly className="bg-[#0a0a0a] border-white/5 text-white/60 text-xs" />
@@ -413,14 +413,14 @@ export function InviteTeam({
                     {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </div>
-                <p className="text-[10px] text-white/30 font-medium italic text-center pt-1">
+                <p className="text-[11px] text-white/45 font-medium italic text-center pt-1">
                   Share this link to invite a {linkRole === "manager" ? `${linkManagerType} manager` : linkRole}{deptNameForLink ? ` — ${deptNameForLink}` : ""}.
                 </p>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => { setGeneratedLink(""); setLinkSubmitted(false); }}
-                  className="w-full text-white/30 hover:text-white text-[9px] font-black uppercase tracking-widest"
+                  className="w-full text-white/45 hover:text-white text-[11px] font-semibold uppercase tracking-wider"
                 >
                   Generate New Link
                 </Button>
@@ -428,18 +428,18 @@ export function InviteTeam({
             ) : (
               <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center">
-                  <Link2 className="w-6 h-6 text-white/20" />
+                  <Link2 className="w-6 h-6 text-white/35" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-white">Temporary Join Link</h4>
-                  <p className="text-[10px] text-white/40 max-w-[240px] leading-relaxed">
+                  <p className="text-[11px] text-white/55 max-w-[240px] leading-relaxed">
                     Generate a secure, single-use link valid for 30 minutes.
                   </p>
                 </div>
                 <Button
                   onClick={handleGenerateLink}
                   disabled={loading}
-                  className="btn-gold rounded-full px-8 text-xs font-black uppercase tracking-widest h-12"
+                  className="btn-gold rounded-full px-8 text-xs font-semibold uppercase tracking-wider h-12"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}
                   Generate 30-Min Link

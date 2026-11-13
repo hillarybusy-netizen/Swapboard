@@ -56,11 +56,11 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl text-center animate-in fade-in zoom-in duration-500 w-full">
-        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-[0_0_30px_rgba(212,175,55,0.1)] shrink-0">
+      <div className="glass rounded-2xl md:rounded-2xl p-5 md:p-8 border-white/5 shadow-2xl text-center animate-in fade-in zoom-in duration-500 w-full">
+        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-4 md:mb-6 shrink-0">
           <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-gold" />
         </div>
-        <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-2">Password updated!</h2>
+        <h2 className="text-lg md:text-xl font-semibold tracking-tight text-white mb-2">Password updated!</h2>
         <p className="text-white/50 text-xs md:text-sm font-medium">Redirecting you to sign in…</p>
       </div>
     );
@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
 
   if (!ready) {
     return (
-      <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl text-center w-full">
+      <div className="glass rounded-2xl md:rounded-2xl p-5 md:p-8 border-white/5 shadow-2xl text-center w-full">
         <Loader2 className="w-6 h-6 md:w-8 md:h-8 animate-spin text-gold mx-auto mb-3 md:mb-4 shrink-0" />
         <p className="text-white/50 text-xs md:text-sm font-medium">Verifying reset link…</p>
       </div>
@@ -76,7 +76,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="glass rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border-white/5 shadow-2xl w-full">
+    <div className="glass rounded-2xl md:rounded-2xl p-5 md:p-8 border-white/5 shadow-2xl w-full">
       <div className="text-center mb-4 md:mb-5">
         <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-3 md:mb-4 shrink-0">
           <KeyRound className="w-4 h-4 md:w-5 md:h-5 text-gold" />
@@ -102,7 +102,7 @@ export default function ResetPasswordPage() {
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/45 hover:text-white/70 transition-colors"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -127,7 +127,7 @@ export default function ResetPasswordPage() {
         <div className="pt-1 md:pt-2">
           <Button
             type="submit"
-            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg shadow-gold/20"
+            className="w-full h-10 md:h-11 btn-gold rounded-full text-xs md:text-sm font-bold shadow-lg"
             disabled={loading}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}

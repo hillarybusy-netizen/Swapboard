@@ -204,7 +204,7 @@ export const Card = ({
               exit={{ opacity: 0, scale: 0.95 }}
               ref={containerRef}
               layoutId={layout ? `card-${card.title}` : undefined}
-              className="relative z-[60] w-full max-w-2xl rounded-[2.5rem] glass glass-shine border border-white/10 p-6 md:p-10 font-sans shadow-2xl overflow-hidden"
+              className="relative z-[60] w-full max-w-2xl rounded-3xl glass glass-shine border border-white/10 p-6 md:p-10 font-sans shadow-2xl overflow-hidden"
             >
               <div className="absolute inset-0 bg-mesh opacity-5 pointer-events-none" />
               <button
@@ -222,13 +222,13 @@ export const Card = ({
                 <div>
                   <motion.p
                     layoutId={layout ? `category-${card.title}` : undefined}
-                    className="text-[10px] font-black uppercase tracking-widest text-gold/60"
+                    className="text-[11px] font-semibold uppercase tracking-wider text-gold/60"
                   >
                     {card.category}
                   </motion.p>
                   <motion.p
                     layoutId={layout ? `title-${card.title}` : undefined}
-                    className="text-xl md:text-2xl font-black text-white"
+                    className="text-xl md:text-2xl font-semibold text-white"
                   >
                     {card.title}
                   </motion.p>
@@ -242,19 +242,18 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="relative z-10 flex h-64 w-64 flex-col items-center justify-center overflow-hidden rounded-[2rem] glass glass-shine border border-white/5 hover:border-gold/30 hover:shadow-2xl hover:shadow-gold/5 transition-all duration-300 group p-6 text-center"
+        className="relative z-10 flex h-64 w-64 flex-col items-center justify-center overflow-hidden rounded-2xl glass glass-shine border border-white/5 hover:border-gold/30 hover:shadow-2xl transition-all duration-300 group p-6 text-center"
       >
-        <div className="absolute -top-12 -right-12 w-32 h-32 bg-gold/5 rounded-full blur-2xl group-hover:bg-gold/10 transition-colors pointer-events-none" />
         
         {IconComponent && (
-          <div className="mb-4 w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-gold/10 group-hover:border-gold/30 group-hover:scale-110 transition-all duration-300">
+          <div className="mb-4 w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-gold/10 group-hover:border-gold/30 transition-all duration-300">
             <IconComponent className="w-6 h-6 text-white/70 group-hover:text-gold transition-colors" />
           </div>
         )}
         
         <motion.p
           layoutId={layout ? `category-${card.category}` : undefined}
-          className="font-sans text-[9px] font-black uppercase tracking-widest text-white/30 group-hover:text-gold/60 transition-colors"
+          className="font-sans text-[11px] font-semibold uppercase tracking-wider text-white/45 group-hover:text-gold/60 transition-colors"
         >
           {card.category}
         </motion.p>

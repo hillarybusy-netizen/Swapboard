@@ -122,7 +122,7 @@ export function NotificationCenter() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-black text-white">Notifications</h2>
+          <h2 className="text-lg font-semibold text-white">Notifications</h2>
           {unreadCount > 0 && (
             <Badge className="bg-red-500/20 text-red-400 border-red-500/30">{unreadCount}</Badge>
           )}
@@ -149,9 +149,9 @@ export function NotificationCenter() {
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-white/40">Loading...</div>
+        <div className="text-center py-8 text-white/55">Loading...</div>
       ) : notifications.length === 0 ? (
-        <div className="text-center py-12 text-white/40">
+        <div className="text-center py-12 text-white/55">
           <Bell className="w-8 h-8 mx-auto mb-3 opacity-50" />
           <p>No notifications</p>
         </div>
@@ -184,7 +184,7 @@ export function NotificationCenter() {
                         )}
                       </div>
                       <p className="text-xs text-white/60 mt-1">{notification.message}</p>
-                      <p className="text-[10px] text-white/40 mt-2">
+                      <p className="text-[11px] text-white/55 mt-2">
                         {new Date(notification.created_at).toLocaleString()}
                       </p>
 

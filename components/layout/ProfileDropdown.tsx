@@ -32,7 +32,7 @@ export function ProfileDropdown({ profile, email, children, align = "end" }: Pro
         {children ? children : (
           <button className="flex items-center gap-2 hover:opacity-80 transition-opacity outline-none">
             <Avatar className="w-10 h-10 md:w-12 md:h-12 border-2 border-white/10 ring-2 ring-gold/10">
-              <AvatarFallback className="bg-gold/10 text-gold text-sm font-black italic">
+              <AvatarFallback className="bg-gold/10 text-gold text-sm font-semibold italic">
                 {displayInitial}
               </AvatarFallback>
             </Avatar>
@@ -45,8 +45,8 @@ export function ProfileDropdown({ profile, email, children, align = "end" }: Pro
       >
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-black text-white">{displayName}</p>
-            <p className="text-xs font-medium text-white/40 uppercase tracking-widest">{profile?.user_role ?? "user"}</p>
+            <p className="text-sm font-semibold text-white">{displayName}</p>
+            <p className="text-xs font-medium text-white/55 uppercase tracking-wider">{profile?.user_role ?? "user"}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-white/5" />

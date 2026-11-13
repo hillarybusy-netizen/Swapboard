@@ -21,7 +21,7 @@ export function SwapHistoryBadge({ historyItems }: Props) {
   if (unseenCount === 0) return null;
 
   return (
-    <span className="absolute -top-1.5 -right-1.5 min-w-[1rem] h-4 px-0.5 rounded-full bg-gold text-[#050505] text-[9px] font-black flex items-center justify-center">
+    <span className="absolute -top-1.5 -right-1.5 min-w-[1rem] h-4 px-0.5 rounded-full bg-gold text-[#050505] text-[11px] font-semibold flex items-center justify-center">
       {unseenCount > 9 ? "9+" : unseenCount}
     </span>
   );

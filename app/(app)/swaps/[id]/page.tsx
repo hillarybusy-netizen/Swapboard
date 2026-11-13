@@ -52,22 +52,22 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-3xl space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Link href="/swaps" className="group flex items-center gap-2 text-white/40 hover:text-gold text-[10px] font-black uppercase tracking-[0.2em] transition-all">
+      <Link href="/swaps" className="group flex items-center gap-2 text-white/55 hover:text-gold text-[11px] font-semibold uppercase tracking-wider transition-all">
         <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" /> Back to Records
       </Link>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold border border-gold/20 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+          <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold border border-gold/20">
             <ArrowLeftRight className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-white">Swap Request</h1>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">ID: {swap.id.split('-')[0]}</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-white">Swap Request</h1>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/45">ID: {swap.id.split('-')[0]}</p>
           </div>
         </div>
         <Badge className={cn(
-          "rounded-full px-6 py-2 text-[10px] font-black uppercase tracking-widest border-none shadow-xl",
+          "rounded-full px-6 py-2 text-[11px] font-semibold uppercase tracking-wider border-none shadow-xl",
           swap.status === "manager_approved" ? "bg-gold text-[#050505]" : "bg-white/10 text-white/60"
         )}>
           {SWAP_STATUS_LABELS[swap.status] ?? swap.status}
@@ -77,20 +77,19 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
       <div className="grid gap-8 grid-cols-1 lg:grid-cols-5">
         <div className="lg:col-span-3 space-y-8">
           {/* Shift Details */}
-          <div className="glass rounded-[2.5rem] p-8 border-white/5 relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.02] blur-3xl -z-10" />
-             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Shift details</h3>
+          <div className="glass rounded-3xl p-8 border-white/5 relative overflow-hidden">
+             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 mb-6">Shift details</h3>
              {shift && (
               <div className="space-y-6">
-                <h4 className="text-xl font-black text-white">{shift.title}</h4>
+                <h4 className="text-xl font-semibold text-white">{shift.title}</h4>
                 <div className="flex flex-wrap gap-6 pt-4 border-t border-white/5">
                   <div className="flex items-center gap-3">
                     <Calendar className="w-4 h-4 text-gold/40" />
-                    <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{formatShiftDate(shift.start_time, tz)}</span>
+                    <span className="text-xs font-bold text-white/60 uppercase tracking-wider">{formatShiftDate(shift.start_time, tz)}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="w-4 h-4 text-gold/40" />
-                    <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{formatShiftTime(shift.start_time, shift.end_time, tz)}</span>
+                    <span className="text-xs font-bold text-white/60 uppercase tracking-wider">{formatShiftTime(shift.start_time, shift.end_time, tz)}</span>
                   </div>
                 </div>
               </div>
@@ -98,27 +97,27 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
           </div>
 
           {/* People & Roles */}
-          <div className="glass rounded-[2.5rem] p-8 border-white/5">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-8">Participants</h3>
+          <div className="glass rounded-3xl p-8 border-white/5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 mb-8">Participants</h3>
             <div className="space-y-8">
               <div className="flex items-center gap-4">
                 <Avatar className="w-12 h-12 rounded-full border-2 border-white/5">
-                  <AvatarFallback className="bg-gold/10 text-gold text-xs font-black italic">{requester?.full_name?.charAt(0) ?? "?"}</AvatarFallback>
+                  <AvatarFallback className="bg-gold/10 text-gold text-xs font-semibold italic">{requester?.full_name?.charAt(0) ?? "?"}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-black text-white">{requester?.full_name ?? "Unknown"}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 italic">Requester {swap.reason && `· "${swap.reason}"`}</p>
+                  <p className="text-sm font-semibold text-white">{requester?.full_name ?? "Unknown"}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-white/45 italic">Requester {swap.reason && `· "${swap.reason}"`}</p>
                 </div>
               </div>
               
               {covering && (
                 <div className="flex items-center gap-4 pt-8 border-t border-white/5">
                   <Avatar className="w-12 h-12 rounded-full border-2 border-white/5">
-                    <AvatarFallback className="bg-white/5 text-white/30 text-xs font-black italic">{covering.full_name?.charAt(0) ?? "?"}</AvatarFallback>
+                    <AvatarFallback className="bg-white/5 text-white/45 text-xs font-semibold italic">{covering.full_name?.charAt(0) ?? "?"}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-black text-white">{covering.full_name}</p>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 italic">Covering Partner</p>
+                    <p className="text-sm font-semibold text-white">{covering.full_name}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/45 italic">Covering Partner</p>
                   </div>
                 </div>
               )}
@@ -128,16 +127,16 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
 
         <div className="lg:col-span-2 space-y-8">
           {/* History Timeline */}
-          <div className="glass rounded-[2.5rem] p-8 border-white/5 bg-white/[0.01]">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-8">Coordination History</h3>
+          <div className="glass rounded-3xl p-8 border-white/5 bg-white/[0.01]">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 mb-8">Coordination History</h3>
             <div className="space-y-10 relative">
               <div className="absolute left-[7px] top-2 bottom-2 w-[1px] bg-white/5" />
               {timeline.map((event, i) => (
                 <div key={i} className="flex gap-6 relative">
-                  <div className="w-3.5 h-3.5 rounded-full bg-gold border-[3px] border-[#050505] shadow-[0_0_8px_rgba(212,175,55,0.4)] z-10 mt-1 shrink-0" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-gold border-[3px] border-[#050505] z-10 mt-1 shrink-0" />
                   <div className="space-y-1">
-                    <p className="text-xs font-black text-white/80 uppercase tracking-widest leading-none">{event.label}</p>
-                    <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.1em]">{timeAgo(event.time)}</p>
+                    <p className="text-xs font-semibold text-white/80 uppercase tracking-wider leading-none">{event.label}</p>
+                    <p className="text-[11px] font-bold text-white/35 uppercase tracking-[0.1em]">{timeAgo(event.time)}</p>
                   </div>
                 </div>
               ))}

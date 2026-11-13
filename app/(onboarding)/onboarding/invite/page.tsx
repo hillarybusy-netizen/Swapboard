@@ -185,12 +185,12 @@ export default function InvitePage() {
   if (done) {
     return (
       <div className="text-center py-12 md:py-16 animate-in fade-in zoom-in duration-700">
-        <div className="w-20 h-20 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-6 border border-gold/20 shadow-[0_0_50px_rgba(212,175,55,0.1)]">
+        <div className="w-20 h-20 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-6 border border-gold/20">
           <CheckCircle2 className="w-10 h-10 text-gold animate-in zoom-in slide-in-from-top-1 duration-1000 delay-300" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-black text-white mb-3 tracking-tighter">Transmission Successful</h1>
-        <p className="text-white/40 text-sm font-medium mb-8 max-w-sm mx-auto">Your workspace is live and team invitations have been dispatched.</p>
-        <Button className="h-12 px-10 btn-gold rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-gold/20" onClick={() => setShowLogoDialog(true)}>
+        <h1 className="text-3xl md:text-4xl font-semibold text-white mb-3 tracking-tighter">Transmission Successful</h1>
+        <p className="text-white/55 text-sm font-medium mb-8 max-w-sm mx-auto">Your workspace is live and team invitations have been dispatched.</p>
+        <Button className="h-12 px-10 btn-gold rounded-full text-sm font-semibold uppercase tracking-wider shadow-2xl" onClick={() => setShowLogoDialog(true)}>
           Enter Workspace <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
 
@@ -204,7 +204,7 @@ export default function InvitePage() {
             </DialogHeader>
             <div className="flex flex-col gap-3 mt-6">
               <Button onClick={() => { window.location.href = "/settings"; }} className="btn-gold w-full">Go to Settings</Button>
-              <Button variant="ghost" onClick={() => { window.location.href = "/dashboard"; }} className="w-full text-white/40 hover:text-white">Not Now</Button>
+              <Button variant="ghost" onClick={() => { window.location.href = "/dashboard"; }} className="w-full text-white/55 hover:text-white">Not Now</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -214,7 +214,7 @@ export default function InvitePage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center gap-2 mb-4 md:mb-5 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+      <div className="flex items-center gap-2 mb-4 md:mb-5 text-[11px] md:text-[11px] font-semibold uppercase tracking-wider text-white/35">
         <button onClick={() => router.back()} className="hover:text-gold transition-colors flex items-center gap-1.5">
           <ChevronLeft className="w-3 h-3" /> Back
         </button>
@@ -225,7 +225,7 @@ export default function InvitePage() {
       </div>
 
       <div className="mb-5 md:mb-6">
-        <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-white mb-2 leading-tight">
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tighter text-white mb-2 leading-tight">
           {isAnonymous ? (
             <>
               Almost there —{" "}
@@ -238,14 +238,14 @@ export default function InvitePage() {
             </>
           )}
         </h1>
-        <p className="text-white/40 text-sm font-medium max-w-lg">
+        <p className="text-white/55 text-sm font-medium max-w-lg">
           {isAnonymous
             ? "Your workspace is ready. Create your account to activate it — nothing is saved until you click Deploy."
             : "Onboard your initial staff to begin coordinating shifts. You can always manage invitations later."}
         </p>
         {pendingOrgName && (
           <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold/10 border border-gold/20">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gold/70">Setting up</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-gold/70">Setting up</span>
             <span className="text-sm font-bold text-white">{pendingOrgName}</span>
           </div>
         )}
@@ -254,7 +254,7 @@ export default function InvitePage() {
       <div className="space-y-4 md:space-y-5">
       {/* Account creation — anonymous users only */}
       {isAnonymous && !authLoading && (
-        <div className="glass rounded-[1.25rem] md:rounded-[1.5rem] border border-white/5 p-5 md:p-6 space-y-4">
+        <div className="glass rounded-[1.25rem] md:rounded-2xl border border-white/5 p-5 md:p-6 space-y-4">
           {/* Honeypot — invisible to real users */}
           <div aria-hidden="true" style={{ opacity: 0, position: "absolute", top: 0, left: 0, height: 0, width: 0, zIndex: -1, overflow: "hidden" }}>
             <label htmlFor="invite_website">Website</label>
@@ -273,7 +273,7 @@ export default function InvitePage() {
             <div className="w-1 h-5 bg-gold rounded-full" />
             <div className="flex items-center gap-2">
               <UserPlus className="w-4 h-4 text-gold" />
-              <h2 className="font-black text-white uppercase tracking-widest text-[10px] md:text-[11px]">Your Account</h2>
+              <h2 className="font-semibold text-white uppercase tracking-wider text-[11px] md:text-[11px]">Your Account</h2>
             </div>
           </div>
 
@@ -298,7 +298,7 @@ export default function InvitePage() {
 
           <div className="space-y-1.5">
             <Label htmlFor="accountPassword" className="text-[11px] md:text-xs font-bold text-white/50 ml-1">
-              Password <span className="text-white/25 normal-case">(min. 8 characters)</span>
+              Password <span className="text-white/40 normal-case">(min. 8 characters)</span>
             </Label>
             <div className="relative">
               <Input
@@ -308,7 +308,7 @@ export default function InvitePage() {
               />
               <button
                 type="button" onClick={() => setShowPassword((v) => !v)} tabIndex={-1}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/45 hover:text-white/70 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -331,7 +331,7 @@ export default function InvitePage() {
             </Label>
           </div>
 
-          <p className="text-[10px] text-white/25 font-medium px-1">
+          <p className="text-[11px] text-white/40 font-medium px-1">
             Already have an account?{" "}
             <Link href="/login" className="text-gold hover:text-gold-light transition-colors font-bold">Sign in instead</Link>
           </p>
@@ -339,15 +339,15 @@ export default function InvitePage() {
       )}
 
       {/* Team invites */}
-      <div className="glass rounded-[1.25rem] md:rounded-[1.5rem] border border-white/5 p-5 md:p-6 space-y-4">
+      <div className="glass rounded-[1.25rem] md:rounded-2xl border border-white/5 p-5 md:p-6 space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-1 h-5 bg-gold rounded-full" />
-          <h2 className="font-black text-white uppercase tracking-widest text-[10px] md:text-[11px]">
-            Invite Core Team <span className="text-white/25 normal-case font-medium">(optional)</span>
+          <h2 className="font-semibold text-white uppercase tracking-wider text-[11px] md:text-[11px]">
+            Invite Core Team <span className="text-white/40 normal-case font-medium">(optional)</span>
           </h2>
         </div>
 
-        <div className="hidden md:grid grid-cols-[1fr_140px_160px_48px] gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/20 px-1">
+        <div className="hidden md:grid grid-cols-[1fr_140px_160px_48px] gap-3 text-[11px] font-semibold uppercase tracking-wider text-white/35 px-1">
           <span>Email address</span>
           <span>Access Level</span>
           <span>Department <span className="text-red-400">*</span></span>
@@ -391,21 +391,21 @@ export default function InvitePage() {
                     </SelectTrigger>
                     <SelectContent className="bg-[#0a0a0a] border-white/10 text-white rounded-2xl shadow-2xl">
                       {pendingDepartments.length === 0 ? (
-                        <div className="px-3 py-2 text-xs text-white/30">No departments set up yet</div>
+                        <div className="px-3 py-2 text-xs text-white/45">No departments set up yet</div>
                       ) : pendingDepartments.map((d) => (
                         <SelectItem key={d.name} value={d.name} className="focus:bg-gold focus:text-[#050505] font-bold">{d.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <div className="h-11 md:h-12 bg-white/[0.02] border border-white/5 rounded-xl md:rounded-2xl flex items-center px-4 text-[10px] font-bold text-white/30 uppercase tracking-wider select-none cursor-not-allowed">
+                  <div className="h-11 md:h-12 bg-white/[0.02] border border-white/5 rounded-xl md:rounded-2xl flex items-center px-4 text-[11px] font-bold text-white/45 uppercase tracking-wider select-none cursor-not-allowed">
                     All Access
                   </div>
                 )}
 
                 <button
                   onClick={() => removeRow(i)} disabled={invites.length === 1}
-                  className="w-11 h-11 flex items-center justify-center text-white/20 hover:text-red-400 disabled:opacity-30 transition-colors shrink-0"
+                  className="w-11 h-11 flex items-center justify-center text-white/35 hover:text-red-400 disabled:opacity-30 transition-colors shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -421,7 +421,7 @@ export default function InvitePage() {
           </div>
         )}
 
-        <Button type="button" variant="ghost" size="sm" onClick={addRow} className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[10px] uppercase tracking-widest">
+        <Button type="button" variant="ghost" size="sm" onClick={addRow} className="text-gold hover:text-gold hover:bg-gold/10 font-bold text-[11px] uppercase tracking-wider">
           <Plus className="w-3 h-3 mr-2" /> Add Personnel
         </Button>
       </div>
@@ -429,13 +429,13 @@ export default function InvitePage() {
       <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between mt-2 md:mt-4 pt-5 border-t border-white/5 gap-4">
         <Button
           variant="ghost" onClick={() => finalize(true)} disabled={loading}
-          className="text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest w-full sm:w-auto"
+          className="text-white/55 hover:text-white font-bold text-xs uppercase tracking-wider w-full sm:w-auto"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
           {isAnonymous ? "Skip invites — just create account" : "Provision Later"}
         </Button>
         <Button
-          className="h-12 px-8 btn-gold rounded-full text-sm font-black uppercase tracking-widest gap-3 shadow-2xl shadow-gold/20 disabled:opacity-20 w-full sm:w-auto active:scale-95 transition-all"
+          className="h-12 px-8 btn-gold rounded-full text-sm font-semibold uppercase tracking-wider gap-3 shadow-2xl disabled:opacity-20 w-full sm:w-auto active:scale-95 transition-all"
           onClick={() => finalize(false)} disabled={loading}
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}

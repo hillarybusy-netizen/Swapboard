@@ -20,10 +20,10 @@ export function ShiftStatusSummary({ shifts }: ShiftStatusSummaryProps) {
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       {SUMMARY_ITEMS.map((item) => (
         <div key={item.label} className="glass rounded-2xl border border-white/5 p-4 text-center">
-          <span className={`block text-2xl font-black ${item.color}`}>
+          <span className={`block text-2xl font-semibold ${item.color}`}>
             {shifts.filter((shift) => item.statuses.includes(shift.status as never)).length}
           </span>
-          <span className="text-[9px] font-black uppercase tracking-wider text-white/30">{item.label}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-white/45">{item.label}</span>
         </div>
       ))}
     </div>

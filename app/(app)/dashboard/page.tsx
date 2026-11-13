@@ -257,8 +257,8 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-2">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">{isAdmin ? "Admin" : "Manager"} Dashboard</h1>
-          <p className="text-white/40 text-[10px] md:text-sm font-medium tracking-wide uppercase">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-2">{isAdmin ? "Admin" : "Manager"} Dashboard</h1>
+          <p className="text-white/55 text-[11px] md:text-sm font-medium tracking-wide uppercase">
             30-Day Performance Overview · <span className="text-gold/60">{org?.name}</span>
           </p>
         </div>
@@ -271,19 +271,18 @@ export default async function DashboardPage() {
       {/* Trial progress */}
       {trialStatus.isOnTrial && (
         <div className="mx-1 md:mx-2">
-          <div className="glass rounded-[1.5rem] md:rounded-[2rem] border-gold/20 p-5 md:p-6 shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10 group-hover:bg-gold/10 transition-colors duration-500" />
+          <div className="glass rounded-2xl md:rounded-2xl border-gold/20 p-5 md:p-6 shadow-2xl relative overflow-hidden group">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
               <div className="flex-1 w-full lg:max-w-md">
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gold text-glow-gold">Trial Status</span>
-                  <span className="text-[10px] md:text-xs font-bold text-white/40">{trialStatus.daysRemaining} days left</span>
+                  <span className="text-[11px] md:text-xs font-semibold uppercase tracking-wider text-gold text-glow-gold">Trial Status</span>
+                  <span className="text-[11px] md:text-xs font-bold text-white/55">{trialStatus.daysRemaining} days left</span>
                 </div>
                 <Progress value={trialStatus.percentUsed} className="h-2 md:h-2.5 bg-white/5 [&>div]:bg-gold shadow-inner" />
               </div>
               <div className="flex items-center gap-4 w-full md:w-auto mt-2 md:mt-0">
                 <p className="text-sm font-medium text-white/60 hidden lg:block">Enjoying SwapBoard? Upgrade now for unlimited features.</p>
-                <Button size="lg" className="btn-gold rounded-full px-8 text-xs font-black uppercase tracking-widest w-full md:w-auto h-12 md:h-auto" asChild>
+                <Button size="lg" className="btn-gold rounded-full px-8 text-xs font-semibold uppercase tracking-wider w-full md:w-auto h-12 md:h-auto" asChild>
                   <Link href="/settings?tab=billing">Upgrade to Pro</Link>
                 </Button>
               </div>
@@ -295,20 +294,19 @@ export default async function DashboardPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-1 md:px-2">
         {kpis.map((kpi: any) => (
-          <div key={kpi.title} className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden group">
+          <div key={kpi.title} className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl relative overflow-hidden group">
             {kpi.locked && (
               <div className="absolute inset-0 z-20 bg-[#050505]/40 backdrop-blur-sm flex items-center justify-center">
                 <Lock className="w-5 h-5 text-gold/60" />
               </div>
             )}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/[0.02] blur-2xl group-hover:bg-gold/[0.05] transition-colors" />
             <div className="mb-4 md:mb-6">
               <kpi.icon className={`w-6 h-6 md:w-7 md:h-7 ${kpi.color}`} strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
-              <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30">{kpi.title}</h3>
-              <p className="text-3xl md:text-4xl font-black text-white tabular-nums tracking-tighter">{kpi.value}</p>
-              <p className="text-[10px] md:text-[11px] text-white/40 font-medium leading-relaxed mt-1 md:mt-2">{kpi.sub}</p>
+              <h3 className="text-[11px] md:text-[11px] font-semibold uppercase tracking-wider text-white/45">{kpi.title}</h3>
+              <p className="text-3xl md:text-4xl font-semibold text-white tabular-nums tracking-tighter">{kpi.value}</p>
+              <p className="text-[11px] md:text-[11px] text-white/55 font-medium leading-relaxed mt-1 md:mt-2">{kpi.sub}</p>
             </div>
           </div>
         ))}
@@ -318,13 +316,13 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 px-1 md:px-2">
         {/* Chart Column */}
         <div className="lg:col-span-2 space-y-6 md:space-y-8">
-          <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden">
+          <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl relative overflow-hidden">
             {!checkPlanLimit(org?.plan, "hasROIMetrics") && (
               <div className="absolute inset-0 z-20 bg-[#050505]/40 backdrop-blur-md flex flex-col items-center justify-center text-center p-8">
                 <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mb-4 border border-gold/20">
                   <Lock className="w-6 h-6 text-gold" />
                 </div>
-                <h3 className="text-xl font-black text-white mb-2 uppercase tracking-tight">ROI Analytics Locked</h3>
+                <h3 className="text-xl font-semibold text-white mb-2 uppercase tracking-tight">ROI Analytics Locked</h3>
                 <p className="text-sm text-white/50 max-w-xs mb-6 font-medium leading-relaxed">Upgrade to the Growth plan to unlock historical trends and deep cost-saving insights.</p>
                 <Button className="btn-gold rounded-full px-8" asChild>
                   <Link href="/settings?tab=billing">View Plans</Link>
@@ -334,17 +332,17 @@ export default async function DashboardPage() {
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
-                <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-1">Swap Activity</h2>
-                <p className="text-[10px] md:text-[11px] text-white/30 font-bold uppercase tracking-widest">Fulfillment Trends · 4 Weeks</p>
+                <h2 className="text-lg md:text-xl font-semibold tracking-tight text-white mb-1">Swap Activity</h2>
+                <p className="text-[11px] md:text-[11px] text-white/45 font-bold uppercase tracking-wider">Fulfillment Trends · 4 Weeks</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-gold" />
-                  <span className="text-[9px] md:text-[10px] font-bold text-white/40 uppercase">Requested</span>
+                  <span className="text-[11px] md:text-[11px] font-bold text-white/55 uppercase">Requested</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-white/20" />
-                  <span className="text-[9px] md:text-[10px] font-bold text-white/40 uppercase">Fulfilled</span>
+                  <span className="text-[11px] md:text-[11px] font-bold text-white/55 uppercase">Fulfilled</span>
                 </div>
               </div>
             </div>
@@ -355,15 +353,15 @@ export default async function DashboardPage() {
 
           {/* At-risk shifts */}
           {atRiskShifts.length > 0 && (
-            <div className="glass rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 border-gold/10">
+            <div className="glass rounded-2xl md:rounded-3xl p-6 md:p-8 border-gold/10">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
                     <AlertTriangle className="w-5 h-5 text-red-500" />
                   </div>
                   <div>
-                    <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-1">Critical Shifts</h2>
-                    <p className="text-[10px] md:text-[11px] text-red-500/60 font-bold uppercase tracking-widest">Required Action Within 48h</p>
+                    <h2 className="text-lg md:text-xl font-semibold tracking-tight text-white mb-1">Critical Shifts</h2>
+                    <p className="text-[11px] md:text-[11px] text-red-500/60 font-bold uppercase tracking-wider">Required Action Within 48h</p>
                   </div>
                 </div>
               </div>
@@ -372,7 +370,7 @@ export default async function DashboardPage() {
                   <div key={shift.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors group scroll-item">
                     <div className="flex flex-col">
                       <p className="text-sm font-bold text-white mb-1">{shift.title}</p>
-                      <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-white/40 font-medium">
+                      <div className="flex items-center gap-2 text-[11px] md:text-[11px] text-white/55 font-medium">
                         <span>{formatShiftDate(shift.start_time, tz)}</span>
                         <span>·</span>
                         <span>{formatShiftTime(shift.start_time, shift.end_time, tz)}</span>
@@ -385,7 +383,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
                     <Badge className={cn(
-                      "rounded-full px-4 py-1 text-[9px] md:text-[10px] font-black uppercase tracking-widest border-none w-fit",
+                      "rounded-full px-4 py-1 text-[11px] md:text-[11px] font-semibold uppercase tracking-wider border-none w-fit",
                       shift.status === "not_started" ? "bg-red-500/20 text-red-400" : "bg-gold/20 text-gold"
                     )}>
                       {shift.status === "not_started" ? "Unassigned" : "Swap Pending"}
@@ -401,14 +399,14 @@ export default async function DashboardPage() {
         <div className="lg:col-span-1 space-y-6">
           {/* Pending Completions */}
           {pendingCompletions.length > 0 && (
-            <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+            <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div>
-                  <h2 className="text-base font-black tracking-tight text-white">Completions</h2>
-                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Awaiting Your Confirmation</p>
+                  <h2 className="text-base font-semibold tracking-tight text-white">Completions</h2>
+                  <p className="text-[11px] text-white/45 font-bold uppercase tracking-wider">Awaiting Your Confirmation</p>
                 </div>
               </div>
               <div className="space-y-3">
@@ -416,7 +414,7 @@ export default async function DashboardPage() {
                   <div key={shift.id} className="flex flex-col gap-3 p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
                     <div>
                       <p className="text-sm font-bold text-white truncate">{shift.title}</p>
-                      <div className="flex items-center gap-2 mt-1 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      <div className="flex items-center gap-2 mt-1 text-[11px] font-bold text-white/55 uppercase tracking-wider">
                         {shift.profile?.full_name && <span>{shift.profile.full_name}</span>}
                         {shift.department && (
                           <>
@@ -439,15 +437,15 @@ export default async function DashboardPage() {
 
           {/* Pending Shift Claims */}
           {pendingClaims.length > 0 && (
-            <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+            <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
                     <UserPlus className="w-4 h-4 text-blue-400" />
                   </div>
                   <div>
-                    <h2 className="text-base font-black tracking-tight text-white">Shift Claims</h2>
-                    <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Awaiting Your Approval</p>
+                    <h2 className="text-base font-semibold tracking-tight text-white">Shift Claims</h2>
+                    <p className="text-[11px] text-white/45 font-bold uppercase tracking-wider">Awaiting Your Approval</p>
                   </div>
                 </div>
                 <Link href="/claims" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold/20 hover:text-gold transition-all">
@@ -459,7 +457,7 @@ export default async function DashboardPage() {
                   <div key={shift.id} className="flex flex-col gap-3 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10">
                     <div>
                       <p className="text-sm font-bold text-white truncate">{shift.title}</p>
-                      <div className="flex items-center gap-2 mt-1 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      <div className="flex items-center gap-2 mt-1 text-[11px] font-bold text-white/55 uppercase tracking-wider">
                         {shift.profile?.full_name && <span>{shift.profile.full_name}</span>}
                         {shift.department && (
                           <>
@@ -468,7 +466,7 @@ export default async function DashboardPage() {
                           </>
                         )}
                       </div>
-                      <p className="text-[10px] font-bold text-white/30 uppercase mt-1">
+                      <p className="text-[11px] font-bold text-white/45 uppercase mt-1">
                         {formatShiftDate(shift.start_time, tz)}
                       </p>
                     </div>
@@ -484,11 +482,11 @@ export default async function DashboardPage() {
           )}
 
           {/* Pending Swap Approvals */}
-          <div className="card-premium p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex flex-col">
+          <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl flex flex-col">
             <div className="flex items-center justify-between mb-8 md:mb-10">
               <div>
-                <h2 className="text-lg md:text-xl font-black tracking-tight text-white mb-1">Swap Approvals</h2>
-                <p className="text-[10px] md:text-[11px] text-white/30 font-bold uppercase tracking-widest">Pending Approvals</p>
+                <h2 className="text-lg md:text-xl font-semibold tracking-tight text-white mb-1">Swap Approvals</h2>
+                <p className="text-[11px] md:text-[11px] text-white/45 font-bold uppercase tracking-wider">Pending Approvals</p>
               </div>
               {pendingSwaps.length > 0 && (
                 <Link href="/swaps?status=worker_accepted" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold/20 hover:text-gold transition-all">
@@ -503,8 +501,8 @@ export default async function DashboardPage() {
                   <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
                     <CheckCircle2 className="w-7 h-7 md:w-8 md:h-8" />
                   </div>
-                  <h3 className="font-bold text-xs md:text-sm mb-1 uppercase tracking-widest">Clear Queue</h3>
-                  <p className="text-[10px] md:text-xs font-medium">All swaps have been processed.</p>
+                  <h3 className="font-bold text-xs md:text-sm mb-1 uppercase tracking-wider">Clear Queue</h3>
+                  <p className="text-[11px] md:text-xs font-medium">All swaps have been processed.</p>
                 </div>
               ) : (
                 <div className="space-y-4 md:space-y-6">
@@ -513,21 +511,21 @@ export default async function DashboardPage() {
                       <div className="flex flex-col gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 hover:border-gold/20 transition-[border-color,background-color,box-shadow]">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-[9px] md:text-[10px] font-black border border-gold/10">
+                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-[11px] md:text-[11px] font-semibold border border-gold/10">
                               {swap.requester?.full_name?.charAt(0)}
                             </div>
                             <div className="flex flex-col min-w-0">
                               <p className="text-xs md:text-sm font-bold truncate leading-tight">{swap.requester?.full_name}</p>
-                              <p className="text-[9px] text-white/30 font-bold uppercase">Requester</p>
+                              <p className="text-[11px] text-white/45 font-bold uppercase">Requester</p>
                             </div>
                           </div>
-                          <ArrowRight className="w-3 h-3 text-white/20 shrink-0 mx-1" />
+                          <ArrowRight className="w-3 h-3 text-white/35 shrink-0 mx-1" />
                           <div className="flex items-center gap-2 md:gap-3 min-w-0">
                             <div className="flex flex-col items-end min-w-0 text-right">
                               <p className="text-xs md:text-sm font-bold truncate leading-tight">{swap.covering_worker?.full_name}</p>
-                              <p className="text-[9px] text-white/30 font-bold uppercase">Cover</p>
+                              <p className="text-[11px] text-white/45 font-bold uppercase">Cover</p>
                             </div>
-                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 text-[9px] md:text-[10px] font-black">
+                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 text-[11px] md:text-[11px] font-semibold">
                               {swap.covering_worker?.full_name?.charAt(0) ?? "?"}
                             </div>
                           </div>
@@ -536,7 +534,7 @@ export default async function DashboardPage() {
                         <div className="h-[1px] w-full bg-white/5" />
 
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                          <div className="flex items-center gap-2 text-[11px] md:text-[11px] font-bold text-white/55 uppercase tracking-wider">
                             <Calendar className="w-3 h-3" />
                             {swap.shift ? `${formatShiftDate(swap.shift.start_time, tz)} · ${formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}` : "No shift data"}
                           </div>
@@ -555,7 +553,7 @@ export default async function DashboardPage() {
                   ))}
                   
                   {pendingSwaps.length >= 5 && (
-                    <Button variant="ghost" className="w-full text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-gold" asChild>
+                    <Button variant="ghost" className="w-full text-[11px] md:text-[11px] font-semibold uppercase tracking-wider text-white/45 hover:text-gold" asChild>
                       <Link href="/swaps?status=worker_accepted">View All Pending Requests</Link>
                     </Button>
                   )}
@@ -570,8 +568,8 @@ export default async function DashboardPage() {
       {hasAdvancedAnalytics && (
         <div className="space-y-8 px-1 md:px-2">
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white mb-2">Advanced Analytics</h2>
-            <p className="text-white/40 text-[10px] md:text-sm font-medium tracking-wide uppercase">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mb-2">Advanced Analytics</h2>
+            <p className="text-white/55 text-[11px] md:text-sm font-medium tracking-wide uppercase">
               Detailed insights into your swap operations
             </p>
           </div>
@@ -586,39 +584,39 @@ export default async function DashboardPage() {
             <div className="lg:col-span-2 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="card-premium p-6 rounded-2xl">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-white/45 mb-4">
                     Overtime Avoided
                   </div>
-                  <p className="text-4xl font-black text-yellow-400 mb-2">
+                  <p className="text-4xl font-semibold text-yellow-400 mb-2">
                     {((analytics as any).overtimeAvoided || 0).toFixed(1)}h
                   </p>
-                  <p className="text-[10px] text-white/40">shift hours covered by swaps</p>
+                  <p className="text-[11px] text-white/55">shift hours covered by swaps</p>
                 </div>
 
                 <div className="card-premium p-6 rounded-2xl">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-white/45 mb-4">
                     Cancellation Rate
                   </div>
-                  <p className="text-4xl font-black text-red-400 mb-2">
+                  <p className="text-4xl font-semibold text-red-400 mb-2">
                     {((analytics as any).cancellationRate || 0)}%
                   </p>
-                  <p className="text-[10px] text-white/40">of swap requests cancelled</p>
+                  <p className="text-[11px] text-white/55">of swap requests cancelled</p>
                 </div>
 
                 {((analytics as any).avgFulfillmentTime !== null) && (
                   <div className="card-premium p-6 rounded-2xl">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-white/45 mb-4">
                       Avg Fulfillment Time
                     </div>
-                    <p className="text-4xl font-black text-purple-400 mb-2">
+                    <p className="text-4xl font-semibold text-purple-400 mb-2">
                       {((analytics as any).avgFulfillmentTime || 0).toFixed(1)}h
                     </p>
-                    <p className="text-[10px] text-white/40">to approve swap requests</p>
+                    <p className="text-[11px] text-white/55">to approve swap requests</p>
                   </div>
                 )}
 
                 <div className="card-premium p-6 rounded-2xl">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-white/45 mb-4">
                     Swaps by Department
                   </div>
                   <div className="space-y-2">
@@ -642,8 +640,8 @@ export default async function DashboardPage() {
       {hasEnterpriseAnalytics && (
         <div className="space-y-8 px-1 md:px-2">
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white mb-2">Enterprise Insights</h2>
-            <p className="text-white/40 text-[10px] md:text-sm font-medium tracking-wide uppercase">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mb-2">Enterprise Insights</h2>
+            <p className="text-white/55 text-[11px] md:text-sm font-medium tracking-wide uppercase">
               Advanced analytics and performance metrics
             </p>
           </div>
@@ -666,12 +664,12 @@ export default async function DashboardPage() {
           {/* Manager Workload */}
           {((analytics as any).managerWorkload || []).length > 0 && (
             <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl">
-              <h3 className="text-lg font-black mb-6">Manager Workload</h3>
+              <h3 className="text-lg font-semibold mb-6">Manager Workload</h3>
               <div className="space-y-3">
                 {((analytics as any).managerWorkload || []).slice(0, 5).map((manager: any) => (
                   <div key={manager.managerId} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
                     <span className="text-sm font-bold text-white/80">{manager.name || `Manager ${manager.managerId.slice(0, 8)}`}</span>
-                    <span className="text-lg font-black text-gold">{manager.swaps}</span>
+                    <span className="text-lg font-semibold text-gold">{manager.swaps}</span>
                   </div>
                 ))}
               </div>
@@ -681,7 +679,7 @@ export default async function DashboardPage() {
           {/* Swap Reasons */}
           {Object.keys(((analytics as any).swapReasons || {})).length > 0 && (
             <div className="card-premium p-6 md:p-8 rounded-2xl md:rounded-3xl">
-              <h3 className="text-lg font-black mb-6">Top Swap Reasons</h3>
+              <h3 className="text-lg font-semibold mb-6">Top Swap Reasons</h3>
               <div className="space-y-2">
                 {Object.entries(((analytics as any).swapReasons || {}))
                   .sort(([, a]: any, [, b]: any) => b - a)
@@ -701,11 +699,10 @@ export default async function DashboardPage() {
       {/* Upgrade Prompt for Basic Plan */}
       {!hasAdvancedAnalytics && (
         <div className="glass rounded-2xl p-8 border-gold/20 mx-1 md:mx-2 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -z-10" />
           <div className="flex items-start gap-4">
             <Lock className="w-6 h-6 text-gold flex-shrink-0 mt-1" />
             <div>
-              <h3 className="text-xl font-black text-white mb-2">Unlock Advanced Analytics</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">Unlock Advanced Analytics</h3>
               <p className="text-white/60 mb-4">
                 Upgrade to Growth plan to access detailed performance metrics, worker analytics, cancellation rates, and more.
               </p>

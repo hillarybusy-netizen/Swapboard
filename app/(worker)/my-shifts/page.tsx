@@ -28,20 +28,20 @@ function statusBadge(status: string) {
     not_started: { label: "Upcoming", color: "text-white/50 bg-white/10" },
     started: {
       label: "Ongoing",
-      color: "text-blue-400 bg-blue-500/15 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)]",
+      color: "text-blue-400 bg-blue-500/15 border border-blue-500/20",
     },
     up_for_swap: { label: "Up for Swap", color: "text-purple-400 bg-purple-500/15 border border-purple-500/20" },
     pending_approval_claim: { label: "Claim Pending", color: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20" },
     pending_approval_swap: { label: "Swap Pending", color: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20" },
-    swapped: { label: "Swapped", color: "text-white/30 bg-white/5 border border-white/10" },
+    swapped: { label: "Swapped", color: "text-white/45 bg-white/5 border border-white/10" },
     overdue_not_done: { label: "Overdue !", color: "text-orange-400 bg-orange-500/15 border border-orange-500/20" },
     done_pending_approval: { label: "Awaiting Approval", color: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20" },
     done_manager_approved: { label: "Completed ✓", color: "text-emerald-400 bg-emerald-500/15 border border-emerald-500/20" },
     done_rejected: { label: "Rejected — check notes", color: "text-red-400 bg-red-500/15 border border-red-500/20" },
     no_show: { label: "No-Show", color: "text-red-400 bg-red-500/15 border border-red-500/20" },
-    cancelled: { label: "Cancelled", color: "text-white/20 bg-white/5" },
+    cancelled: { label: "Cancelled", color: "text-white/35 bg-white/5" },
   };
-  return map[status] ?? { label: status, color: "text-white/40 bg-white/5" };
+  return map[status] ?? { label: status, color: "text-white/55 bg-white/5" };
 }
 
 function filterShifts(shifts: any[], tab: TabKey) {
@@ -133,8 +133,8 @@ export default async function MyShiftsPage({
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black tracking-tight text-white mb-1">My Shifts</h1>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+        <h1 className="text-3xl font-semibold tracking-tight text-white mb-1">My Shifts</h1>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-white/45">
           {allShifts.length} Total ·{" "}
           <span className="text-gold/50">{upcomingCount} Upcoming</span>
         </p>
@@ -144,7 +144,7 @@ export default async function MyShiftsPage({
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: department.color || "#d4af37" }}
             />
-            <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
+            <span className="text-[11px] font-bold text-white/50 uppercase tracking-wider">
               {department.name}
             </span>
           </div>
@@ -160,10 +160,10 @@ export default async function MyShiftsPage({
             key={tab.key}
             href={`?tab=${tab.key}`}
             className={cn(
-              "flex-1 py-2.5 rounded-full text-[10px] font-black text-center transition-all duration-200",
+              "flex-1 py-2.5 rounded-full text-[11px] font-semibold text-center transition-all duration-200",
               currentTab === tab.key
                 ? "bg-gold text-[#050505] shadow-md"
-                : "text-white/40 hover:text-white"
+                : "text-white/55 hover:text-white"
             )}
           >
             {tab.label}
@@ -176,8 +176,8 @@ export default async function MyShiftsPage({
         {displayShifts.length === 0 ? (
           <div className="glass rounded-2xl p-10 text-center border border-white/5">
             <Calendar className="w-8 h-8 text-white/15 mx-auto mb-3" />
-            <p className="text-sm font-bold text-white/30">No shifts here</p>
-            <p className="text-[11px] text-white/20 mt-1">
+            <p className="text-sm font-bold text-white/45">No shifts here</p>
+            <p className="text-[11px] text-white/35 mt-1">
               {currentTab === "upcoming" ? "No upcoming shifts assigned to you." : "Nothing to show in this category."}
             </p>
           </div>

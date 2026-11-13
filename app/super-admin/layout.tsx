@@ -37,10 +37,10 @@ export default async function SuperAdminLayout({ children }: { children: React.R
         <header className="sticky top-0 z-30 h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-10 bg-black/20 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/60 mt-0.5">Platform Status: Online</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#eeeeee]/60 mt-0.5">Platform Status: Online</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#eeeeee]/40 mt-0.5 hidden sm:inline">Logged in as {user.email}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#eeeeee]/40 mt-0.5 hidden sm:inline">Logged in as {user.email}</span>
             <AdminProfileDropdown email={user.email || ""} isSuperAdmin={true} />
           </div>
         </header>

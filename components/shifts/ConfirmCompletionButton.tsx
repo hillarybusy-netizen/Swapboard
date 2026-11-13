@@ -73,7 +73,7 @@ export function ConfirmCompletionButton({
             flex items-center justify-center gap-2 flex-1
             h-9 px-4 rounded-xl
             bg-emerald-500/10 border border-emerald-500/20
-            text-emerald-400 text-[10px] font-black uppercase tracking-widest
+            text-emerald-400 text-[11px] font-semibold uppercase tracking-wider
             hover:bg-emerald-500/20 hover:border-emerald-500/40
             active:scale-95 transition-all duration-200
             disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap
@@ -95,7 +95,7 @@ export function ConfirmCompletionButton({
               flex items-center justify-center gap-2
               h-9 px-4 rounded-xl
               bg-red-500/10 border border-red-500/20
-              text-red-400 text-[10px] font-black uppercase tracking-widest
+              text-red-400 text-[11px] font-semibold uppercase tracking-wider
               hover:bg-red-500/20 hover:border-red-500/40
               active:scale-95 transition-all duration-200
               disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap
@@ -114,12 +114,12 @@ export function ConfirmCompletionButton({
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Optional rejection reason…"
             rows={2}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2 text-sm text-white/70 placeholder:text-white/20 focus:outline-none focus:border-gold/30 resize-none"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2 text-sm text-white/70 placeholder:text-white/35 focus:outline-none focus:border-gold/30 resize-none"
           />
           <button
             onClick={handleReject}
             disabled={!!loading}
-            className="w-full h-9 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full h-9 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-semibold uppercase tracking-wider hover:bg-red-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading === "reject" ? <Loader2 className="w-3 h-3 animate-spin" /> : <XCircle className="w-3 h-3" />}
             {loading === "reject" ? "Rejecting…" : "Confirm Rejection"}

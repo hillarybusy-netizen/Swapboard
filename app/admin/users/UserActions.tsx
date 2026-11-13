@@ -76,7 +76,7 @@ export function UserActions({ user }: { user: any }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0 text-white/20 hover:text-white/60">
+        <Button variant="ghost" className="h-8 w-8 p-0 text-white/35 hover:text-white/60">
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

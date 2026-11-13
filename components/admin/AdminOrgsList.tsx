@@ -122,7 +122,7 @@ function OrgActions({ org }: { org: any }) {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="h-9 w-9 p-0 text-white/20 hover:text-white/60 hover:bg-white/5 rounded-xl"
+            className="h-9 w-9 p-0 text-white/35 hover:text-white/60 hover:bg-white/5 rounded-xl"
             disabled={isPending}
           >
             {isPending ? (
@@ -157,7 +157,7 @@ function OrgActions({ org }: { org: any }) {
                   />
                   {plan.charAt(0).toUpperCase() + plan.slice(1)}
                   {org.plan === plan && (
-                    <span className="ml-auto text-[9px] text-gold/60">Current</span>
+                    <span className="ml-auto text-[11px] text-gold/60">Current</span>
                   )}
                 </DropdownMenuItem>
               ))}
@@ -260,29 +260,29 @@ export function AdminOrgsList({ orgs }: { orgs: any[] }) {
       {/* Search and Filter Row */}
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/45" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search organizations by name, subdomain, or industry..."
-            className="w-full pl-11 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-xs md:text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-gold/50 transition-all font-medium"
+            className="w-full pl-11 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-xs md:text-sm text-white placeholder:text-white/45 focus:outline-none focus:border-gold/50 transition-all font-medium"
           />
         </div>
 
         {/* Plan Filters */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/30 shrink-0 mr-1 flex items-center gap-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-white/45 shrink-0 mr-1 flex items-center gap-1">
             <Filter className="w-3 h-3" /> Plan:
           </span>
           {plans.map((plan) => (
             <button
               key={plan}
               onClick={() => setSelectedPlan(plan)}
-              className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${
+              className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold uppercase tracking-wider transition-all shrink-0 ${
                 selectedPlan === plan
-                  ? "bg-gold text-black shadow-lg shadow-gold/20 font-black"
-                  : "bg-white/5 text-white/40 hover:text-white hover:bg-white/10"
+                  ? "bg-gold text-black shadow-lg font-semibold"
+                  : "bg-white/5 text-white/55 hover:text-white hover:bg-white/10"
               }`}
             >
               {plan}
@@ -293,54 +293,53 @@ export function AdminOrgsList({ orgs }: { orgs: any[] }) {
 
       {/* Organizations List */}
       {filtered.length === 0 ? (
-        <div className="glass rounded-[2rem] p-12 text-center space-y-3 border-white/5">
-          <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 mx-auto">
+        <div className="glass rounded-2xl p-12 text-center space-y-3 border-white/5">
+          <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/45 mx-auto">
             <Building2 className="w-5 h-5" />
           </div>
           <p className="text-sm font-bold text-white/60">No organizations match your filters</p>
-          <p className="text-xs text-white/30">Try clearing your search query or selecting a different plan filter.</p>
+          <p className="text-xs text-white/45">Try clearing your search query or selecting a different plan filter.</p>
         </div>
       ) : (
         <div className="grid gap-4 md:gap-5">
           {filtered.map((org: any) => {
-            const planBadge = PLAN_BADGES[org.plan] || { label: org.plan, className: "bg-white/5 text-white/40 border-white/10" };
+            const planBadge = PLAN_BADGES[org.plan] || { label: org.plan, className: "bg-white/5 text-white/55 border-white/10" };
             const planPrice = PLAN_LIMITS[org.plan as Plan]?.price || 0;
 
             return (
               <div
                 key={org.id}
-                className="glass rounded-[2rem] p-6 md:p-8 border-white/5 hover:border-gold/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-all group relative overflow-hidden"
+                className="glass rounded-2xl p-6 md:p-8 border-white/5 hover:border-gold/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-all group relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-gold/[0.03] to-transparent blur-3xl -z-10" />
 
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                   {/* Left: Org Identity */}
                   <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-white/[0.02] border border-white/10 flex items-center justify-center text-xl font-black text-white/60 group-hover:border-gold/30 group-hover:text-gold transition-all shrink-0">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-white/[0.02] border border-white/10 flex items-center justify-center text-xl font-semibold text-white/60 group-hover:border-gold/30 group-hover:text-gold transition-all shrink-0">
                       {org.name?.charAt(0) ?? "O"}
                     </div>
                     <div>
                       <div className="flex items-center gap-2.5 mb-1 flex-wrap">
-                        <h2 className="text-lg font-black text-white tracking-tight group-hover:text-gold transition-colors">
+                        <h2 className="text-lg font-semibold text-white tracking-tight group-hover:text-gold transition-colors">
                           {org.name}
                         </h2>
-                        <Badge className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider border ${planBadge.className}`}>
+                        <Badge className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider border ${planBadge.className}`}>
                           {planBadge.label}
                         </Badge>
                         {org.industry && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 bg-white/[0.02] px-2 py-0.5 rounded-md border border-white/5">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-white/45 bg-white/[0.02] px-2 py-0.5 rounded-md border border-white/5">
                             {org.industry}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-white/30 font-medium">
-                        <span className="flex items-center gap-1 text-white/40 font-mono text-[11px]">
-                          <Globe className="w-3 h-3 text-white/20" />
+                      <div className="flex items-center gap-3 text-xs text-white/45 font-medium">
+                        <span className="flex items-center gap-1 text-white/55 font-mono text-[11px]">
+                          <Globe className="w-3 h-3 text-white/35" />
                           {org.subdomain ? `${org.subdomain}.swapboard.ca` : "app.swapboard.ca"}
                         </span>
                         <span>·</span>
-                        <span className="font-mono text-[10px] text-white/20">ID: {org.id.slice(0, 8)}...</span>
+                        <span className="font-mono text-[11px] text-white/35">ID: {org.id.slice(0, 8)}...</span>
                       </div>
                     </div>
                   </div>
@@ -348,8 +347,8 @@ export function AdminOrgsList({ orgs }: { orgs: any[] }) {
                   {/* Right: Metrics & Actions */}
                   <div className="flex flex-wrap items-center gap-6 md:gap-8 justify-between lg:justify-end border-t border-white/5 pt-4 lg:border-t-0 lg:pt-0">
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-1 flex items-center gap-1">
-                        <CalendarDays className="w-3 h-3 text-white/20" />
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-white/45 mb-1 flex items-center gap-1">
+                        <CalendarDays className="w-3 h-3 text-white/35" />
                         Created
                       </p>
                       <p className="text-xs font-bold text-white/70">
@@ -358,18 +357,18 @@ export function AdminOrgsList({ orgs }: { orgs: any[] }) {
                     </div>
 
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-1">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-white/45 mb-1">
                         Plan Rate
                       </p>
-                      <p className="text-xs font-black text-gold">
+                      <p className="text-xs font-semibold text-gold">
                         {formatCurrency(planPrice)}
-                        <span className="text-[10px] text-white/30 font-medium"> / mo</span>
+                        <span className="text-[11px] text-white/45 font-medium"> / mo</span>
                       </p>
                     </div>
 
                     {org.trial_ends_at && org.plan === "trial" && (
                       <div>
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-400/60 mb-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-400/60 mb-1">
                           Trial Expires
                         </p>
                         <p className="text-xs font-bold text-amber-200">

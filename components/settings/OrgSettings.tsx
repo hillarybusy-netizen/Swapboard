@@ -119,49 +119,49 @@ export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgS
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-black text-white tracking-tight">Organization</h2>
-        <p className="text-sm text-white/40 mt-1">Workspace details and usage overview</p>
+        <h2 className="text-xl font-semibold text-white tracking-tight">Organization</h2>
+        <p className="text-sm text-white/55 mt-1">Workspace details and usage overview</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="glass rounded-2xl border border-white/5 p-4">
-          <div className="flex items-center gap-2 text-white/30 mb-2">
+          <div className="flex items-center gap-2 text-white/45 mb-2">
             <CreditCard className="w-3.5 h-3.5" />
-            <span className="text-[9px] font-black uppercase tracking-widest">Plan</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Plan</span>
           </div>
-          <p className="text-sm font-black text-white">{planInfo.label}</p>
+          <p className="text-sm font-semibold text-white">{planInfo.label}</p>
           {trial.isOnTrial && !trial.isExpired && (
-            <p className="text-[10px] text-gold/70 mt-1 flex items-center gap-1">
+            <p className="text-[11px] text-gold/70 mt-1 flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {trial.daysRemaining} days left
             </p>
           )}
         </div>
         <div className="glass rounded-2xl border border-white/5 p-4">
-          <div className="flex items-center gap-2 text-white/30 mb-2">
+          <div className="flex items-center gap-2 text-white/45 mb-2">
             <Users className="w-3.5 h-3.5" />
-            <span className="text-[9px] font-black uppercase tracking-widest">Members</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Members</span>
           </div>
-          <p className="text-sm font-black text-white">
+          <p className="text-sm font-semibold text-white">
             {profileCount}
-            <span className="text-white/30 font-bold"> / {planInfo.maxWorkers}</span>
+            <span className="text-white/45 font-bold"> / {planInfo.maxWorkers}</span>
           </p>
         </div>
         <div className="glass rounded-2xl border border-white/5 p-4">
-          <div className="flex items-center gap-2 text-white/30 mb-2">
+          <div className="flex items-center gap-2 text-white/45 mb-2">
             <Building2 className="w-3.5 h-3.5" />
-            <span className="text-[9px] font-black uppercase tracking-widest">Departments</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Departments</span>
           </div>
-          <p className="text-sm font-black text-white">
+          <p className="text-sm font-semibold text-white">
             {departmentCount}
-            <span className="text-white/30 font-bold"> / {planInfo.maxDepartments}</span>
+            <span className="text-white/45 font-bold"> / {planInfo.maxDepartments}</span>
           </p>
         </div>
         <div className="glass rounded-2xl border border-white/5 p-4">
-          <div className="flex items-center gap-2 text-white/30 mb-2">
-            <span className="text-[9px] font-black uppercase tracking-widest">Industry</span>
+          <div className="flex items-center gap-2 text-white/45 mb-2">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Industry</span>
           </div>
-          <p className="text-sm font-black text-white truncate">
+          <p className="text-sm font-semibold text-white truncate">
             {org ? `${INDUSTRY_ICONS[org.industry]} ${INDUSTRY_LABELS[org.industry]}` : "—"}
           </p>
         </div>
@@ -180,7 +180,7 @@ export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgS
           </Avatar>
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Company Logo</h4>
-            <p className="text-xs text-white/40">Upload a square image (PNG, JPG) max 2MB.</p>
+            <p className="text-xs text-white/55">Upload a square image (PNG, JPG) max 2MB.</p>
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
@@ -245,7 +245,7 @@ export function OrgSettings({ org, userId, profileCount, departmentCount }: OrgS
                 Delete Organization
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-[#0a0a0a] border-red-500/30 shadow-2xl shadow-red-500/10">
+            <AlertDialogContent className="bg-[#0a0a0a] border-red-500/30 shadow-2xl">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-red-500">Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription className="text-white/60">

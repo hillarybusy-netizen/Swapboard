@@ -49,7 +49,7 @@ export function ExportReportButton({ data }: ExportReportButtonProps) {
   return (
     <Button 
       variant="outline" 
-      className="glass border-white/5 rounded-full text-xs font-bold uppercase tracking-widest px-6 h-10 hover:bg-white/5"
+      className="glass border-white/5 rounded-full text-xs font-bold uppercase tracking-wider px-6 h-10 hover:bg-white/5"
       onClick={exportToCSV}
     >
       <Download className="w-4 h-4 mr-2" />

@@ -53,8 +53,8 @@ export default async function SwapsPage() {
     <div className="space-y-10 max-w-5xl mx-auto pb-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-2">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">Swap Requests</h1>
-          <p className="text-white/40 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-2">Swap Requests</h1>
+          <p className="text-white/55 text-[11px] md:text-[11px] font-semibold uppercase tracking-wider">
             Coordination History · <span className="text-gold/60">{allSwaps.length} Total Requests</span>
           </p>
         </div>

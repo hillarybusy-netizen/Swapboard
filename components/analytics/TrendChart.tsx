@@ -12,7 +12,7 @@ interface TrendChartProps {
 export function TrendChart({ data, dataKeys, title, height = 300 }: TrendChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="h-[300px] flex items-center justify-center text-white/40">
+      <div className="h-[300px] flex items-center justify-center text-white/55">
         <p>No data available</p>
       </div>
     );
@@ -20,7 +20,7 @@ export function TrendChart({ data, dataKeys, title, height = 300 }: TrendChartPr
 
   return (
     <div className="card-premium p-6 rounded-2xl">
-      <h3 className="text-lg font-black mb-4">{title}</h3>
+      <h3 className="text-lg font-semibold mb-4">{title}</h3>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />

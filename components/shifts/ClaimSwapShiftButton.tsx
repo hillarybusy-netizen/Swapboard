@@ -36,7 +36,7 @@ export function ClaimSwapShiftButton({ swapId, swapTitle }: { swapId: string; sw
         w-full h-12 flex items-center justify-center gap-2 rounded-xl
         bg-purple-500/10 border border-purple-500/20 text-purple-400
         hover:bg-purple-500/20 hover:border-purple-500/30
-        active:scale-[0.98] transition-all duration-200 font-black uppercase tracking-widest text-[11px]
+        active:scale-[0.98] transition-all duration-200 font-semibold uppercase tracking-wider text-[11px]
         disabled:opacity-50 disabled:pointer-events-none
       "
     >

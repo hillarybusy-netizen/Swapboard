@@ -39,7 +39,7 @@ export function AdminProfileDropdown({ email, isSuperAdmin }: AdminProfileDropdo
       {/* Profile Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="md:hidden w-10 h-10 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center text-gold hover:bg-gold/30 transition-colors font-black text-sm"
+        className="md:hidden w-10 h-10 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center text-gold hover:bg-gold/30 transition-colors font-semibold text-sm"
         title={email}
       >
         {initials || <User className="w-5 h-5" />}
@@ -50,7 +50,7 @@ export function AdminProfileDropdown({ email, isSuperAdmin }: AdminProfileDropdo
         <div className="absolute right-0 top-12 w-48 rounded-xl bg-[#080808] border border-white/10 shadow-xl z-50 overflow-hidden">
           {/* Header with Email */}
           <div className="px-4 py-3 border-b border-white/5 bg-white/[0.02]">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/55">
               {isSuperAdmin ? "Super Admin Account" : "Admin Account"}
             </p>
             <p className="text-xs font-bold text-white mt-1 truncate">{email}</p>

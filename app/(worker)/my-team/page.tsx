@@ -15,12 +15,12 @@ export default async function MyTeamPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
-          <Users className="w-8 h-8 text-white/20" />
+          <Users className="w-8 h-8 text-white/35" />
         </div>
-        <p className="text-sm font-bold uppercase tracking-widest text-white/30">
+        <p className="text-sm font-bold uppercase tracking-wider text-white/45">
           No Organization
         </p>
-        <p className="text-xs text-white/20">You haven&apos;t been added to an organization yet.</p>
+        <p className="text-xs text-white/35">You haven&apos;t been added to an organization yet.</p>
       </div>
     );
   }
@@ -61,15 +61,12 @@ export default async function MyTeamPage() {
           isMe && "border-blue-500/20 bg-blue-500/3"
         )}
       >
-        {isManager && (
-          <div className="absolute top-0 right-0 w-20 h-20 bg-gold/8 blur-2xl rounded-full pointer-events-none" />
-        )}
 
         <div className="flex items-center gap-3 relative z-10">
           {/* Avatar */}
           <div
             className={cn(
-              "w-12 h-12 rounded-full flex items-center justify-center text-base font-black border-2 shrink-0 transition-transform group-hover:scale-105",
+              "w-12 h-12 rounded-full flex items-center justify-center text-base font-semibold border-2 shrink-0 transition-transform",
               isManager
                 ? "bg-gold/20 border-gold/30 text-gold"
                 : "bg-white/5 border-white/10 text-white/50"
@@ -85,7 +82,7 @@ export default async function MyTeamPage() {
                 {member.full_name ?? "Unknown"}
               </h3>
               {isMe && (
-                <span className="text-[8px] font-black text-blue-300 bg-blue-500/15 border border-blue-500/20 px-1.5 py-0.5 rounded-full uppercase tracking-widest">
+                <span className="text-[11px] font-semibold text-blue-300 bg-blue-500/15 border border-blue-500/20 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                   You
                 </span>
               )}
@@ -97,7 +94,7 @@ export default async function MyTeamPage() {
                     className="w-1.5 h-1.5 rounded-full"
                     style={{ backgroundColor: member.department.color || "#d4af37" }}
                   />
-                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                  <span className="text-[11px] font-bold text-white/45 uppercase tracking-wider">
                     {member.department.name}
                   </span>
                 </div>
@@ -109,7 +106,7 @@ export default async function MyTeamPage() {
           {/* Role badge */}
           {isManager && (
             <div className="shrink-0">
-              <span className="text-[8px] font-black text-gold/60 uppercase tracking-widest rounded-full border border-gold/20 bg-gold/10 px-2 py-1">
+              <span className="text-[11px] font-semibold text-gold/60 uppercase tracking-wider rounded-full border border-gold/20 bg-gold/10 px-2 py-1">
                 Manager
               </span>
             </div>
@@ -123,8 +120,8 @@ export default async function MyTeamPage() {
     <div className="space-y-8 animate-in fade-in duration-700 pb-10">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black tracking-tight text-white mb-1">My Team</h1>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+        <h1 className="text-3xl font-semibold tracking-tight text-white mb-1">My Team</h1>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-white/45">
           Staff Directory ·{" "}
           <span className="text-gold/50">{members.length} Members</span>
         </p>
@@ -133,16 +130,16 @@ export default async function MyTeamPage() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="glass rounded-2xl p-4 text-center border border-white/5">
-          <span className="text-2xl font-black text-white block">{members.length}</span>
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Total</span>
+          <span className="text-2xl font-semibold text-white block">{members.length}</span>
+          <span className="text-[11px] font-semibold text-white/45 uppercase tracking-wider">Total</span>
         </div>
         <div className="glass rounded-2xl p-4 text-center border border-gold/15">
-          <span className="text-2xl font-black text-gold block">{managers.length}</span>
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Managers</span>
+          <span className="text-2xl font-semibold text-gold block">{managers.length}</span>
+          <span className="text-[11px] font-semibold text-white/45 uppercase tracking-wider">Managers</span>
         </div>
         <div className="glass rounded-2xl p-4 text-center border border-white/5">
-          <span className="text-2xl font-black text-blue-400 block">{workers.length}</span>
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-wider">Workers</span>
+          <span className="text-2xl font-semibold text-blue-400 block">{workers.length}</span>
+          <span className="text-[11px] font-semibold text-white/45 uppercase tracking-wider">Workers</span>
         </div>
       </div>
 
@@ -151,7 +148,7 @@ export default async function MyTeamPage() {
         <section className="space-y-3">
           <div className="flex items-center gap-2 px-1">
             <Users className="w-3.5 h-3.5 text-gold/60" />
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-gold/50">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-gold/50">
               Managers
             </h2>
           </div>
@@ -167,8 +164,8 @@ export default async function MyTeamPage() {
       {workers.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-2 px-1">
-            <Users className="w-3.5 h-3.5 text-white/30" />
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+            <Users className="w-3.5 h-3.5 text-white/45" />
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-white/45">
               Team Members
             </h2>
           </div>
@@ -183,8 +180,8 @@ export default async function MyTeamPage() {
       {members.length === 0 && (
         <div className="glass rounded-2xl p-12 text-center border border-white/5">
           <Users className="w-10 h-10 text-white/15 mx-auto mb-3" />
-          <p className="text-sm font-bold text-white/30">No team members yet</p>
-          <p className="text-[11px] text-white/20 mt-1">
+          <p className="text-sm font-bold text-white/45">No team members yet</p>
+          <p className="text-[11px] text-white/35 mt-1">
             Your team members will appear here once they&apos;re onboarded.
           </p>
         </div>

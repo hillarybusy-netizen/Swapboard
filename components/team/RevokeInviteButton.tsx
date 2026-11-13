@@ -42,7 +42,7 @@ export function RevokeInviteButton({ id }: { id: string }) {
     <Button
       variant="ghost"
       size="icon"
-      className="h-8 w-8 text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+      className="h-8 w-8 text-white/35 hover:text-red-400 hover:bg-red-500/10 transition-colors"
       onClick={handleRevoke}
       disabled={isPending}
     >

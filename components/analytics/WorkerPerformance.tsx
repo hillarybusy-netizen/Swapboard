@@ -16,7 +16,7 @@ export function WorkerPerformance({ workers }: WorkerPerformanceProps) {
     return (
       <Card className="bg-white/[0.02] border-white/10">
         <CardHeader>
-          <CardTitle className="text-lg font-black">Top Workers</CardTitle>
+          <CardTitle className="text-lg font-semibold">Top Workers</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-white/50">No worker data available</p>
@@ -35,7 +35,7 @@ export function WorkerPerformance({ workers }: WorkerPerformanceProps) {
             <Users className="w-4 h-4 text-blue-400" />
           </div>
           <div>
-            <CardTitle className="text-lg font-black">Top Workers</CardTitle>
+            <CardTitle className="text-lg font-semibold">Top Workers</CardTitle>
             <CardDescription>Most active swap covers</CardDescription>
           </div>
         </div>
@@ -43,12 +43,12 @@ export function WorkerPerformance({ workers }: WorkerPerformanceProps) {
       <CardContent className="space-y-3">
         {workers.map((worker, idx) => (
           <div key={worker.id} className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5">
-            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-[10px] font-black">
+            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-[11px] font-semibold">
               #{idx + 1}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold truncate">{worker.name}</p>
-              <p className="text-[10px] text-white/40">{worker.swaps} swaps covered</p>
+              <p className="text-[11px] text-white/55">{worker.swaps} swaps covered</p>
             </div>
             <div className="w-12 h-2 bg-white/5 rounded-full">
               <div

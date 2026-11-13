@@ -102,16 +102,15 @@ export default async function MyProfilePage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
       {/* Header */}
-      <h1 className="text-3xl font-black tracking-tight text-white">My Profile</h1>
+      <h1 className="text-3xl font-semibold tracking-tight text-white">My Profile</h1>
 
       {/* Profile Hero Card */}
-      <div className="glass rounded-[2rem] p-6 border border-white/5 relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-28 bg-gold/5 blur-3xl -z-10" />
+      <div className="glass rounded-2xl p-6 border border-white/5 relative overflow-hidden">
 
         <div className="flex flex-col items-center text-center">
           {/* Avatar */}
           <div className="relative mb-4">
-            <div className="w-20 h-20 rounded-full bg-gold/10 border-2 border-gold/25 flex items-center justify-center text-gold text-2xl font-black shadow-xl shadow-gold/10">
+            <div className="w-20 h-20 rounded-full bg-gold/10 border-2 border-gold/25 flex items-center justify-center text-gold text-2xl font-semibold shadow-xl">
               {initials}
             </div>
             {pct === 100 && (
@@ -121,10 +120,10 @@ export default async function MyProfilePage() {
             )}
           </div>
 
-          <h2 className="text-xl font-black text-white tracking-tight">
+          <h2 className="text-xl font-semibold text-white tracking-tight">
             {profile?.full_name ?? "Unnamed Worker"}
           </h2>
-          <p className="text-[11px] font-bold uppercase tracking-widest text-white/30 mt-0.5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-white/45 mt-0.5">
             {user.email}
           </p>
           {orgName && (
@@ -133,7 +132,7 @@ export default async function MyProfilePage() {
 
           {/* Role / Dept badges */}
           <div className="flex items-center gap-2 mt-3 flex-wrap justify-center">
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-[10px] font-black text-gold uppercase tracking-widest">
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-[11px] font-semibold text-gold uppercase tracking-wider">
               <Shield className="w-3 h-3" />
               {profile?.user_role ?? "worker"}
             </span>
@@ -145,14 +144,14 @@ export default async function MyProfilePage() {
       <div className="glass rounded-2xl p-5 border border-white/5 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-black text-white">Profile Completion</p>
-            <p className="text-[11px] text-white/30 font-medium mt-0.5">
+            <p className="text-sm font-semibold text-white">Profile Completion</p>
+            <p className="text-[11px] text-white/45 font-medium mt-0.5">
               {completedCount} of {fields.length} fields complete
             </p>
           </div>
           <span
             className={cn(
-              "text-2xl font-black",
+              "text-2xl font-semibold",
               pct === 100 ? "text-emerald-400" : pct >= 50 ? "text-gold" : "text-white/50"
             )}
           >
@@ -196,7 +195,7 @@ export default async function MyProfilePage() {
                   {field.done ? (
                     <Check className="w-3.5 h-3.5 text-emerald-400" strokeWidth={3} />
                   ) : (
-                    <X className="w-3 h-3 text-white/20" strokeWidth={3} />
+                    <X className="w-3 h-3 text-white/35" strokeWidth={3} />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -209,7 +208,7 @@ export default async function MyProfilePage() {
                     {field.label}
                   </p>
                   {!field.done && (
-                    <p className="text-[10px] text-white/25">{field.tip}</p>
+                    <p className="text-[11px] text-white/40">{field.tip}</p>
                   )}
                 </div>
                 <Icon
@@ -226,7 +225,7 @@ export default async function MyProfilePage() {
 
       {/* Account Info (read-only fields) */}
       <div className="space-y-2">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 px-1">Account Info</h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 px-1">Account Info</h3>
         <div className="glass rounded-2xl border border-white/5 divide-y divide-white/5">
           {[
             { label: "Email", value: user.email },
@@ -236,7 +235,7 @@ export default async function MyProfilePage() {
             { label: "Hourly Rate", value: profile?.hourly_rate ? `$${profile.hourly_rate}/hr` : "—" },
           ].map(({ label, value }) => (
             <div key={label} className="flex items-center justify-between px-5 py-3.5">
-              <span className="text-sm font-bold text-white/40">{label}</span>
+              <span className="text-sm font-bold text-white/55">{label}</span>
               <span className="text-sm font-medium text-white">{value ?? "—"}</span>
             </div>
           ))}
@@ -245,7 +244,7 @@ export default async function MyProfilePage() {
 
       {/* Edit Form */}
       <div className="space-y-2">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 px-1">
+        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 px-1">
           Edit Profile
         </h3>
         <ProfileEditForm
@@ -273,7 +272,7 @@ export default async function MyProfilePage() {
             "
           >
             <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
-            <span className="text-sm font-black uppercase tracking-widest">Sign Out</span>
+            <span className="text-sm font-semibold uppercase tracking-wider">Sign Out</span>
           </button>
         </form>
       </div>

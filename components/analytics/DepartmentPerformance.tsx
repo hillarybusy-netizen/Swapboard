@@ -18,7 +18,7 @@ export function DepartmentPerformance({ departments }: DepartmentPerformanceProp
     return (
       <Card className="bg-white/[0.02] border-white/10">
         <CardHeader>
-          <CardTitle className="text-lg font-black">Department Performance</CardTitle>
+          <CardTitle className="text-lg font-semibold">Department Performance</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-white/50">No department data available</p>
@@ -35,7 +35,7 @@ export function DepartmentPerformance({ departments }: DepartmentPerformanceProp
             <TrendingUp className="w-4 h-4 text-emerald-400" />
           </div>
           <div>
-            <CardTitle className="text-lg font-black">Department Performance</CardTitle>
+            <CardTitle className="text-lg font-semibold">Department Performance</CardTitle>
             <CardDescription>Performance by department</CardDescription>
           </div>
         </div>
@@ -46,9 +46,9 @@ export function DepartmentPerformance({ departments }: DepartmentPerformanceProp
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-bold text-sm">{dept.name}</p>
-                <p className="text-[10px] text-white/40 uppercase font-bold">Fulfillment Rate</p>
+                <p className="text-[11px] text-white/55 uppercase font-bold">Fulfillment Rate</p>
               </div>
-              <p className="text-2xl font-black text-emerald-400">{dept.fulfillmentRate}%</p>
+              <p className="text-2xl font-semibold text-emerald-400">{dept.fulfillmentRate}%</p>
             </div>
             <div className="w-full bg-white/5 rounded-full h-1">
               <div
@@ -56,7 +56,7 @@ export function DepartmentPerformance({ departments }: DepartmentPerformanceProp
                 style={{ width: `${dept.fulfillmentRate}%` }}
               />
             </div>
-            <div className="flex gap-6 text-[10px] text-white/40 font-bold uppercase">
+            <div className="flex gap-6 text-[11px] text-white/55 font-bold uppercase">
               <span>Avg Time: {dept.avgTime.toFixed(1)}h</span>
               <span>Active: {dept.activeSwaps}</span>
             </div>

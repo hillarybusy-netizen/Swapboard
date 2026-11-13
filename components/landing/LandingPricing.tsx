@@ -5,6 +5,9 @@ import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 import { StaggerContainer, StaggerItem, ScaleOnScroll } from "@/components/animations/ScrollAnimations";
 import { cn } from "@/lib/utils";
+import { DEMO_HREF, ONBOARD_EMAIL } from "@/lib/contact";
+
+const SALES_HREF = `mailto:${ONBOARD_EMAIL}?subject=${encodeURIComponent("SwapBoard Enterprise")}`;
 
 const plans = [
   {
@@ -30,6 +33,7 @@ const plans = [
     desc: "For large organisations",
     features: ["Unlimited workers", "Multi-location", "Advanced analytics", "Dedicated support", "SSO & compliance"],
     highlighted: false,
+    contactSales: true,
   },
 ];
 
@@ -60,7 +64,7 @@ export function LandingPricing() {
             Annually
              <span
               className={cn(
-                "px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider",
+                "px-1.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider",
                 isAnnual ? "bg-[#050505]/20 text-[#050505]" : "bg-gold/20 text-gold"
               )}
             >
@@ -85,21 +89,21 @@ export function LandingPricing() {
           <StaggerItem key={plan.name}>
             <ScaleOnScroll>
               <div
-                className={`relative rounded-[2rem] sm:rounded-[2.5rem] p-8 sm:p-10 flex flex-col h-full ${
+                className={`relative rounded-2xl sm:rounded-3xl p-8 sm:p-10 flex flex-col h-full ${
                   plan.highlighted
-                    ? "glass shadow-2xl shadow-gold/10 border-gold/40 lg:scale-105 z-10"
-                    : "card-premium lg:opacity-80"
+                    ? "glass !bg-gold/[0.04] !border-gold/35 z-10"
+                    : "card-premium"
                 }`}
               >
                 {plan.highlighted && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 rounded-full bg-gold text-[#050505] text-[10px] font-black uppercase tracking-widest">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 rounded-full bg-gold text-[#050505] text-[11px] font-semibold uppercase tracking-wider">
                     Most popular
                   </div>
                 )}
                 <div className="flex justify-between items-start mb-2 h-8">
                   <h3 className="font-bold text-2xl">{plan.name}</h3>
                   {isAnnual && (
-                    <div className="bg-gold/10 text-gold text-[9px] font-bold px-1.5 py-0.5 rounded border border-gold/20">
+                    <div className="bg-gold/10 text-gold text-[11px] font-bold px-1.5 py-0.5 rounded border border-gold/20">
                       Save 25%
                     </div>
                   )}
@@ -107,23 +111,23 @@ export function LandingPricing() {
                 <div className="flex flex-col gap-1 mb-6">
                   <div className="flex items-baseline gap-2 min-h-[48px]">
                     {isAnnual && (
-                      <span className="text-2xl font-bold text-white/30 line-through decoration-white/30">
+                      <span className="text-2xl font-bold text-white/45 line-through decoration-white/30">
                         {plan.price}
                       </span>
                     )}
                     <div className="flex items-baseline gap-1">
-                      <span className="text-5xl font-black text-gold">
+                      <span className="text-5xl font-semibold text-gold">
                         {isAnnual ? plan.annualPrice : plan.price}
                       </span>
-                      <span className="text-white/30 font-medium">/mo</span>
+                      <span className="text-white/45 font-medium">/mo</span>
                     </div>
                   </div>
-                  <span className="text-[11px] text-white/40 font-medium tracking-wide">
+                  <span className="text-[11px] text-white/55 font-medium tracking-wide">
                     {isAnnual ? "Billed annually" : "Billed monthly"}
                   </span>
                 </div>
-                <p className="text-sm text-white/50 mb-10 font-medium min-h-[40px]">{plan.desc}</p>
-                <div className="h-[2px] w-full bg-white/5 mb-10" />
+                <p className="text-sm text-white/50 mb-8 font-medium min-h-[40px]">{plan.desc}</p>
+                <div className="h-px w-full bg-white/[0.07] mb-8" />
                 <ul className="space-y-4 mb-12 flex-grow">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-3 text-sm font-medium text-white/60">
@@ -134,19 +138,36 @@ export function LandingPricing() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href="/onboarding/industry"
-                  className={`block text-center py-4 rounded-full text-base font-bold transition-all ${
-                    plan.highlighted ? "btn-gold" : "glass hover:bg-white/5 text-white/80"
-                  }`}
-                >
-                  Start your trial
-                </Link>
+                {plan.contactSales ? (
+                  <a
+                    href={SALES_HREF}
+                    className="block text-center py-3.5 rounded-full text-base font-semibold transition-colors border border-white/12 bg-white/[0.03] hover:bg-white/[0.07] text-white/90"
+                  >
+                    Contact sales
+                  </a>
+                ) : (
+                  <Link
+                    href="/onboarding/industry"
+                    className={`block text-center py-3.5 rounded-full text-base font-semibold transition-colors ${
+                      plan.highlighted ? "btn-gold" : "border border-white/12 bg-white/[0.03] hover:bg-white/[0.07] text-white/90"
+                    }`}
+                  >
+                    Start your trial
+                  </Link>
+                )}
               </div>
             </ScaleOnScroll>
           </StaggerItem>
         ))}
       </StaggerContainer>
+
+      <p className="mt-10 text-center text-sm text-white/55">
+        Want a walkthrough first?{" "}
+        <a href={DEMO_HREF} className="font-semibold text-gold hover:text-gold-light transition-colors">
+          Book a free demo
+        </a>{" "}
+        or email <a href={`mailto:${ONBOARD_EMAIL}`} className="text-white/80 hover:text-white underline underline-offset-4 decoration-white/20">{ONBOARD_EMAIL}</a>
+      </p>
     </div>
   );
 }

@@ -15,22 +15,22 @@ export function WorkerBottomNav() {
           href="/home"
           className={cn(
             "flex flex-col items-center gap-1.5 transition-colors",
-            pathname === "/home" ? "text-gold" : "text-white/40 hover:text-white/60"
+            pathname === "/home" ? "text-gold" : "text-white/55 hover:text-white/60"
           )}
         >
           <Home className="w-6 h-6" />
-          <span className="text-[10px] font-bold">Home</span>
+          <span className="text-[11px] font-bold">Home</span>
         </Link>
 
         <Link
           href="/my-shifts"
           className={cn(
             "flex flex-col items-center gap-1.5 transition-colors",
-            pathname === "/my-shifts" ? "text-gold" : "text-white/40 hover:text-white/60"
+            pathname === "/my-shifts" ? "text-gold" : "text-white/55 hover:text-white/60"
           )}
         >
           <CalendarDays className="w-6 h-6" />
-          <span className="text-[10px] font-bold">Shifts</span>
+          <span className="text-[11px] font-bold">Shifts</span>
         </Link>
 
         {/* Center Swap Button */}
@@ -38,37 +38,37 @@ export function WorkerBottomNav() {
           <Link
             href="/swap"
             className={cn(
-              "w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95",
+              "w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95",
               pathname === "/swap"
-                ? "bg-gold shadow-gold/40"
-                : "bg-gold shadow-gold/20"
+                ? "bg-gold"
+                : "bg-gold"
             )}
           >
             <RefreshCw className="w-8 h-8 text-[#050505]" />
           </Link>
-          <span className="text-[10px] font-bold text-white/40 mt-1">Swap</span>
+          <span className="text-[11px] font-bold text-white/55 mt-1">Swap</span>
         </div>
 
         <Link
           href="/my-team"
           className={cn(
             "flex flex-col items-center gap-1.5 transition-colors",
-            pathname === "/my-team" ? "text-gold" : "text-white/40 hover:text-white/60"
+            pathname === "/my-team" ? "text-gold" : "text-white/55 hover:text-white/60"
           )}
         >
           <Users className="w-6 h-6" />
-          <span className="text-[10px] font-bold">Team</span>
+          <span className="text-[11px] font-bold">Team</span>
         </Link>
 
         <Link
           href="/my-profile"
           className={cn(
             "flex flex-col items-center gap-1.5 transition-colors",
-            pathname === "/my-profile" ? "text-gold" : "text-white/40 hover:text-white/60"
+            pathname === "/my-profile" ? "text-gold" : "text-white/55 hover:text-white/60"
           )}
         >
           <User className="w-6 h-6" />
-          <span className="text-[10px] font-bold">Profile</span>
+          <span className="text-[11px] font-bold">Profile</span>
         </Link>
       </div>
     </nav>
