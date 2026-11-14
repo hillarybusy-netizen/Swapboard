@@ -44,7 +44,7 @@ export default async function AdminClaimsPage() {
       </div>
 
       {claims.length === 0 ? (
-        <div className="glass rounded-3xl p-16 text-center border border-white/5">
+        <div className="glass rounded-3xl p-8 sm:p-16 text-center border border-white/5">
           <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="w-8 h-8 text-white/15" />
           </div>

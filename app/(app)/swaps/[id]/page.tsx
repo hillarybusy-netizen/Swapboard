@@ -77,7 +77,7 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
       <div className="grid gap-8 grid-cols-1 lg:grid-cols-5">
         <div className="lg:col-span-3 space-y-8">
           {/* Shift Details */}
-          <div className="glass rounded-3xl p-8 border-white/5 relative overflow-hidden">
+          <div className="glass rounded-3xl p-5 sm:p-8 border-white/5 relative overflow-hidden">
              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 mb-6">Shift details</h3>
              {shift && (
               <div className="space-y-6">
@@ -97,7 +97,7 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
           </div>
 
           {/* People & Roles */}
-          <div className="glass rounded-3xl p-8 border-white/5">
+          <div className="glass rounded-3xl p-5 sm:p-8 border-white/5">
             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 mb-8">Participants</h3>
             <div className="space-y-8">
               <div className="flex items-center gap-4">
@@ -127,7 +127,7 @@ export default async function SwapDetailPage(props: { params: Promise<{ id: stri
 
         <div className="lg:col-span-2 space-y-8">
           {/* History Timeline */}
-          <div className="glass rounded-3xl p-8 border-white/5 bg-white/[0.01]">
+          <div className="glass rounded-3xl p-5 sm:p-8 border-white/5 bg-white/[0.01]">
             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/35 mb-8">Coordination History</h3>
             <div className="space-y-10 relative">
               <div className="absolute left-[7px] top-2 bottom-2 w-[1px] bg-white/5" />

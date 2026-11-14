@@ -199,7 +199,7 @@ export default async function AdminAnalyticsPage() {
     <div className="space-y-8 max-w-full pb-10 px-2 md:px-4">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-semibold tracking-tight text-white mb-2">Platform Analytics</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-2">Platform Analytics</h1>
         <p className="text-white/55 text-[11px] font-semibold uppercase tracking-wider">Comprehensive 30-Day Performance Dashboard</p>
       </div>
 

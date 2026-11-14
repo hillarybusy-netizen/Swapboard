@@ -55,7 +55,7 @@ export function CancelClaimButton({ shiftId, shiftTitle }: Props) {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200"
           onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}
         >
-          <div className="glass rounded-3xl p-8 max-w-sm w-full border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200">
+          <div className="glass rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
               <AlertTriangle className="w-6 h-6 text-red-400" />
             </div>

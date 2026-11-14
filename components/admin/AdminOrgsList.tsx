@@ -293,7 +293,7 @@ export function AdminOrgsList({ orgs }: { orgs: any[] }) {
 
       {/* Organizations List */}
       {filtered.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center space-y-3 border-white/5">
+        <div className="glass rounded-2xl p-8 sm:p-12 text-center space-y-3 border-white/5">
           <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/45 mx-auto">
             <Building2 className="w-5 h-5" />
           </div>

@@ -113,10 +113,10 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
           <Plus className="w-4 h-4" /> Add shift
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-[#0a0a0a] border-white/5 rounded-3xl shadow-2xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md bg-[#0a0a0a] border-white/5 rounded-3xl shadow-2xl p-0 overflow-y-auto">
         <div className="absolute inset-0 bg-mesh opacity-10 pointer-events-none" />
         
-        <DialogHeader className="p-8 pb-0">
+        <DialogHeader className="p-5 pb-0 sm:p-8 sm:pb-0">
           <DialogTitle className="text-2xl font-semibold tracking-tight text-white mb-1">Create Shift</DialogTitle>
           <p className="text-[11px] text-white/45 font-bold uppercase tracking-wider">New Deployment Details</p>
           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
@@ -125,7 +125,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6 relative">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-6 relative">
           <div className="space-y-2">
             <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Shift Title <span className="text-red-400">*</span></Label>
             <Input 
@@ -137,7 +137,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Start Time <span className="text-red-400">*</span></Label>
               <Input
@@ -160,7 +160,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[11px] font-semibold uppercase tracking-wider text-white/55 ml-1">Department <span className="text-red-400">*</span></Label>
               <Select value={form.department_id} onValueChange={(v) => set("department_id", v)}>
@@ -229,7 +229,7 @@ export function AddShiftDialog({ departments, profiles, orgId, timezone }: Props
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5 -mx-8 px-8 bg-white/[0.01]">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5 -mx-5 px-5 sm:-mx-8 sm:px-8 bg-white/[0.01]">
             <Button type="button" variant="ghost" className="text-white/55 hover:text-white rounded-full px-6 font-bold text-xs" onClick={() => setOpen(false)}>
               Cancel
             </Button>

@@ -284,7 +284,7 @@ export default async function ShiftDetailPage(props: {
 
       {/* Manager action panel */}
       {canAct && (
-        <div className="card-premium rounded-3xl p-8 space-y-6">
+        <div className="card-premium rounded-3xl p-5 sm:p-8 space-y-6">
           <div>
             <h2 className="text-lg font-semibold text-white mb-1">
               Manager Actions

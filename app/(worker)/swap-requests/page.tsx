@@ -40,7 +40,7 @@ export default async function SwapRequestsPage() {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div>
-        <h1 className="text-4xl font-semibold tracking-tight text-white mb-2">Swap Requests</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-2">Swap Requests</h1>
         <p className="text-[11px] font-semibold uppercase tracking-wider text-white/45">Manage Cover & Exchanges</p>
       </div>
 
@@ -51,7 +51,7 @@ export default async function SwapRequestsPage() {
         </div>
 
         {availableSwaps.length === 0 ? (
-          <div className="glass rounded-3xl p-12 text-center border-white/5">
+          <div className="glass rounded-3xl p-8 sm:p-12 text-center border-white/5">
             <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
               <ArrowLeftRight className="w-8 h-8 text-white/35" />
             </div>
@@ -129,7 +129,7 @@ export default async function SwapRequestsPage() {
                 </div>
 
                 {swap.shift && (
-                  <div className="flex items-center gap-4 text-[11px] font-bold text-white/55 uppercase tracking-wider">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-bold text-white/55 uppercase tracking-wider">
                     <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {formatShiftDate(swap.shift.start_time, tz)}</span>
                     <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {formatShiftTime(swap.shift.start_time, swap.shift.end_time, tz)}</span>
                   </div>

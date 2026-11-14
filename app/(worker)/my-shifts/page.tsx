@@ -174,7 +174,7 @@ export default async function MyShiftsPage({
       {/* Shift List */}
       <div className="space-y-3">
         {displayShifts.length === 0 ? (
-          <div className="glass rounded-2xl p-10 text-center border border-white/5">
+          <div className="glass rounded-2xl p-8 sm:p-10 text-center border border-white/5">
             <Calendar className="w-8 h-8 text-white/15 mx-auto mb-3" />
             <p className="text-sm font-bold text-white/45">No shifts here</p>
             <p className="text-[11px] text-white/35 mt-1">

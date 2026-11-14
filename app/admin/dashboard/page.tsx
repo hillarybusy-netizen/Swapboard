@@ -834,7 +834,7 @@ export default async function AdminDashboardPage() {
 
       {/* Upgrade Prompt for Basic Plan */}
       {!hasAdvancedAnalytics && (
-        <div className="glass rounded-2xl p-8 border-gold/20 mx-1 md:mx-2 relative overflow-hidden">
+        <div className="glass rounded-2xl p-5 sm:p-8 border-gold/20 mx-1 md:mx-2 relative overflow-hidden">
           <div className="flex items-start gap-4">
             <Lock className="w-6 h-6 text-gold flex-shrink-0 mt-1" />
             <div>

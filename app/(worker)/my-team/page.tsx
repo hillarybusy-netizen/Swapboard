@@ -178,7 +178,7 @@ export default async function MyTeamPage() {
       )}
 
       {members.length === 0 && (
-        <div className="glass rounded-2xl p-12 text-center border border-white/5">
+        <div className="glass rounded-2xl p-8 sm:p-12 text-center border border-white/5">
           <Users className="w-10 h-10 text-white/15 mx-auto mb-3" />
           <p className="text-sm font-bold text-white/45">No team members yet</p>
           <p className="text-[11px] text-white/35 mt-1">

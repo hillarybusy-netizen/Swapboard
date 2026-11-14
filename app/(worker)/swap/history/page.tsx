@@ -85,7 +85,7 @@ export default async function SwapHistoryPage() {
 
       {/* History List */}
       {history.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center border border-white/5">
+        <div className="glass rounded-2xl p-8 sm:p-12 text-center border border-white/5">
           <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
             <ClipboardList className="w-7 h-7 text-white/15" />
           </div>

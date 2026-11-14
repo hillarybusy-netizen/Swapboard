@@ -80,7 +80,7 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-10 px-1 md:px-2">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
             <ArrowLeft className="w-5 h-5 text-white/60" />
@@ -237,7 +237,7 @@ export default async function AnalyticsPage() {
 
       {/* Locked Features */}
       {!hasAdvancedAnalytics && (
-        <div className="glass rounded-2xl p-8 border-gold/20 relative overflow-hidden">
+        <div className="glass rounded-2xl p-5 sm:p-8 border-gold/20 relative overflow-hidden">
           <div className="flex items-start gap-4">
             <Lock className="w-6 h-6 text-gold flex-shrink-0 mt-1" />
             <div>

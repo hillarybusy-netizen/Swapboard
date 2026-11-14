@@ -111,7 +111,7 @@ export default async function LandingPage() {
 
             {/* Card 2 */}
             <StaggerItem>
-              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-8 h-full min-h-[280px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
+              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8 h-full min-h-[280px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
                 <div className="relative z-10">
                   <div className="w-11 h-11 rounded-xl bg-gold/[0.08] border border-gold/20 flex items-center justify-center mb-6">
                     <Clock className="w-5 h-5 text-gold" />
@@ -125,7 +125,7 @@ export default async function LandingPage() {
 
             {/* Card 3 */}
             <StaggerItem>
-              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-8 h-full min-h-[260px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
+              <div className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8 h-full min-h-[260px] flex flex-col justify-between hover:border-white/[0.14] transition-colors duration-300">
                 <div className="relative z-10">
                   <div className="w-11 h-11 rounded-xl bg-gold/[0.08] border border-gold/20 flex items-center justify-center mb-6">
                     <BarChart3 className="w-5 h-5 text-gold" />

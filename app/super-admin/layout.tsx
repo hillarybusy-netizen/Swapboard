@@ -34,7 +34,7 @@ export default async function SuperAdminLayout({ children }: { children: React.R
       <AdminSidebar profile={profile as any} isSuperAdmin={true} />
       
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-30 h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-10 bg-black/20 backdrop-blur-md">
+        <header className="sticky top-0 z-30 h-16 border-b border-white/5 flex items-center justify-between gap-3 pl-16 pr-4 md:px-10 bg-black/20 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[#eeeeee]/60 mt-0.5">Platform Status: Online</span>
@@ -44,7 +44,7 @@ export default async function SuperAdminLayout({ children }: { children: React.R
             <AdminProfileDropdown email={user.email || ""} isSuperAdmin={true} />
           </div>
         </header>
-        <main className="flex-1 px-10 py-12">
+        <main className="flex-1 min-w-0 px-4 py-8 md:px-10 md:py-12">
           {children}
         </main>
       </div>
