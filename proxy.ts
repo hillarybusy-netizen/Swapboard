@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   "/terms",
   "/privacy",
   "/onboarding",
+  "/demo",
   "/",
 ];
 
