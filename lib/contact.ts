@@ -9,6 +9,5 @@ export const DEMO_SECTION_HREF = "/#demo";
 
 export const SOCIAL_LINKS = {
   tiktok: "https://www.tiktok.com/@swapboard",
-  // TODO: confirm the exact LinkedIn URL
-  linkedin: "https://www.linkedin.com/company/swapboard",
+  linkedin: "https://www.linkedin.com/in/chukwuebuka-okonkwo-5837aa320",
 } as const;

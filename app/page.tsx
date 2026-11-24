@@ -349,7 +349,7 @@ export default async function LandingPage() {
               <a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noopener noreferrer" aria-label="SwapBoard on TikTok (@swapboard)" className="w-9 h-9 rounded-full border border-white/10 hover:border-white/25 transition-colors flex items-center justify-center text-white/55 hover:text-white">
                 <IconBrandTiktok className="w-4 h-4" stroke={1.75} />
               </a>
-              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="SwapBoard on LinkedIn" className="w-9 h-9 rounded-full border border-white/10 hover:border-white/25 transition-colors flex items-center justify-center text-white/55 hover:text-white">
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="SwapBoard founder on LinkedIn" className="w-9 h-9 rounded-full border border-white/10 hover:border-white/25 transition-colors flex items-center justify-center text-white/55 hover:text-white">
                 <IconBrandLinkedin className="w-4 h-4" stroke={1.75} />
               </a>
             </div>
